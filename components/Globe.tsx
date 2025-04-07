@@ -7,7 +7,11 @@ import * as satellite from 'satellite.js';
 const GlobeGL = dynamic(() => import('react-globe.gl'), { ssr: false });
 
 export default function Globe({ objects }: { objects: any[] }) {
-  const [globeEl, setGlobeEl] = useState<any>(null);
+  import { useRef } from 'react';
+import type { GlobeMethods } from 'react-globe.gl';
+
+const globeEl = useRef<GlobeMethods>();
+
  type SatPoint = {
   lat: number;
   lng: number;
@@ -66,7 +70,8 @@ const positionEci = positionAndVelocity.position;
   return (
     <div className="w-full h-[500px] rounded-xl overflow-hidden bg-black/80 border border-gray-700 p-2">
       <GlobeGL
-        ref={setGlobeEl}
+        ref={globeEl}
+
         globeImageUrl="//unpkg.com/three-globe/example/img/earth-dark.jpg"
         backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
         pointsData={points}
