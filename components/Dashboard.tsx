@@ -1,5 +1,9 @@
 'use client'
 
+interface NoradObject {
+  OBJECT_NAME: string;
+  OBJECT_TYPE: string;
+}
 
 import { useEffect, useState } from 'react';
 import { Loader2, Star, Globe2, SignalHigh, Menu } from 'lucide-react';
@@ -10,7 +14,7 @@ const SkyMap = dynamic(() => import('./SkyMap'), { ssr: false });
 const Globe = dynamic(() => import('./Globe'), { ssr: false });
 
 export default function Dashboard() {
-  const [noradObjects, setNoradObjects] = useState([]);
+  const [noradObjects, setNoradObjects] = useState<NoradObject[]>([]);
   const [satnogsSignals, setSatnogsSignals] = useState([]);
   const [heavensAbove, setHeavensAbove] = useState([]);
   const [loading, setLoading] = useState(true);

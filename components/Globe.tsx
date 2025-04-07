@@ -1,7 +1,8 @@
 'use client';
 import dynamic from 'next/dynamic';
 import { useEffect, useState } from 'react';
-import satellite from 'satellite.js';
+import * as satellite from 'satellite.js';
+
 
 const GlobeGL = dynamic(() => import('react-globe.gl'), { ssr: false });
 
