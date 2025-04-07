@@ -8,7 +8,16 @@ const GlobeGL = dynamic(() => import('react-globe.gl'), { ssr: false });
 
 export default function Globe({ objects }: { objects: any[] }) {
   const [globeEl, setGlobeEl] = useState<any>(null);
-  const [points, setPoints] = useState([]);
+ type SatPoint = {
+  lat: number;
+  lng: number;
+  size: number;
+  color: string;
+  name: string;
+};
+
+const [points, setPoints] = useState<SatPoint[]>([]);
+
 
   useEffect(() => {
     if (!objects || objects.length === 0) return;
