@@ -18,7 +18,12 @@ export default function Globe({ objects }: { objects: any[] }) {
         // Usar datos TLE para calcular la posición
         const satrec = satellite.twoline2satrec(obj.TLE_LINE1, obj.TLE_LINE2);
         const positionAndVelocity = satellite.propagate(satrec, new Date());
-        const positionEci = positionAndVelocity.position;
+
+if (!positionAndVelocity || !positionAndVelocity.position) {
+  throw new Error('No se pudo calcular la posición');
+}
+
+const positionEci = positionAndVelocity.position;
 
         if (!positionEci) {
           throw new Error('No se pudo calcular la posición');
