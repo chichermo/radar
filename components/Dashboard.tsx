@@ -1,3 +1,6 @@
+'use client'
+
+
 import { useEffect, useState } from 'react';
 import { Loader2, Star, Globe2, SignalHigh, Menu } from 'lucide-react';
 import dynamic from 'next/dynamic';
@@ -27,7 +30,8 @@ export default function Dashboard() {
         const satnogsData = await satnogsRes.json();
         setSatnogsSignals(satnogsData);
 
-        const heavensRes = await fetch("https://api.heavens-above.com/VisiblePasses/?lat=0&lng=0&alt=0&tz=UTC");
+        const heavensRes = await fetch("/api/heavens");
+
         const heavensData = await heavensRes.json();
         setHeavensAbove(heavensData);
       } catch (error) {
