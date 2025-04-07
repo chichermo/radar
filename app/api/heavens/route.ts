@@ -1,10 +1,17 @@
-export async function GET() {
-  const res = await fetch("https://api.heavens-above.com/VisiblePasses/?lat=0&lng=0&alt=0&tz=UTC", {
-    headers: {
-      'User-Agent': 'Radar Espacial/1.0',
-    },
-  });
+// app/api/heavens/route.js
+import { NextResponse } from "next/server";
 
-  const data = await res.json();
-  return Response.json(data);
+export async function GET() {
+  try {
+    const url = "http://api.heavens-above.com/satinfo?satid=25544";
+    const response = await fetch(url, { cache: "no-store" });
+    if (!response.ok) {
+      throw new Error("Failed to fetch Heavens-Above data");
+    }
+    const data = await response.text();
+    return NextResponse.json({ data });
+  } catch (error) {
+    console.error("Error in /api/heavens:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 }
