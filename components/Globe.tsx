@@ -7,7 +7,7 @@ import * as satellite from 'satellite.js';
 const GlobeGL = dynamic(() => import('react-globe.gl'), { ssr: false });
 
 export default function Globe({ objects }: { objects: any[] }) {
-  const globeEl = useRef<GlobeMethods | undefined>();
+  const globeEl = useRef<GlobeMethods | undefined>(undefined);
   const [points, setPoints] = useState<any[]>([]);
 
   useEffect(() => {
