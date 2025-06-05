@@ -1,7 +1,13 @@
-
 import { useEffect, useRef } from 'react';
 
-export default function useSignalAlerts(signals: any[]) {
+/* Agregar una interfaz para el tipo de señal (Signal) */
+interface Signal {
+  id: string;
+  /* Agrega aquí los campos que se esperan de cada señal */
+}
+
+/* Actualizar la firma del hook para usar la interfaz Signal en lugar de any */
+export default function useSignalAlerts(signals: Signal[]) {
   const previousCount = useRef(0);
 
   useEffect(() => {

@@ -1,16 +1,51 @@
 /* app/globals.css */
+/* Se agrega un reset básico (por ejemplo, usando Tailwind) y un estilo de fondo (por ejemplo, un degradado oscuro) para mejorar la UX. (Se elimina el bloque de animación (si no se usa) para limpiar el archivo.) */
 .stars {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url('/stars.jpg') repeat;
-  animation: twinkle 5s infinite;
+  @apply fixed inset-0 pointer-events-none;
+  background-image: radial-gradient(2px 2px at 20px 30px, #fff, rgba(0,0,0,0)),
+                    radial-gradient(2px 2px at 40px 70px, #fff, rgba(0,0,0,0)),
+                    radial-gradient(2px 2px at 50px 160px, #fff, rgba(0,0,0,0)),
+                    radial-gradient(2px 2px at 90px 40px, #fff, rgba(0,0,0,0)),
+                    radial-gradient(2px 2px at 130px 80px, #fff, rgba(0,0,0,0));
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  animation: twinkle 4s ease-in-out infinite;
 }
 
 @keyframes twinkle {
-  0% { opacity: 0.8; }
-  50% { opacity: 1; }
-  100% { opacity: 0.8; }
+  0% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+  100% { opacity: 0.3; }
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background-start: #0a0a0a;
+    --background-end: #1a1a1a;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-gradient-to-b from-[var(--background-start)] to-[var(--background-end)] text-white min-h-screen;
+    background-attachment: fixed;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg;
+  }
+
+  .hover-card {
+    @apply transition-all duration-200 hover:bg-white/10 hover:border-white/20;
+  }
+}
+
+/* Se elimina el bloque de animación (si no se usa) para limpiar el archivo. */
