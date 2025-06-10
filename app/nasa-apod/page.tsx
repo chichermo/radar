@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Calendar, Camera, Info } from 'lucide-react';
-// import useSWR from "swr";
 
 function getLastNDates(n: number) {
   const dates = [];
@@ -48,8 +47,16 @@ export default function NasaApodPage() {
   if (isLoading) {
     return <div className="text-center text-gray-300">Cargando imagen del día...</div>;
   }
+  
   if (error || data?.error) {
-    return <div className="text-center text-red-400">No se pudo cargar la imagen de la NASA.</div>;
+    return (
+      <div className="space-y-6 ml-64">
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+          <strong>Error:</strong> No se pudo cargar la imagen de la NASA. 
+          {error && <div className="mt-2 text-sm">Detalles: {error.message}</div>}
+        </div>
+      </div>
+    );
   }
 
   const apod = data;

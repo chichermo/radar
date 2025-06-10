@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import Globe from '@/components/Globe';
 import { useState } from 'react';
 
@@ -14,7 +14,7 @@ const mockTLEObjects = [
 export default function OrbitalPage() {
   const [selected, setSelected] = useState<typeof mockTLEObjects[0] | null>(null);
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 ml-64">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">
           Visualización Orbital
@@ -39,7 +39,7 @@ export default function OrbitalPage() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ml-64">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">
             Satélites Activos

@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Clock, MapPin, Satellite } from 'lucide-react';
 import { useState } from 'react';
 

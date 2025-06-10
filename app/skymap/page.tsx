@@ -2,16 +2,15 @@
 
 import React, { useState, useEffect } from 'react';
 import SkyMap from '@/components/SkyMap';
-import { Card } from '@/components/ui/Card';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { ErrorAlert } from '@/components/ui/ErrorAlert';
+import ErrorDisplay from '@/components/ErrorDisplay';
+import LoadingSpinner from '@/components/LoadingSpinner';
 import { fetchAllSpaceObjects } from '@/services/spaceData';
 import type { SpaceObject } from '@/types/space';
 
 export default function SkyMapPage() {
   const [objects, setObjects] = useState<SpaceObject[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | Error | null>(null);
   const [showHazardousOnly, setShowHazardousOnly] = useState(false);
   const [showTrajectories, setShowTrajectories] = useState(true);
 
@@ -19,12 +18,13 @@ export default function SkyMapPage() {
     const loadData = async () => {
       try {
         setLoading(true);
+        setError(null);
         const data = await fetchAllSpaceObjects();
         setObjects(data);
-        setError(null);
       } catch (err) {
-        setError('Error al cargar los datos espaciales');
-        console.error(err);
+        const errorMessage = err instanceof Error ? err : new Error('Error desconocido al cargar datos espaciales');
+        setError(errorMessage);
+        console.error('Error en SkyMapPage:', errorMessage);
       } finally {
         setLoading(false);
       }
@@ -46,64 +46,98 @@ export default function SkyMapPage() {
     satellites: objects.filter(obj => obj.type === 'satellite').length
   };
 
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorAlert message={error} />;
+  if (loading) {
+    return (
+      <div className="space-y-6 ml-64">
+        <header className="mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">
+            Mapa del Cielo
+          </h1>
+          <p className="text-gray-300">
+            Visualización de objetos espaciales en tiempo real. 
+            Monitorea asteroides, satélites y otros objetos cercanos a la Tierra.
+          </p>
+        </header>
+        <LoadingSpinner message="Cargando datos espaciales..." size="lg" />
+      </div>
+    );
+  }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Mapa del Espacio</h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+    <div className="space-y-6 ml-64">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">
+          Mapa del Cielo
+        </h1>
+        <p className="text-gray-300">
+          Visualización de objetos espaciales en tiempo real. 
+          Monitorea asteroides, satélites y otros objetos cercanos a la Tierra.
+        </p>
+      </header>
+
+      {error && (
+        <ErrorDisplay 
+          error={error} 
+          title="Error al cargar datos espaciales"
+          onDismiss={() => setError(null)}
+        />
+      )}
+
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3">
-          <SkyMap 
-            objects={filteredObjects}
-            showTrajectories={showTrajectories}
-          />
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+            <SkyMap 
+              objects={filteredObjects}
+              showTrajectories={showTrajectories}
+              error={error ? error.toString() : undefined}
+            />
+          </div>
         </div>
         
-        <div className="space-y-4">
-          <Card className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Filtros</h2>
-            <div className="space-y-2">
+        <div className="space-y-6">
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Filtros</h2>
+            <div className="space-y-4">
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   checked={showHazardousOnly}
                   onChange={(e) => setShowHazardousOnly(e.target.checked)}
-                  className="form-checkbox"
+                  className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
                 />
-                <span>Mostrar solo objetos peligrosos</span>
+                <span className="text-gray-300">Mostrar solo objetos peligrosos</span>
               </label>
               <label className="flex items-center space-x-2">
                 <input
                   type="checkbox"
                   checked={showTrajectories}
                   onChange={(e) => setShowTrajectories(e.target.checked)}
-                  className="form-checkbox"
+                  className="rounded border-gray-600 bg-gray-700 text-blue-500 focus:ring-blue-500"
                 />
-                <span>Mostrar trayectorias</span>
+                <span className="text-gray-300">Mostrar trayectorias</span>
               </label>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Estadísticas</h2>
-            <div className="space-y-2">
-              <p>Total de objetos: {stats.total}</p>
-              <p>Objetos peligrosos: {stats.hazardous}</p>
-              <p>Asteroides: {stats.asteroids}</p>
-              <p>Satélites: {stats.satellites}</p>
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Estadísticas</h2>
+            <div className="space-y-2 text-gray-300">
+              <p>Total de objetos: <span className="text-white font-semibold">{stats.total}</span></p>
+              <p>Objetos peligrosos: <span className="text-red-400 font-semibold">{stats.hazardous}</span></p>
+              <p>Asteroides: <span className="text-orange-400 font-semibold">{stats.asteroids}</span></p>
+              <p>Satélites: <span className="text-blue-400 font-semibold">{stats.satellites}</span></p>
             </div>
-          </Card>
+          </div>
 
-          <Card className="p-4">
-            <h2 className="text-xl font-semibold mb-4">Información</h2>
-            <p className="text-sm text-gray-600">
-              Los datos se actualizan automáticamente cada 5 minutos.
-              Los objetos peligrosos están marcados en rojo.
-              Las trayectorias muestran el movimiento previsto en las próximas 24 horas.
-            </p>
-          </Card>
+          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+            <h2 className="text-xl font-semibold text-white mb-4">Información</h2>
+            <div className="text-sm text-gray-400 space-y-2">
+              <p>• Los datos se actualizan automáticamente cada 5 minutos</p>
+              <p>• Los objetos peligrosos están marcados en rojo</p>
+              <p>• Haz clic en un objeto para ver más detalles</p>
+              <p>• Usa los filtros para personalizar la vista</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

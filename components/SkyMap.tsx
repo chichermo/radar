@@ -1,142 +1,97 @@
-'use client';
+"use client";
 
-import React, { useEffect, useRef, useState } from 'react';
-import { Viewer, Entity, EntityDescription } from 'resium';
-import { Cartesian3, Color, JulianDate, TimeInterval, TimeIntervalCollection } from 'cesium';
+import React, { useState, useRef } from 'react';
 import type { SpaceObject } from '@/types/space';
 
 interface SkyMapProps {
   objects: SpaceObject[];
   showTrajectories?: boolean;
+  error?: string;
 }
 
-export default function SkyMap({ objects = [], showTrajectories = true }: SkyMapProps) {
+export default function SkyMap({ objects = [], showTrajectories = true, error }: SkyMapProps) {
   const [selectedObject, setSelectedObject] = useState<SpaceObject | null>(null);
-  const viewerRef = useRef<any>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  useEffect(() => {
-    if (viewerRef.current && objects.length > 0) {
-      // Centrar la vista en el primer objeto
-      const firstObject = objects[0];
-      viewerRef.current.camera.flyTo({
-        destination: Cartesian3.fromDegrees(
-          firstObject.position.x,
-          firstObject.position.y,
-          firstObject.position.z
-        ),
-        duration: 2
-      });
-    }
-  }, [objects]);
-
-  const calculateTrajectory = (object: SpaceObject) => {
-    if (!object.velocity) return null;
-
-    const startTime = JulianDate.now();
-    const stopTime = JulianDate.addHours(startTime, 24, new JulianDate());
-    const positions: Cartesian3[] = [];
-
-    // Calcular posiciones futuras cada hora
-    for (let i = 0; i <= 24; i++) {
-      const time = JulianDate.addHours(startTime, i, new JulianDate());
-      const position = new Cartesian3(
-        object.position.x + object.velocity.x * i,
-        object.position.y + object.velocity.y * i,
-        object.position.z + object.velocity.z * i
-      );
-      positions.push(position);
-    }
-
-    return new TimeIntervalCollection([
-      new TimeInterval({
-        start: startTime,
-        stop: stopTime,
-        data: positions
-      })
-    ]);
-  };
+  // Validar que objects sea un array
+  const validObjects = Array.isArray(objects) ? objects : [];
 
   return (
-    <div className="relative w-full h-[600px] rounded-lg overflow-hidden">
-      <Viewer
-        ref={viewerRef}
-        full
-        timeline={false}
-        animation={false}
-        baseLayerPicker={false}
-        navigationHelpButton={false}
-        homeButton={false}
-        geocoder={false}
-        sceneModePicker={false}
-        skyBox={false}
-        skyAtmosphere={false}
-        contextOptions={{
-          webgl: {
-            alpha: true
-          }
-        }}
-      >
-        {objects.map((object) => {
-          const position = Cartesian3.fromDegrees(
-            object.position.x,
-            object.position.y,
-            object.position.z
-          );
+    <div className="relative w-full h-[600px] rounded-lg overflow-hidden bg-gray-900">
+      {/* Mostrar error si existe */}
+      {error && (
+        <div className="absolute top-4 left-4 right-4 z-10 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded">
+          <strong>Error:</strong> {error}
+        </div>
+      )}
 
-          const trajectory = showTrajectories ? calculateTrajectory(object) : null;
-          const size = Math.max(object.size.min, object.size.max) * 1000; // Escalar para mejor visualización
+      {/* Canvas para el mapa del cielo */}
+      <canvas
+        ref={canvasRef}
+        className="w-full h-full"
+        style={{ background: 'radial-gradient(circle at center, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' }}
+      />
 
-          return (
-            <Entity
-              key={object.id}
-              position={position}
-              name={object.name}
-              description={
-                `\n${object.name}\nTipo: ${object.type === 'asteroid' ? 'Asteroide' : 'Satélite'}\nTamaño: ${object.size.min.toFixed(1)} - ${object.size.max.toFixed(1)} metros\n` +
-                (object.isHazardous ? '¡Objeto potencialmente peligroso!\n' : '') +
-                (object.orbit ? `Órbita:\n  Eje semi-mayor: ${object.orbit.semiMajorAxis.toFixed(2)} km\n  Excentricidad: ${object.orbit.eccentricity.toFixed(4)}\n  Inclinación: ${object.orbit.inclination.toFixed(2)}°\n` : '') +
-                `Última actualización: ${new Date(object.lastUpdated).toLocaleString()}`
-              }
-              point={{
-                pixelSize: size,
-                color: object.isHazardous ? Color.RED : Color.WHITE,
-                outlineColor: Color.BLACK,
-                outlineWidth: 2
-              }}
-              path={trajectory ? {
-                resolution: 1,
-                material: Color.YELLOW.withAlpha(0.5),
-                width: 2,
-                leadTime: 24 * 3600, // 24 horas en segundos
-                trailTime: 0
-              } : undefined}
-              onClick={() => setSelectedObject(object)}
-            />
-          );
-        })}
-      </Viewer>
-
+      {/* Información del objeto seleccionado */}
       {selectedObject && (
-        <div className="absolute top-4 right-4 bg-white p-4 rounded-lg shadow-lg max-w-sm">
-          <h3 className="text-lg font-semibold mb-2">{selectedObject.name}</h3>
-          <p className="text-sm text-gray-600">
-            Tipo: {selectedObject.type === 'asteroid' ? 'Asteroide' : 'Satélite'}
-          </p>
-          {selectedObject.isHazardous && (
-            <p className="text-red-500 font-medium mt-2">
-              ¡Objeto potencialmente peligroso!
-            </p>
-          )}
+        <div className="absolute top-4 right-4 bg-gray-800 border border-gray-600 rounded-lg p-4 text-white max-w-sm">
+          <h3 className="font-bold text-lg mb-2">{selectedObject.name}</h3>
+          <div className="space-y-1 text-sm">
+            <p><span className="text-gray-400">Tipo:</span> {selectedObject.type}</p>
+            <p><span className="text-gray-400">ID:</span> {selectedObject.id}</p>
+            {selectedObject.position && (
+              <>
+                <p><span className="text-gray-400">X:</span> {selectedObject.position.x?.toFixed(2)}</p>
+                <p><span className="text-gray-400">Y:</span> {selectedObject.position.y?.toFixed(2)}</p>
+                <p><span className="text-gray-400">Z:</span> {selectedObject.position.z?.toFixed(2)}</p>
+              </>
+            )}
+            {selectedObject.isHazardous && (
+              <p className="text-red-400 font-semibold">⚠️ Objeto peligroso</p>
+            )}
+          </div>
           <button
             onClick={() => setSelectedObject(null)}
-            className="mt-4 text-sm text-blue-600 hover:text-blue-800"
+            className="mt-3 px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm"
           >
             Cerrar
           </button>
         </div>
       )}
 
-      <p className="mt-2 text-sm">{(objects?.length ?? 0)} objetos en el mapa</p>
+      {/* Lista de objetos en el mapa */}
+      <div className="absolute bottom-4 left-4 right-4 bg-gray-800 border border-gray-600 rounded-lg p-4">
+        <h3 className="text-white font-semibold mb-2">Objetos en el mapa ({validObjects.length})</h3>
+        <div className="max-h-32 overflow-y-auto">
+          {validObjects.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {validObjects.slice(0, 12).map((obj, index) => (
+                <button
+                  key={obj.id || index}
+                  onClick={() => setSelectedObject(obj)}
+                  className={`text-left p-2 rounded text-sm transition-colors ${
+                    obj.isHazardous 
+                      ? 'bg-red-900/50 border border-red-500 text-red-200' 
+                      : 'bg-gray-700 hover:bg-gray-600 text-gray-300'
+                  }`}
+                >
+                  <div className="font-medium truncate">{obj.name || `Objeto ${index + 1}`}</div>
+                  <div className="text-xs opacity-75">{obj.type}</div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-400 text-sm">No hay objetos para mostrar</p>
+          )}
+        </div>
+      </div>
+
+      {/* Contador de objetos */}
+      <div className="absolute top-4 left-4 bg-gray-800/80 border border-gray-600 rounded px-3 py-1">
+        <p className="text-sm text-gray-300">
+          {validObjects.length} objetos en el mapa
+        </p>
+      </div>
     </div>
   );
 }

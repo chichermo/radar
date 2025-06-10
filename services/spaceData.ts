@@ -41,52 +41,71 @@ async function fetchNearEarthAsteroids(): Promise<SpaceObject[]> {
   const startDate = today.toISOString().split('T')[0];
   const endDate = new Date(today.setDate(today.getDate() + 7)).toISOString().split('T')[0];
 
-  const response = await fetch(
-    `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${NASA_API_KEY}`
-  );
+  try {
+    const response = await fetch(
+      `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${NASA_API_KEY}`
+    );
 
-  if (!response.ok) {
-    throw new Error('Error al obtener datos de asteroides');
-  }
-
-  const data = await response.json();
-  const asteroids: SpaceObject[] = [];
-
-  Object.values(data.near_earth_objects).forEach((dayAsteroids: unknown) => {
-    if (Array.isArray(dayAsteroids)) {
-      dayAsteroids.forEach((asteroid: any) => {
-        const closeApproach = asteroid.close_approach_data[0];
-        asteroids.push({
-          id: asteroid.id,
-          name: asteroid.name,
-          type: 'asteroid',
-          position: {
-            x: parseFloat(closeApproach.miss_distance.kilometers),
-            y: 0,
-            z: 0
-          },
-          velocity: {
-            x: parseFloat(closeApproach.relative_velocity.kilometers_per_hour),
-            y: 0,
-            z: 0
-          },
-          size: {
-            min: asteroid.estimated_diameter.meters.estimated_diameter_min,
-            max: asteroid.estimated_diameter.meters.estimated_diameter_max
-          },
-          isHazardous: asteroid.is_potentially_hazardous_asteroid,
-          orbit: {
-            semiMajorAxis: parseFloat(asteroid.orbital_data.semi_major_axis),
-            eccentricity: parseFloat(asteroid.orbital_data.eccentricity),
-            inclination: parseFloat(asteroid.orbital_data.inclination)
-          },
-          lastUpdated: new Date().toISOString()
-        });
-      });
+    if (!response.ok) {
+      throw new Error(`Error al obtener datos de asteroides: ${response.statusText}`);
     }
-  });
 
-  return asteroids;
+    const data = await response.json();
+    const asteroids: SpaceObject[] = [];
+
+    Object.values(data.near_earth_objects).forEach((dayAsteroids: unknown) => {
+      if (Array.isArray(dayAsteroids)) {
+        dayAsteroids.forEach((asteroid: any) => {
+          try {
+            const closeApproach = asteroid.close_approach_data?.[0];
+            if (!closeApproach) {
+              console.warn(`Asteroid ${asteroid.id} no tiene datos de acercamiento`);
+              return;
+            }
+
+            const orbitalData = asteroid.orbital_data || {};
+            const semiMajorAxis = parseFloat(orbitalData.semi_major_axis || '0');
+            const eccentricity = parseFloat(orbitalData.eccentricity || '0');
+            const inclination = parseFloat(orbitalData.inclination || '0');
+
+            asteroids.push({
+              id: asteroid.id,
+              name: asteroid.name,
+              type: 'asteroid',
+              position: {
+                x: parseFloat(closeApproach.miss_distance?.kilometers || '0'),
+                y: 0,
+                z: 0
+              },
+              velocity: {
+                x: parseFloat(closeApproach.relative_velocity?.kilometers_per_hour || '0'),
+                y: 0,
+                z: 0
+              },
+              size: {
+                min: asteroid.estimated_diameter?.meters?.estimated_diameter_min || 0,
+                max: asteroid.estimated_diameter?.meters?.estimated_diameter_max || 0
+              },
+              isHazardous: asteroid.is_potentially_hazardous_asteroid || false,
+              orbit: {
+                semiMajorAxis,
+                eccentricity,
+                inclination
+              },
+              lastUpdated: new Date().toISOString()
+            });
+          } catch (error) {
+            console.warn(`Error al procesar asteroide ${asteroid.id}:`, error);
+          }
+        });
+      }
+    });
+
+    return asteroids;
+  } catch (error) {
+    console.error('Error al obtener datos de asteroides:', error);
+    throw error;
+  }
 }
 
 export async function fetchSpaceTrackObjects(): Promise<SpaceObject[]> {
