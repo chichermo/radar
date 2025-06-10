@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { Camera, Star, Info, Calendar, MapPin, Thermometer, Activity, Zap, Eye } from 'lucide-react';
+import { Camera, Star, Info, Calendar, MapPin, Thermometer, Activity, Zap, Eye, Settings } from 'lucide-react';
 
 interface JWSTImage {
   id: string;
@@ -225,7 +225,7 @@ export default function JWSTPage() {
                   : 'border-transparent text-gray-400 hover:text-gray-300'
               }`}
             >
-              <Telescope className="h-4 w-4 inline mr-2" />
+              <Settings className="h-4 w-4 inline mr-2" />
               Instrumentos
             </button>
           </nav>

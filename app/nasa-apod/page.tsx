@@ -5,9 +5,10 @@ import { Calendar, Camera, Info } from 'lucide-react';
 
 function getLastNDates(n: number) {
   const dates = [];
+  const today = new Date();
   for (let i = 1; i <= n; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
+    const d = new Date(today);
+    d.setDate(today.getDate() - i);
     dates.push(d.toISOString().slice(0, 10));
   }
   return dates;
@@ -36,12 +37,24 @@ export default function NasaApodPage() {
   // Obtener miniaturas de los últimos 4 días
   const lastDates = getLastNDates(4);
   const [previousImages, setPreviousImages] = React.useState<any[]>([]);
+  const [loadingPrevious, setLoadingPrevious] = React.useState(true);
+  
   React.useEffect(() => {
+    setLoadingPrevious(true);
     Promise.all(
       lastDates.map(date =>
-        fetch(`/api/nasa-apod?date=${date}`).then(res => res.json())
+        fetch(`/api/nasa-apod?date=${date}`)
+          .then(res => res.json())
+          .catch(err => ({ 
+            error: `Error al cargar imagen para ${date}`,
+            date: date,
+            title: `Error - ${date}`
+          }))
       )
-    ).then(setPreviousImages);
+    ).then(images => {
+      setPreviousImages(images);
+      setLoadingPrevious(false);
+    });
   }, []);
 
   if (isLoading) {
@@ -127,28 +140,42 @@ export default function NasaApodPage() {
               Imágenes Anteriores
             </h2>
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                {previousImages.map((img, idx) => (
-                  <a
-                    key={img.date || idx}
-                    href={img.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block aspect-square bg-gray-700 rounded-lg overflow-hidden hover:scale-105 transition"
-                    title={img.title}
-                  >
-                    {img.media_type === 'image' ? (
-                      <img
-                        src={img.url}
-                        alt={img.title}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      <span className="flex items-center justify-center h-full text-xs text-gray-400">Video</span>
-                    )}
-                  </a>
-                ))}
-              </div>
+              {loadingPrevious ? (
+                <div className="text-center py-4">
+                  <p className="text-gray-400 text-sm">Cargando imágenes anteriores...</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  {previousImages.map((img, idx) => (
+                    <div
+                      key={img.date || idx}
+                      className={`block aspect-square rounded-lg overflow-hidden transition ${
+                        img.error 
+                          ? 'bg-gray-700 border border-gray-600' 
+                          : 'bg-gray-700 hover:scale-105'
+                      }`}
+                      title={img.title}
+                    >
+                      {img.error ? (
+                        <div className="flex items-center justify-center h-full">
+                          <div className="text-center">
+                            <p className="text-red-400 text-xs mb-1">Error</p>
+                            <p className="text-gray-400 text-xs">{img.date}</p>
+                          </div>
+                        </div>
+                      ) : img.media_type === 'image' ? (
+                        <img
+                          src={img.url}
+                          alt={img.title}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <span className="flex items-center justify-center h-full text-xs text-gray-400">Video</span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 
