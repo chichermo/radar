@@ -1,17 +1,300 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
+import { MapPin, Calendar, Search, Eye, BookOpen, Globe, Clock, AlertTriangle } from 'lucide-react';
+
+interface ArchaeologicalFind {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  date: string;
+  period: string;
+  significance: string;
+  category: string;
+  imageUrl: string;
+  details: string;
+}
+
+const mockFinds: ArchaeologicalFind[] = [
+  {
+    id: "1",
+    title: "Antikythera - La Primera Computadora Mecánica",
+    description: "Un dispositivo astronómico de 2,000 años de antigüedad que predice eclipses y posiciones planetarias con precisión asombrosa.",
+    location: "Isla de Antikythera, Grecia",
+    date: "1901",
+    period: "100-150 a.C.",
+    significance: "Demuestra que los antiguos griegos tenían conocimientos astronómicos avanzados",
+    category: "Tecnología Antigua",
+    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+    details: "El mecanismo de Antikythera es considerado la primera computadora analógica del mundo. Sus engranajes de bronce podían calcular las posiciones del Sol, la Luna y los planetas, así como predecir eclipses con una precisión extraordinaria para su época."
+  },
+  {
+    id: "2",
+    title: "Göbekli Tepe - El Primer Templo de la Humanidad",
+    description: "Un complejo megalítico de 12,000 años que desafía nuestra comprensión de la evolución de las civilizaciones.",
+    location: "Sureste de Turquía",
+    date: "1994",
+    period: "9,600-8,200 a.C.",
+    significance: "Reescribe la historia de la arquitectura y la religión",
+    category: "Arquitectura Megalítica",
+    imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+    details: "Göbekli Tepe es 6,000 años más antiguo que Stonehenge y las pirámides de Egipto. Sus pilares tallados con animales sugieren que la religión organizada precedió a la agricultura, cambiando fundamentalmente nuestra comprensión del desarrollo humano."
+  },
+  {
+    id: "3",
+    title: "Mapa de Piri Reis - Cartografía Antigua Precisa",
+    description: "Un mapa del siglo XVI que muestra la costa de la Antártida antes de su descubrimiento oficial, con detalles inexplicables.",
+    location: "Estambul, Turquía",
+    date: "1513",
+    period: "Siglo XVI",
+    significance: "Sugiere conocimientos geográficos perdidos o fuentes desconocidas",
+    category: "Cartografía Misteriosa",
+    imageUrl: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&h=600&fit=crop",
+    details: "El mapa de Piri Reis muestra la costa de la Antártida sin hielo, algo que solo pudo haber ocurrido hace millones de años. ¿Cómo pudo un cartógrafo del siglo XVI tener acceso a esta información?"
+  },
+  {
+    id: "4",
+    title: "Esferas de Piedra de Costa Rica",
+    description: "Cientos de esferas perfectamente esféricas de granito que desafían las capacidades tecnológicas de su época.",
+    location: "Delta del Diquís, Costa Rica",
+    date: "1930s",
+    period: "300-1500 d.C.",
+    significance: "Demuestra habilidades de tallado y matemáticas avanzadas",
+    category: "Artefactos Misteriosos",
+    imageUrl: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&h=600&fit=crop",
+    details: "Las esferas varían en tamaño desde unos pocos centímetros hasta más de 2 metros de diámetro. Su perfección esférica sugiere conocimientos matemáticos y herramientas de precisión que no deberían existir en esa época."
+  },
+  {
+    id: "5",
+    title: "Líneas de Nazca - Geoglifos Gigantes",
+    description: "Enormes dibujos en el desierto peruano visibles solo desde el aire, creados hace más de 2,000 años.",
+    location: "Desierto de Nazca, Perú",
+    date: "1927",
+    period: "200 a.C. - 600 d.C.",
+    significance: "Muestra capacidades de medición y diseño a gran escala",
+    category: "Geoglifos",
+    imageUrl: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=600&fit=crop",
+    details: "Las líneas de Nazca incluyen figuras de animales, plantas y formas geométricas que se extienden por kilómetros. Su propósito exacto sigue siendo un misterio, aunque se cree que tenían significado astronómico o ceremonial."
+  },
+  {
+    id: "6",
+    title: "Biblioteca de Ashurbanipal - Conocimiento Perdido",
+    description: "La biblioteca más antigua del mundo, conteniendo miles de tablillas con conocimientos astronómicos y matemáticos.",
+    location: "Nínive, Irak",
+    date: "1853",
+    period: "668-627 a.C.",
+    significance: "Preserva conocimientos científicos antiguos",
+    category: "Biblioteca Antigua",
+    imageUrl: "https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&h=600&fit=crop",
+    details: "La biblioteca contenía más de 30,000 tablillas cuneiformes con textos sobre astronomía, matemáticas, medicina y literatura. Muchos de estos conocimientos se perdieron durante siglos y fueron redescubiertos solo recientemente."
+  }
+];
 
 export default function ArchaeologyPage() {
+  const [finds] = useState<ArchaeologicalFind[]>(mockFinds);
+  const [selectedFind, setSelectedFind] = useState<ArchaeologicalFind | null>(null);
+  const [activeCategory, setActiveCategory] = useState('all');
+
+  const categories = ['all', ...Array.from(new Set(finds.map(find => find.category)))];
+  const filteredFinds = activeCategory === 'all' ? finds : finds.filter(find => find.category === activeCategory);
+
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold mb-4">Hallazgos Arqueológicos</h1>
-      <p className="mb-6 text-gray-600 max-w-2xl">
-        Explora descubrimientos arqueológicos relevantes para la ciencia espacial y la historia de la humanidad. Aquí se mostrarán hallazgos, artefactos y noticias recientes relacionados con la arqueología y el espacio.
-      </p>
-      {/* Aquí se integrarán los datos reales o mock de hallazgos arqueológicos */}
-      <div className="rounded-lg border border-dashed border-gray-300 p-8 text-center text-gray-400">
-        Próximamente: integración de datos arqueológicos.
+    <div className="space-y-6 ml-64">
+      <header className="mb-8">
+        <h1 className="text-3xl font-bold text-white mb-2">
+          Hallazgos Arqueológicos Misteriosos
+        </h1>
+        <p className="text-gray-300 text-lg leading-relaxed">
+          Descubre artefactos y sitios arqueológicos que desafían nuestra comprensión de la historia. 
+          Desde computadoras mecánicas de 2,000 años hasta templos más antiguos que las pirámides, 
+          estos hallazgos revelan que las civilizaciones antiguas poseían conocimientos y tecnologías 
+          que solo ahora estamos comenzando a comprender.
+        </p>
+      </header>
+
+      {/* Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <Search className="h-5 w-5 text-orange-400" />
+            <span className="text-orange-200 font-semibold">Hallazgos</span>
+          </div>
+          <p className="text-2xl font-bold text-white mt-2">{finds.length}</p>
+          <p className="text-orange-300 text-sm">Documentados</p>
+        </div>
+        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <Globe className="h-5 w-5 text-blue-400" />
+            <span className="text-blue-200 font-semibold">Regiones</span>
+          </div>
+          <p className="text-2xl font-bold text-white mt-2">6</p>
+          <p className="text-blue-300 text-sm">Continentes</p>
+        </div>
+        <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <Clock className="h-5 w-5 text-green-400" />
+            <span className="text-green-200 font-semibold">Período</span>
+          </div>
+          <p className="text-2xl font-bold text-white mt-2">12K años</p>
+          <p className="text-green-300 text-sm">Antigüedad máxima</p>
+        </div>
+        <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
+          <div className="flex items-center space-x-2">
+            <AlertTriangle className="h-5 w-5 text-purple-400" />
+            <span className="text-purple-200 font-semibold">Misterios</span>
+          </div>
+          <p className="text-2xl font-bold text-white mt-2">Sin resolver</p>
+          <p className="text-purple-300 text-sm">Muchos casos</p>
+        </div>
+      </div>
+
+      {/* Explicación educativa */}
+      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-8">
+        <h2 className="text-xl font-semibold text-white mb-4">¿Por qué son importantes estos hallazgos?</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <h3 className="text-lg font-medium text-blue-400 mb-2">Para la Ciencia</h3>
+            <ul className="text-gray-300 space-y-2 text-sm">
+              <li>• <strong>Reescriben la historia:</strong> Cambian nuestra comprensión del desarrollo humano</li>
+              <li>• <strong>Conocimientos perdidos:</strong> Revelan tecnologías antiguas avanzadas</li>
+              <li>• <strong>Conectan épocas:</strong> Muestran continuidad en el conocimiento científico</li>
+              <li>• <strong>Inspiran innovación:</strong> Las soluciones antiguas pueden inspirar nuevas tecnologías</li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-green-400 mb-2">Para la Humanidad</h3>
+            <ul className="text-gray-300 space-y-2 text-sm">
+              <li>• <strong>Herencia cultural:</strong> Conectan con nuestros ancestros</li>
+              <li>• <strong>Humildad científica:</strong> Nos recuerdan que no sabemos todo</li>
+              <li>• <strong>Misterio y asombro:</strong> Mantienen viva la curiosidad humana</li>
+              <li>• <strong>Perspectiva temporal:</strong> Nos dan contexto sobre nuestro lugar en la historia</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* Filtros por categoría */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {categories.map((category) => (
+          <button
+            key={category}
+            onClick={() => setActiveCategory(category)}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              activeCategory === category
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+          >
+            {category === 'all' ? 'Todos' : category}
+          </button>
+        ))}
+      </div>
+
+      {/* Lista de hallazgos */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filteredFinds.map((find) => (
+          <div
+            key={find.id}
+            className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:border-blue-500 transition-colors cursor-pointer"
+            onClick={() => setSelectedFind(find)}
+          >
+            <div className="relative h-48">
+              <img
+                src={find.imageUrl}
+                alt={find.title}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                <h3 className="text-white font-semibold text-sm">{find.title}</h3>
+                <p className="text-gray-300 text-xs">{find.period}</p>
+              </div>
+            </div>
+            <div className="p-4">
+              <p className="text-gray-300 text-sm mb-3 line-clamp-2">{find.description}</p>
+              <div className="flex items-center justify-between text-xs text-gray-400">
+                <div className="flex items-center space-x-1">
+                  <MapPin className="h-3 w-3" />
+                  <span>{find.location}</span>
+                </div>
+                <span className="px-2 py-1 bg-gray-700 rounded text-xs">
+                  {find.category}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal para detalles */}
+      {selectedFind && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-600">
+            <div className="relative h-64">
+              <img
+                src={selectedFind.imageUrl}
+                alt={selectedFind.title}
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={() => setSelectedFind(null)}
+                className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-6">
+              <h2 className="text-2xl font-bold text-white mb-2">{selectedFind.title}</h2>
+              <p className="text-gray-300 mb-4">{selectedFind.description}</p>
+              
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
+                <div>
+                  <span className="text-gray-400">Ubicación:</span>
+                  <p className="text-white">{selectedFind.location}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Descubierto:</span>
+                  <p className="text-white">{selectedFind.date}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Período:</span>
+                  <p className="text-white">{selectedFind.period}</p>
+                </div>
+                <div>
+                  <span className="text-gray-400">Categoría:</span>
+                  <p className="text-white">{selectedFind.category}</p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <h3 className="text-lg font-semibold text-blue-400 mb-2">Significado Histórico</h3>
+                <p className="text-gray-300">{selectedFind.significance}</p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-green-400 mb-2">Detalles del Hallazgo</h3>
+                <p className="text-gray-300 leading-relaxed">{selectedFind.details}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sección de reflexión */}
+      <div className="mt-12 p-6 bg-gray-800/50 border border-gray-700 rounded-lg">
+        <h2 className="text-xl font-semibold text-white mb-4">¿Qué nos enseñan estos hallazgos?</h2>
+        <div className="text-gray-300 space-y-3">
+          <p>
+            Estos artefactos y sitios arqueológicos nos recuerdan que la historia humana es mucho más compleja 
+            de lo que pensábamos. Cada descubrimiento nos obliga a reconsiderar nuestras suposiciones sobre 
+            las capacidades tecnológicas y científicas de las civilizaciones antiguas.
+          </p>
+          <p>
+            <strong>La lección más importante:</strong> Nunca subestimes la inteligencia y creatividad de 
+            nuestros ancestros. Lo que hoy nos parece misterioso o imposible, mañana podría ser comprendido 
+            con nuevos descubrimientos o perspectivas.
+          </p>
+        </div>
       </div>
     </div>
   );

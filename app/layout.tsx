@@ -19,7 +19,7 @@ export default function RootLayout({
       <body className="h-full font-sans">
         <div className="min-h-full flex flex-col">
           <Navbar />
-          <div className="flex flex-1 overflow-hidden">
+          <div className="flex flex-1 overflow-hidden pt-16">
             <Sidebar />
             <main className="flex-1 overflow-y-auto bg-gray-900 p-6">
               {children}
