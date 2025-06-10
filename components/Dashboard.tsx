@@ -33,12 +33,68 @@ interface SatnogsData {
   error?: string;
 }
 
-// Mock data para el Globe
+// Mock data para el Globe (formato TLE)
 const mockTLEObjects = [
   {
     TLE_LINE1: "1 25544U 98067A   20123.45678901  .00000000  00000-0  00000-0 0  9999",
     TLE_LINE2: "2 25544  51.6423 290.9073 0006703 126.2523 325.9358 15.49525375234567",
     OBJECT_NAME: "ISS (ZARYA)"
+  }
+];
+
+// Mock data para SkyMap (formato SpaceObject)
+const mockSpaceObjects = [
+  {
+    id: "25544",
+    name: "ISS (ZARYA)",
+    type: "satellite" as const,
+    position: {
+      x: 400000, // km desde el centro de la Tierra
+      y: 200000,
+      z: 100000
+    },
+    velocity: {
+      x: 7.7, // km/s
+      y: 0.0,
+      z: 0.0
+    },
+    size: {
+      min: 0.1,
+      max: 0.1
+    },
+    isHazardous: false,
+    orbit: {
+      semiMajorAxis: 6778,
+      eccentricity: 0.0001,
+      inclination: 51.6
+    },
+    lastUpdated: new Date().toISOString()
+  },
+  {
+    id: "33591",
+    name: "STARLINK-1234",
+    type: "satellite" as const,
+    position: {
+      x: 350000,
+      y: 250000,
+      z: 150000
+    },
+    velocity: {
+      x: 7.5,
+      y: 0.2,
+      z: 0.1
+    },
+    size: {
+      min: 0.05,
+      max: 0.05
+    },
+    isHazardous: false,
+    orbit: {
+      semiMajorAxis: 6928,
+      eccentricity: 0.0002,
+      inclination: 53.0
+    },
+    lastUpdated: new Date().toISOString()
   }
 ];
 
@@ -108,7 +164,7 @@ export default function Dashboard() {
           <p className="mb-2 text-gray-300 text-sm">
             Visualiza los objetos espaciales como puntos en el cielo. Útil para aficionados a la astronomía y para el monitoreo visual de eventos espaciales. El mapa es generado en tiempo real y se adapta al tamaño de la ventana.
           </p>
-          <SkyMap objects={mockTLEObjects} />
+          <SkyMap objects={mockSpaceObjects} />
         </Card>
       </section>
 
