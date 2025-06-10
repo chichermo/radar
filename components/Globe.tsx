@@ -41,6 +41,14 @@ interface OrbitalPath {
   type: string;
 }
 
+// Tipo para el parámetro del event handler de GlobeGL
+interface GlobeClickPoint {
+  name?: string;
+  lat?: number;
+  lng?: number;
+  [key: string]: any;
+}
+
 function ErrorAlert({ message }: { message: string }) {
   return (
     <div className="p-4 bg-red-900/50 border border-red-500 text-red-300 rounded-lg backdrop-blur-sm">
@@ -373,12 +381,12 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
             onGlobeReady={() => {
               setIsLoading(false);
             }}
-            onGlobeClick={(point) => {
+            onGlobeClick={(point: GlobeClickPoint) => {
               if (point && 'name' in point) {
                 onSatelliteSelect?.(point as OrbitalPoint);
               }
             }}
-            onPointHover={(point) => {
+            onPointHover={(point: GlobeClickPoint) => {
               setHoveredPoint(point as OrbitalPoint);
             }}
           />
