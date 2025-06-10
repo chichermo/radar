@@ -1,5 +1,5 @@
 "use client";
-import { Bell, Menu, Moon, Settings, Sun } from 'lucide-react';
+import { Bell, Menu, Moon, Settings, Sun, Search, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
@@ -16,43 +16,88 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="bg-gray-800 border-b border-gray-700 fixed w-full z-40">
+    <nav className="bg-gray-800/95 backdrop-blur-sm border-b border-gray-700/50 fixed w-full z-40 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <div className="flex items-center">
-            <button
-              type="button"
-              onClick={toggleSidebar}
-              className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
-            >
-              <Menu className="h-6 w-6" />
-            </button>
-            <div className="ml-4">
-              <h1 className="text-white font-semibold">Radar Espacial</h1>
-            </div>
-          </div>
-
+          {/* Lado izquierdo */}
           <div className="flex items-center space-x-4">
             <button
               type="button"
-              className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              onClick={toggleSidebar}
+              className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
             >
-              <Bell className="h-5 w-5" />
+              <Menu className="h-5 w-5" />
             </button>
+            
+            {/* Barra de búsqueda */}
+            <div className="hidden md:flex items-center space-x-2 bg-gray-700/50 rounded-xl px-3 py-1.5 border border-gray-600/50">
+              <Search className="h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar objetos espaciales..."
+                className="bg-transparent text-white placeholder-gray-400 text-sm focus:outline-none w-64"
+              />
+            </div>
+          </div>
+
+          {/* Centro - Título */}
+          <div className="flex-1 flex justify-center lg:justify-start lg:ml-8">
+            <div className="flex items-center space-x-2">
+              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <div className="w-2 h-2 bg-white rounded-full"></div>
+              </div>
+              <h1 className="text-lg font-semibold text-white hidden sm:block">
+                Radar Espacial
+              </h1>
+            </div>
+          </div>
+
+          {/* Lado derecho - Acciones */}
+          <div className="flex items-center space-x-2">
+            {/* Indicador de estado del sistema */}
+            <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-green-900/20 border border-green-500/30 rounded-lg">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-green-400 text-xs font-medium">Online</span>
+            </div>
+
+            {/* Notificaciones */}
             <button
               type="button"
-              className="text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
+              className="relative p-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
+            >
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full text-xs flex items-center justify-center text-white">
+                3
+              </span>
+            </button>
+
+            {/* Tema */}
+            <button
+              type="button"
+              className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
             >
               <Sun className="h-5 w-5" />
             </button>
+
+            {/* Configuración */}
             <Link
               href="/settings"
-              className={`text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white ${
-                pathname === '/settings' ? 'text-white' : ''
+              className={`p-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200 ${
+                pathname === '/settings' 
+                  ? 'text-blue-400 bg-blue-900/20 border border-blue-500/30' 
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700/50'
               }`}
             >
               <Settings className="h-5 w-5" />
             </Link>
+
+            {/* Perfil de usuario */}
+            <button
+              type="button"
+              className="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-gray-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all duration-200"
+            >
+              <User className="h-5 w-5" />
+            </button>
           </div>
         </div>
       </div>

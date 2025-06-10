@@ -12,7 +12,9 @@ import {
   Settings,
   History,
   Search,
-  Camera
+  Camera,
+  ArrowRight,
+  Sparkles
 } from 'lucide-react'
 
 /* Definir un array de objetos TLE (mock) para el Globe */
@@ -27,130 +29,197 @@ const sections = [
     description: 'Observa en tiempo real dónde están los satélites alrededor de la Tierra. Como un GPS cósmico que te muestra la posición exacta de cada nave espacial.',
     href: '/orbital',
     icon: GlobeIcon,
-    color: 'bg-blue-500'
+    color: 'from-blue-500 to-blue-600',
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/20'
   },
   {
     title: 'Mapa del Cielo',
     description: 'Explora el cielo como un astrónomo. Ve asteroides, satélites y otros objetos espaciales representados como puntos brillantes en un mapa interactivo.',
     href: '/skymap',
     icon: Map,
-    color: 'bg-purple-500'
+    color: 'from-purple-500 to-purple-600',
+    bgColor: 'bg-purple-500/10',
+    borderColor: 'border-purple-500/20'
   },
   {
     title: 'Telescopio James Webb',
     description: 'Descubre las increíbles imágenes del telescopio más poderoso del mundo. Ve galaxias lejanas, nebulosas y exoplanetas como nunca antes.',
     href: '/jwst',
     icon: Camera,
-    color: 'bg-indigo-500'
+    color: 'from-indigo-500 to-indigo-600',
+    bgColor: 'bg-indigo-500/10',
+    borderColor: 'border-indigo-500/20'
   },
   {
     title: 'Próximos Pasos',
     description: '¿Cuándo pasará la Estación Espacial Internacional sobre tu casa? Descubre cuándo y dónde mirar para ver satélites a simple vista.',
     href: '/passes',
     icon: Satellite,
-    color: 'bg-green-500'
+    color: 'from-green-500 to-green-600',
+    bgColor: 'bg-green-500/10',
+    borderColor: 'border-green-500/20'
   },
   {
     title: 'Señales Detectadas',
     description: 'Monitorea señales de radio misteriosas del espacio. ¿Será una estrella pulsante, una galaxia distante o algo más extraordinario?',
     href: '/signals',
     icon: Radio,
-    color: 'bg-red-500'
+    color: 'from-red-500 to-red-600',
+    bgColor: 'bg-red-500/10',
+    borderColor: 'border-red-500/20'
   },
   {
     title: 'NASA APOD',
     description: 'Cada día, una nueva imagen asombrosa del universo. Desde nebulosas coloridas hasta galaxias en colisión, descubre la belleza del cosmos.',
     href: '/nasa-apod',
     icon: Sun,
-    color: 'bg-yellow-500'
+    color: 'from-yellow-500 to-yellow-600',
+    bgColor: 'bg-yellow-500/10',
+    borderColor: 'border-yellow-500/20'
   },
   {
     title: 'Asteroides NEO',
     description: 'Vigila rocas espaciales que se acercan a la Tierra. Aprende sobre asteroides potencialmente peligrosos y cómo los científicos los monitorean.',
     href: '/asteroids',
     icon: AlertCircle,
-    color: 'bg-orange-500'
+    color: 'from-orange-500 to-orange-600',
+    bgColor: 'bg-orange-500/10',
+    borderColor: 'border-orange-500/20'
   },
   {
     title: 'Clima Espacial',
     description: '¿Cómo está el clima en el espacio? Monitorea tormentas solares, auroras boreales y eventos que pueden afectar satélites y comunicaciones.',
     href: '/space-weather',
     icon: Sun,
-    color: 'bg-indigo-500'
+    color: 'from-indigo-500 to-indigo-600',
+    bgColor: 'bg-indigo-500/10',
+    borderColor: 'border-indigo-500/20'
   },
   {
     title: 'SETI - Búsqueda de Vida',
     description: '¿Estamos solos en el universo? Explora señales misteriosas y anomalías que podrían ser evidencia de civilizaciones extraterrestres.',
     href: '/seti',
     icon: Search,
-    color: 'bg-pink-500'
+    color: 'from-pink-500 to-pink-600',
+    bgColor: 'bg-pink-500/10',
+    borderColor: 'border-pink-500/20'
   },
   {
     title: 'Hallazgos Arqueológicos',
     description: 'Descubre artefactos antiguos y misterios arqueológicos que desafían nuestra comprensión de la historia humana y civilizaciones perdidas.',
     href: '/archaeology',
     icon: History,
-    color: 'bg-teal-500'
+    color: 'from-teal-500 to-teal-600',
+    bgColor: 'bg-teal-500/10',
+    borderColor: 'border-teal-500/20'
   }
 ]
 
 export default function Home() {
   return (
-    <div className="container mx-auto p-4 space-y-10 ml-64">
-      <header className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-white mb-4">
-          Radar de Anomalías Espaciales
-        </h1>
-        <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-          Bienvenido a tu ventana al cosmos. Esta plataforma te permite explorar el universo, 
-          monitorear señales misteriosas del espacio y descubrir los últimos hallazgos científicos. 
-          Desde satélites en órbita hasta posibles señales de vida extraterrestre, aquí encontrarás 
-          todo lo que necesitas para convertirte en un explorador espacial desde tu computadora.
-        </p>
-        <div className="mt-6 p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg max-w-2xl mx-auto">
-          <p className="text-blue-200 text-sm">
-            💡 <strong>Consejo:</strong> Haz clic en cualquier sección para explorar. Cada una te 
-            explicará en términos simples qué estás viendo y por qué es importante.
-          </p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      {/* Header mejorado */}
+      <div className="relative overflow-hidden">
+        {/* Fondo con estrellas animadas */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="stars"></div>
         </div>
-      </header>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {sections.map((section) => (
-          <Link
-            key={section.title}
-            href={section.href}
-            className={`flex flex-col items-start justify-between rounded-xl border border-gray-700 bg-gray-800 p-6 transition-all duration-200 shadow-sm hover:shadow-2xl hover:scale-[1.04] hover:border-primary hover:bg-gradient-to-br hover:from-gray-800 hover:to-gray-900 group focus:outline-none focus:ring-2 focus:ring-primary/60`}
-          >
-            <div className={`rounded-full p-2 mb-4 text-white bg-opacity-80 ${section.color} group-hover:scale-110 transition-transform duration-200`}>
-              <section.icon className="h-7 w-7" />
+        
+        <div className="relative z-10 text-center py-16 px-6">
+          <div className="flex items-center justify-center mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
+              <Sparkles className="h-8 w-8 text-white" />
             </div>
-            <div>
-              <h2 className="text-lg font-bold mb-2 group-hover:text-primary transition-colors duration-200">{section.title}</h2>
-              <p className="text-gray-400 text-sm group-hover:text-gray-200 transition-colors duration-200 leading-relaxed">{section.description}</p>
+          </div>
+          
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Radar Espacial
+          </h1>
+          
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">
+            Plataforma de monitoreo en tiempo real de objetos espaciales y señales anómalas. 
+            Explora el cosmos desde la comodidad de tu pantalla.
+          </p>
+          
+          {/* Estadísticas rápidas */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-2xl mx-auto mb-12">
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4">
+              <div className="text-2xl font-bold text-blue-400">1,247</div>
+              <div className="text-sm text-gray-400">Objetos Rastreados</div>
             </div>
-          </Link>
-        ))}
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4">
+              <div className="text-2xl font-bold text-green-400">24/7</div>
+              <div className="text-sm text-gray-400">Monitoreo Activo</div>
+            </div>
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4">
+              <div className="text-2xl font-bold text-orange-400">156</div>
+              <div className="text-sm text-gray-400">Alertas Hoy</div>
+            </div>
+            <div className="bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 rounded-xl p-4">
+              <div className="text-2xl font-bold text-purple-400">99.9%</div>
+              <div className="text-sm text-gray-400">Precisión</div>
+            </div>
+          </div>
+        </div>
       </div>
 
-      <div className="mt-12 p-6 bg-gray-800/50 border border-gray-700 rounded-lg">
-        <h2 className="text-2xl font-bold text-white mb-4">¿Cómo usar esta plataforma?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-semibold text-blue-400 mb-2">Para Principiantes</h3>
-            <ul className="text-gray-300 space-y-1 text-sm">
-              <li>• Empieza con "NASA APOD" para ver imágenes hermosas</li>
-              <li>• Explora "Mapa del Cielo" para entender qué hay arriba</li>
-              <li>• Revisa "Próximos Pasos" para ver satélites desde tu casa</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-green-400 mb-2">Para Exploradores</h3>
-            <ul className="text-gray-300 space-y-1 text-sm">
-              <li>• Sumérgete en "SETI" para buscar vida extraterrestre</li>
-              <li>• Analiza "Señales Detectadas" para encontrar anomalías</li>
-              <li>• Estudia "Asteroides NEO" para entender amenazas espaciales</li>
-            </ul>
+      {/* Secciones principales */}
+      <div className="max-w-7xl mx-auto px-6 pb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {sections.map((section) => (
+            <Link
+              key={section.title}
+              href={section.href}
+              className="group relative overflow-hidden rounded-2xl border border-gray-700/50 bg-gray-800/50 backdrop-blur-sm p-8 transition-all duration-300 hover:scale-105 hover:border-gray-600/50 hover:bg-gray-800/70 hover:shadow-2xl"
+            >
+              {/* Fondo con gradiente sutil */}
+              <div className={`absolute inset-0 bg-gradient-to-br ${section.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
+              
+              {/* Contenido */}
+              <div className="relative z-10">
+                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${section.color} mb-6 group-hover:scale-110 transition-transform duration-300`}>
+                  <section.icon className="h-6 w-6 text-white" />
+                </div>
+                
+                <h2 className="text-xl font-bold text-white mb-4 group-hover:text-gray-100 transition-colors duration-300">
+                  {section.title}
+                </h2>
+                
+                <p className="text-gray-400 text-sm leading-relaxed mb-6 group-hover:text-gray-300 transition-colors duration-300">
+                  {section.description}
+                </p>
+                
+                <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors duration-300">
+                  <span className="text-sm font-medium">Explorar</span>
+                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                </div>
+              </div>
+              
+              {/* Efecto de brillo en hover */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer con información adicional */}
+      <div className="border-t border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">¿Listo para explorar el cosmos?</h3>
+            <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+              Nuestro sistema de monitoreo espacial te mantiene informado sobre todo lo que sucede en el espacio exterior. 
+              Desde satélites hasta asteroides, nunca te perderás nada importante.
+            </p>
+            <div className="flex items-center justify-center space-x-4">
+              <div className="flex items-center space-x-2 text-green-400">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm">Sistema Activo</span>
+              </div>
+              <div className="text-gray-500">•</div>
+              <div className="text-gray-400 text-sm">Última actualización: hace 2 minutos</div>
+            </div>
           </div>
         </div>
       </div>

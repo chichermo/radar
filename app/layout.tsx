@@ -21,8 +21,10 @@ export default function RootLayout({
           <Navbar />
           <div className="flex flex-1 overflow-hidden pt-16">
             <Sidebar />
-            <main className="flex-1 overflow-y-auto bg-gray-900 p-6">
-              {children}
+            <main className="flex-1 overflow-y-auto bg-gray-900 p-6 lg:ml-72 transition-all duration-300">
+              <div className="max-w-7xl mx-auto">
+                {children}
+              </div>
             </main>
           </div>
         </div>

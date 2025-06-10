@@ -1,6 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { 
   Globe, 
   Map, 
@@ -35,141 +36,227 @@ import {
   TrashIcon,
   CogIcon,
   Menu,
-  X
+  X,
+  Eye,
+  Zap,
+  Shield
 } from 'lucide-react';
-import { useState } from 'react';
 
-const menuItems = [
+// Menú reorganizado por categorías lógicas
+const menuCategories = [
   {
-    title: 'Dashboard',
-    href: '/',
-    icon: Globe,
-    description: 'Vista general del sistema'
+    title: "Vista General",
+    items: [
+      {
+        title: 'Dashboard',
+        href: '/',
+        icon: Home,
+        description: 'Vista general del sistema'
+      }
+    ]
   },
   {
-    title: 'Visualización Orbital',
-    href: '/orbital',
-    icon: Globe,
-    description: 'Posición de satélites en tiempo real'
+    title: "Visualización Espacial",
+    items: [
+      {
+        title: 'Visualización Orbital',
+        href: '/orbital',
+        icon: Globe,
+        description: 'Posición de satélites en tiempo real'
+      },
+      {
+        title: 'Mapa del Cielo',
+        href: '/skymap',
+        icon: Map,
+        description: 'Visualización de objetos espaciales'
+      },
+      {
+        title: 'James Webb',
+        href: '/jwst',
+        icon: Camera,
+        description: 'Telescopio Espacial James Webb'
+      }
+    ]
   },
   {
-    title: 'Mapa del Cielo',
-    href: '/skymap',
-    icon: Map,
-    description: 'Visualización de objetos espaciales'
+    title: "Monitoreo en Tiempo Real",
+    items: [
+      {
+        title: 'Próximos Pasos',
+        href: '/passes',
+        icon: Satellite,
+        description: 'Próximos pasos satelitales'
+      },
+      {
+        title: 'Señales Detectadas',
+        href: '/signals',
+        icon: Radio,
+        description: 'Monitoreo de señales anómalas'
+      },
+      {
+        title: 'Clima Espacial',
+        href: '/space-weather',
+        icon: Sun,
+        description: 'Condiciones del clima espacial'
+      }
+    ]
   },
   {
-    title: 'Próximos Pasos',
-    href: '/passes',
-    icon: Satellite,
-    description: 'Próximos pasos satelitales'
+    title: "Amenazas y Riesgos",
+    items: [
+      {
+        title: 'Asteroides NEO',
+        href: '/asteroids',
+        icon: AlertCircle,
+        description: 'Objetos cercanos a la Tierra'
+      },
+      {
+        title: 'Basura Espacial',
+        href: '/space-debris',
+        icon: AlertTriangle,
+        description: 'Objetos espaciales en órbita'
+      }
+    ]
   },
   {
-    title: 'Señales Detectadas',
-    href: '/signals',
-    icon: Radio,
-    description: 'Monitoreo de señales anómalas'
+    title: "Investigación y Descubrimientos",
+    items: [
+      {
+        title: 'NASA APOD',
+        href: '/nasa-apod',
+        icon: ImageIcon,
+        description: 'Imagen astronómica del día'
+      },
+      {
+        title: 'SETI',
+        href: '/seti',
+        icon: Search,
+        description: 'Búsqueda de inteligencia extraterrestre'
+      },
+      {
+        title: 'Hallazgos Arqueológicos',
+        href: '/archaeology',
+        icon: History,
+        description: 'Descubrimientos recientes'
+      }
+    ]
   },
   {
-    title: 'NASA APOD',
-    href: '/nasa-apod',
-    icon: ImageIcon,
-    description: 'Imagen astronómica del día'
-  },
-  {
-    title: 'Asteroides NEO',
-    href: '/asteroids',
-    icon: AlertCircle,
-    description: 'Objetos cercanos a la Tierra'
-  },
-  {
-    title: 'Clima Espacial',
-    href: '/space-weather',
-    icon: Sun,
-    description: 'Condiciones del clima espacial'
-  },
-  {
-    title: 'Basura Espacial',
-    href: '/space-debris',
-    icon: AlertTriangle,
-    description: 'Objetos espaciales en órbita'
-  },
-  {
-    title: 'SETI',
-    href: '/seti',
-    icon: Search,
-    description: 'Datos de radioastronomía'
-  },
-  {
-    title: 'Hallazgos Arqueológicos',
-    href: '/archaeology',
-    icon: History,
-    description: 'Descubrimientos recientes'
-  },
-  {
-    title: 'Configuración',
-    href: '/settings',
-    icon: Settings,
-    description: 'Ajustes del sistema'
-  },
-  {
-    title: 'James Webb',
-    href: '/jwst',
-    icon: Camera,
-    description: 'Información sobre el Telescopio Espacial James Webb'
+    title: "Configuración",
+    items: [
+      {
+        title: 'Configuración',
+        href: '/settings',
+        icon: Settings,
+        description: 'Ajustes del sistema'
+      }
+    ]
   }
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
+  const [objectCount, setObjectCount] = useState(0);
+
+  useEffect(() => {
+    // Solo generar el número aleatorio en el cliente para evitar errores de hidratación
+    setObjectCount(Math.floor(Math.random() * 1000) + 500);
+  }, []);
 
   return (
     <>
-      {/* Botón de menú móvil */}
+      {/* Botón de menú móvil mejorado */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 rounded-md bg-gray-800 text-white"
+        className="lg:hidden fixed top-4 left-4 z-50 p-3 rounded-xl bg-gray-800/90 backdrop-blur-sm text-white border border-gray-700 hover:bg-gray-700/90 transition-all duration-200 shadow-lg"
       >
-        {isOpen ? <X size={24} /> : <Menu size={24} />}
+        {isOpen ? <X size={20} /> : <Menu size={20} />}
       </button>
 
-      {/* Sidebar */}
+      {/* Sidebar mejorado */}
       <div className={`
-        fixed top-0 left-0 h-full w-64 bg-gray-900 text-white transform transition-transform duration-200 ease-in-out z-40
+        fixed top-0 left-0 h-full w-72 bg-gray-900/95 backdrop-blur-sm text-white transform transition-all duration-300 ease-in-out z-40
+        border-r border-gray-700/50 shadow-2xl
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-4">
-          <h1 className="text-xl font-bold mb-8">Espacio Anomalías</h1>
-          <nav className="space-y-1">
-            {menuItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.title}
-                  href={item.href}
-                  className={`
-                    flex items-center px-4 py-2 text-sm font-medium rounded-md
-                    ${isActive 
-                      ? 'bg-gray-800 text-white' 
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }
-                  `}
-                  onClick={() => setIsOpen(false)}
-                >
-                  <item.icon className="mr-3 h-5 w-5" />
-                  {item.title}
-                </Link>
-              );
-            })}
+        <div className="p-6">
+          {/* Header mejorado */}
+          <div className="mb-8">
+            <div className="flex items-center space-x-3 mb-2">
+              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+                <Radar className="h-5 w-5 text-white" />
+              </div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                Radar Espacial
+              </h1>
+            </div>
+            <p className="text-gray-400 text-sm">Monitoreo de anomalías espaciales</p>
+          </div>
+
+          {/* Navegación por categorías */}
+          <nav className="space-y-6">
+            {menuCategories.map((category) => (
+              <div key={category.title}>
+                <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
+                  {category.title}
+                </h3>
+                <div className="space-y-1">
+                  {category.items.map((item) => {
+                    const isActive = pathname === item.href;
+                    return (
+                      <Link
+                        key={item.title}
+                        href={item.href}
+                        className={`
+                          group flex items-center px-3 py-2.5 text-sm font-medium rounded-xl transition-all duration-200
+                          ${isActive 
+                            ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 text-blue-300 border border-blue-500/30 shadow-lg' 
+                            : 'text-gray-300 hover:bg-gray-800/50 hover:text-white hover:border-gray-600/30 border border-transparent'
+                          }
+                        `}
+                        onClick={() => setIsOpen(false)}
+                      >
+                        <div className={`
+                          p-1.5 rounded-lg mr-3 transition-all duration-200
+                          ${isActive 
+                            ? 'bg-blue-600/20 text-blue-400' 
+                            : 'bg-gray-700/50 text-gray-400 group-hover:bg-gray-600/50 group-hover:text-gray-300'
+                          }
+                        `}>
+                          <item.icon className="h-4 w-4" />
+                        </div>
+                        <span className="flex-1">{item.title}</span>
+                        {isActive && (
+                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                        )}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
+
+          {/* Footer con información adicional */}
+          <div className="absolute bottom-6 left-6 right-6">
+            <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
+              <div className="flex items-center space-x-2 mb-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-xs text-gray-400">Sistema Activo</span>
+              </div>
+              <p className="text-xs text-gray-500">
+                Monitoreando {objectCount > 0 ? objectCount : '...'} objetos espaciales
+              </p>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Overlay para móvil */}
+      {/* Overlay mejorado para móvil */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

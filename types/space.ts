@@ -1,7 +1,7 @@
 export interface SpaceObject {
   id: string;
   name: string;
-  type: 'asteroid' | 'satellite';
+  type: 'asteroid' | 'satellite' | 'debris';
   position: {
     x: number;
     y: number;
@@ -17,6 +17,8 @@ export interface SpaceObject {
     max: number;
   };
   isHazardous: boolean;
+  magnitude?: number;
+  distance?: number;
   orbit?: {
     semiMajorAxis: number;
     eccentricity: number;
