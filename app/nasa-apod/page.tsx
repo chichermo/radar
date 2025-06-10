@@ -19,21 +19,6 @@ export default function NasaApodPage() {
   const [error, setError] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    setIsLoading(true);
-    fetch('/api/nasa-apod')
-      .then(res => res.json())
-      .then(json => {
-        setData(json);
-        setError(null);
-      })
-      .catch(err => {
-        setError(err);
-        setData(null);
-      })
-      .finally(() => setIsLoading(false));
-  }, []);
-
   // Obtener miniaturas de los últimos 4 días
   const lastDates = getLastNDates(4);
   const [previousImages, setPreviousImages] = React.useState<any[]>([]);
@@ -41,167 +26,214 @@ export default function NasaApodPage() {
   
   React.useEffect(() => {
     setLoadingPrevious(true);
-    Promise.all(
+    // Usar Promise.allSettled para manejar errores individuales
+    Promise.allSettled(
       lastDates.map(date =>
         fetch(`/api/nasa-apod?date=${date}`)
           .then(res => res.json())
-          .catch(err => ({ 
-            error: `Error al cargar imagen para ${date}`,
-            date: date,
-            title: `Error - ${date}`
-          }))
+          .then(data => {
+            if (data.error) {
+              throw new Error(data.error);
+            }
+            return data;
+          })
       )
-    ).then(images => {
+    ).then(results => {
+      const images = results.map((result, index) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        } else {
+          return { 
+            error: `Error al cargar imagen para ${lastDates[index]}`,
+            date: lastDates[index],
+            title: `Error - ${lastDates[index]}`,
+            url: "https://apod.nasa.gov/apod/image/2401/ngc1566_hst_960.jpg"
+          };
+        }
+      });
       setPreviousImages(images);
       setLoadingPrevious(false);
     });
   }, []);
 
+  useEffect(() => {
+    setIsLoading(true);
+    fetch('/api/nasa-apod')
+      .then(res => res.json())
+      .then(json => {
+        if (json.error) {
+          setError(json.error);
+          setData(null);
+        } else {
+          setData(json);
+          setError(null);
+        }
+      })
+      .catch(err => {
+        setError(err.message);
+        setData(null);
+      })
+      .finally(() => setIsLoading(false));
+  }, []);
+
   if (isLoading) {
-    return <div className="text-center text-gray-300">Cargando imagen del día...</div>;
-  }
-  
-  if (error || data?.error) {
     return (
-      <div className="space-y-6 ml-64">
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-          <strong>Error:</strong> No se pudo cargar la imagen de la NASA. 
-          {error && <div className="mt-2 text-sm">Detalles: {error.message}</div>}
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-700 rounded w-1/3 mb-4"></div>
+            <div className="h-96 bg-gray-700 rounded mb-4"></div>
+            <div className="h-4 bg-gray-700 rounded w-full mb-2"></div>
+            <div className="h-4 bg-gray-700 rounded w-3/4"></div>
+          </div>
         </div>
       </div>
     );
   }
 
-  const apod = data;
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="max-w-6xl mx-auto">
+          <div className="bg-red-900/20 border border-red-500 rounded-lg p-6">
+            <h1 className="text-2xl font-bold mb-4">Error al cargar la imagen</h1>
+            <p className="text-red-300">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
+            >
+              Reintentar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-6 ml-64">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          NASA Astronomy Picture of the Day
-        </h1>
-        <p className="text-gray-300">
-          Descubre una nueva imagen o fotografía del fascinante universo cada día.
-          Cada imagen viene acompañada de una explicación escrita por un astrónomo profesional.
-        </p>
-      </header>
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2 flex items-center">
+            <Camera className="mr-3 h-8 w-8" />
+            Imagen del Día de la NASA
+          </h1>
+          <p className="text-gray-400 flex items-center">
+            <Calendar className="mr-2 h-4 w-4" />
+            {data?.date && new Date(data.date).toLocaleDateString('es-ES', {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            })}
+          </p>
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
-            <div className="relative aspect-video">
-              {apod.media_type === 'image' ? (
-                <img
-                  src={apod.url}
-                  alt={apod.title}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <iframe
-                  src={apod.url}
-                  title={apod.title}
-                  className="w-full h-full min-h-[300px]"
-                  allowFullScreen
-                />
-              )}
-              <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-6">
-                <h2 className="text-2xl font-bold text-white mb-2">
-                  {apod.title}
-                </h2>
-                <div className="flex items-center space-x-4 text-sm text-gray-300">
-                  <div className="flex items-center space-x-1">
-                    <Calendar className="h-4 w-4" />
-                    <span>{apod.date}</span>
-                  </div>
-                  {apod.copyright && (
-                    <div className="flex items-center space-x-1">
-                      <Camera className="h-4 w-4" />
-                      <span>© {apod.copyright}</span>
-                    </div>
+        {data && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                {data.media_type === 'video' ? (
+                  <iframe
+                    src={data.url}
+                    title={data.title}
+                    className="w-full h-96"
+                    frameBorder="0"
+                    allowFullScreen
+                  />
+                ) : (
+                  <img
+                    src={data.url}
+                    alt={data.title}
+                    className="w-full h-auto"
+                    onError={(e) => {
+                      e.currentTarget.src = "https://apod.nasa.gov/apod/image/2401/ngc1566_hst_960.jpg";
+                    }}
+                  />
+                )}
+                <div className="p-6">
+                  <h2 className="text-2xl font-bold mb-4">{data.title}</h2>
+                  <p className="text-gray-300 leading-relaxed">{data.explanation}</p>
+                  {data.copyright && (
+                    <p className="mt-4 text-sm text-gray-400">
+                      Crédito: {data.copyright}
+                    </p>
                   )}
                 </div>
               </div>
             </div>
-            <div className="p-6">
-              <div className="flex items-start space-x-3">
-                <Info className="h-5 w-5 text-primary mt-1" />
-                <p className="text-gray-300 leading-relaxed">
-                  {apod.explanation}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div className="space-y-6">
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Imágenes Anteriores
-            </h2>
-            <div className="space-y-4">
-              {loadingPrevious ? (
-                <div className="text-center py-4">
-                  <p className="text-gray-400 text-sm">Cargando imágenes anteriores...</p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-4">
-                  {previousImages.map((img, idx) => (
-                    <div
-                      key={img.date || idx}
-                      className={`block aspect-square rounded-lg overflow-hidden transition ${
-                        img.error 
-                          ? 'bg-gray-700 border border-gray-600' 
-                          : 'bg-gray-700 hover:scale-105'
-                      }`}
-                      title={img.title}
+            <div className="space-y-6">
+              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+                <h3 className="text-xl font-semibold mb-4 flex items-center">
+                  <Info className="mr-2 h-5 w-5" />
+                  Información
+                </h3>
+                <div className="space-y-3">
+                  <div>
+                    <span className="text-gray-400">Tipo:</span>
+                    <span className="ml-2 capitalize">{data.media_type}</span>
+                  </div>
+                  <div>
+                    <span className="text-gray-400">Fecha:</span>
+                    <span className="ml-2">{data.date}</span>
+                  </div>
+                  {data.hdurl && (
+                    <a
+                      href={data.hdurl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm"
                     >
-                      {img.error ? (
-                        <div className="flex items-center justify-center h-full">
-                          <div className="text-center">
-                            <p className="text-red-400 text-xs mb-1">Error</p>
-                            <p className="text-gray-400 text-xs">{img.date}</p>
-                          </div>
-                        </div>
-                      ) : img.media_type === 'image' ? (
-                        <img
-                          src={img.url}
-                          alt={img.title}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="flex items-center justify-center h-full text-xs text-gray-400">Video</span>
-                      )}
-                    </div>
-                  ))}
+                      Ver en HD
+                    </a>
+                  )}
                 </div>
-              )}
-            </div>
-          </div>
+              </div>
 
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Información
-            </h2>
-            <div className="space-y-4">
-              <div className="p-4 bg-gray-700 rounded-lg">
-                <h3 className="font-medium text-white mb-2">Acerca de APOD</h3>
-                <p className="text-sm text-gray-300">
-                  Astronomy Picture of the Day (APOD) es un proyecto de la NASA y
-                  la Universidad Tecnológica de Michigan. Cada día se presenta una
-                  imagen o fotografía diferente de nuestro fascinante universo.
-                </p>
-              </div>
-              <div className="p-4 bg-gray-700 rounded-lg">
-                <h3 className="font-medium text-white mb-2">Créditos</h3>
-                <p className="text-sm text-gray-300">
-                  Imágenes y datos: NASA, ESA, y otros colaboradores.
-                  Explicaciones: Astrónomos profesionales.
-                </p>
+              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+                <h3 className="text-xl font-semibold mb-4">Imágenes Anteriores</h3>
+                {loadingPrevious ? (
+                  <div className="space-y-3">
+                    {[1, 2, 3, 4].map(i => (
+                      <div key={i} className="animate-pulse">
+                        <div className="h-20 bg-gray-700 rounded"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {previousImages.map((image, index) => (
+                      <div key={index} className="border border-gray-600 rounded p-3">
+                        {image.error ? (
+                          <div className="text-red-400 text-sm">
+                            <p className="font-semibold">{image.title}</p>
+                            <p className="text-xs">{image.error}</p>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-3">
+                            <img
+                              src={image.url}
+                              alt={image.title}
+                              className="w-16 h-16 object-cover rounded"
+                              onError={(e) => {
+                                e.currentTarget.src = "https://apod.nasa.gov/apod/image/2401/ngc1566_hst_960.jpg";
+                              }}
+                            />
+                            <div>
+                              <p className="text-sm font-medium line-clamp-2">{image.title}</p>
+                              <p className="text-xs text-gray-400">{image.date}</p>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
