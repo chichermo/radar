@@ -121,28 +121,31 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
     return colors[type] || colors['unknown'];
   }, []);
 
-  // Calcular datos de satélites usando useMemo para evitar recálculos innecesarios
+  // Calcular posiciones orbitales usando useMemo
   const calculatedPoints = useMemo(() => {
     if (!Array.isArray(validTLEObjects) || validTLEObjects.length === 0) {
       return [];
     }
-    
+
     // Usar datos mock para evitar problemas con la librería satellite.js
     return validTLEObjects
       .map((tleObj: TLEObject, index: number): OrbitalPoint | null => {
         try {
-          // Generar posiciones mock basadas en el índice
-          const baseLat = 20 + (index * 10); // Latitudes entre 20 y 50
-          const baseLng = -100 + (index * 30); // Longitudes entre -100 y -10
-          const timeOffset = currentTime.getTime() / 1000 + (index * 1000); // Offset de tiempo por satélite
+          // Generar posiciones mock basadas en el índice con rangos más seguros
+          const baseLat = 20 + (index * 5) % 60; // Latitudes entre 20 y 80
+          const baseLng = -120 + (index * 20) % 240; // Longitudes entre -120 y 120
+          const timeOffset = (currentTime.getTime() / 1000 + (index * 1000)) % 100000; // Offset de tiempo cíclico
           
-          // Simular movimiento orbital con funciones trigonométricas
-          const lat = baseLat + Math.sin(timeOffset / 10000) * 15;
-          const lng = baseLng + Math.cos(timeOffset / 8000) * 20;
+          // Simular movimiento orbital con funciones trigonométricas y rangos limitados
+          const latVariation = Math.sin(timeOffset / 10000) * 10; // Variación de ±10 grados
+          const lngVariation = Math.cos(timeOffset / 8000) * 15; // Variación de ±15 grados
           
-          // Validar coordenadas
-          if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
-            console.error("Invalid coordinates calculated for:", tleObj.OBJECT_NAME);
+          const lat = Math.max(-85, Math.min(85, baseLat + latVariation)); // Limitar entre -85 y 85
+          const lng = ((baseLng + lngVariation + 180) % 360) - 180; // Normalizar entre -180 y 180
+          
+          // Validar coordenadas finales
+          if (isNaN(lat) || isNaN(lng) || lat < -85 || lat > 85 || lng < -180 || lng > 180) {
+            console.warn("Invalid coordinates calculated for:", tleObj.OBJECT_NAME, "lat:", lat, "lng:", lng);
             return null;
           }
           
@@ -179,20 +182,27 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
     return validTLEObjects
       .map((tleObj: TLEObject, index: number): OrbitalPath | null => {
         try {
-          // Generar trayectorias mock basadas en el índice
-          const baseLat = 20 + (index * 10);
-          const baseLng = -100 + (index * 30);
-          const timeOffset = currentTime.getTime() / 1000 + (index * 1000);
+          // Generar trayectorias mock basadas en el índice con rangos más seguros
+          const baseLat = 20 + (index * 5) % 60;
+          const baseLng = -120 + (index * 20) % 240;
+          const timeOffset = (currentTime.getTime() / 1000 + (index * 1000)) % 100000;
           
-          // Simular trayectorias orbitales
-          const startLat = baseLat + Math.sin(timeOffset / 10000) * 15;
-          const startLng = baseLng + Math.cos(timeOffset / 8000) * 20;
-          const endLat = baseLat + Math.sin((timeOffset + 5000) / 10000) * 15;
-          const endLng = baseLng + Math.cos((timeOffset + 5000) / 8000) * 20;
+          // Simular trayectorias orbitales con rangos limitados
+          const latVariation1 = Math.sin(timeOffset / 10000) * 10;
+          const lngVariation1 = Math.cos(timeOffset / 8000) * 15;
+          const latVariation2 = Math.sin((timeOffset + 5000) / 10000) * 10;
+          const lngVariation2 = Math.cos((timeOffset + 5000) / 8000) * 15;
+          
+          const startLat = Math.max(-85, Math.min(85, baseLat + latVariation1));
+          const startLng = ((baseLng + lngVariation1 + 180) % 360) - 180;
+          const endLat = Math.max(-85, Math.min(85, baseLat + latVariation2));
+          const endLng = ((baseLng + lngVariation2 + 180) % 360) - 180;
           
           // Validar coordenadas
-          if (isNaN(startLat) || isNaN(startLng) || isNaN(endLat) || isNaN(endLng)) {
-            console.error("Invalid path coordinates calculated for:", tleObj.OBJECT_NAME);
+          if (isNaN(startLat) || isNaN(startLng) || isNaN(endLat) || isNaN(endLng) ||
+              startLat < -85 || startLat > 85 || endLat < -85 || endLat > 85 ||
+              startLng < -180 || startLng > 180 || endLng < -180 || endLng > 180) {
+            console.warn("Invalid path coordinates calculated for:", tleObj.OBJECT_NAME);
             return null;
           }
           
@@ -222,21 +232,24 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
       const validPoints = Array.isArray(calculatedPoints) ? calculatedPoints : [];
       const validPaths = Array.isArray(calculatedPaths) ? calculatedPaths : [];
       
-      // Validación adicional para puntos
+      // Validación adicional para puntos con rangos más estrictos
       const validatedPoints = validPoints.filter(point => {
         if (!point || typeof point !== 'object') return false;
         if (typeof point.lat !== 'number' || typeof point.lng !== 'number') return false;
         if (isNaN(point.lat) || isNaN(point.lng)) return false;
+        if (point.lat < -85 || point.lat > 85 || point.lng < -180 || point.lng > 180) return false;
         return true;
       });
       
-      // Validación adicional para paths
+      // Validación adicional para paths con rangos más estrictos
       const validatedPaths = validPaths.filter(path => {
         if (!path || typeof path !== 'object') return false;
         if (typeof path.points !== 'object' || !Array.isArray(path.points) || path.points.length !== 2) return false;
         if (typeof path.points[0][0] !== 'number' || typeof path.points[0][1] !== 'number') return false;
         if (typeof path.points[1][0] !== 'number' || typeof path.points[1][1] !== 'number') return false;
         if (isNaN(path.points[0][0]) || isNaN(path.points[0][1]) || isNaN(path.points[1][0]) || isNaN(path.points[1][1])) return false;
+        if (path.points[0][0] < -85 || path.points[0][0] > 85 || path.points[1][0] < -85 || path.points[1][0] > 85) return false;
+        if (path.points[0][1] < -180 || path.points[0][1] > 180 || path.points[1][1] < -180 || path.points[1][1] > 180) return false;
         return true;
       });
       
