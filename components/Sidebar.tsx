@@ -184,11 +184,13 @@ export default function Sidebar() {
           {/* Header mejorado */}
           <div className="mb-8">
             <div className="flex items-center space-x-3 mb-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <Radar className="h-5 w-5 text-white" />
-              </div>
+              <img 
+                src="/logorad.png" 
+                alt="Cosmic Eye Logo" 
+                className="w-8 h-8 rounded-lg"
+              />
               <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Radar Espacial
+                COSMIC EYE
               </h1>
             </div>
             <p className="text-gray-400 text-sm">Monitoreo de anomalías espaciales</p>

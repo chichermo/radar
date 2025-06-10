@@ -145,7 +145,7 @@ export default function SkyMap({ objects = [], showTrajectories = true, error }:
   };
 
   const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
+    // No usar preventDefault() en event listeners pasivos
     const scale = e.deltaY > 0 ? 0.9 : 1.1;
     setZoom(prev => Math.max(0.5, Math.min(3, prev * scale)));
   };

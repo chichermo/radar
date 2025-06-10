@@ -42,12 +42,14 @@ export default function Navbar() {
 
           {/* Centro - Título */}
           <div className="flex-1 flex justify-center lg:justify-start lg:ml-8">
-            <div className="flex items-center space-x-2">
-              <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
-                <div className="w-2 h-2 bg-white rounded-full"></div>
-              </div>
+            <div className="flex items-center space-x-3">
+              <img 
+                src="/logorad.png" 
+                alt="Cosmic Eye Logo" 
+                className="w-8 h-8 rounded-lg"
+              />
               <h1 className="text-lg font-semibold text-white hidden sm:block">
-                Radar Espacial
+                COSMIC EYE
               </h1>
             </div>
           </div>

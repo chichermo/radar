@@ -128,13 +128,15 @@ export default function Home() {
         
         <div className="relative z-10 text-center py-16 px-6">
           <div className="flex items-center justify-center mb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-2xl">
-              <Sparkles className="h-8 w-8 text-white" />
-            </div>
+            <img 
+              src="/logorad.png" 
+              alt="Cosmic Eye Logo" 
+              className="w-16 h-16 rounded-2xl shadow-2xl"
+            />
           </div>
           
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-            Radar Espacial
+            COSMIC EYE
           </h1>
           
           <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed mb-8">

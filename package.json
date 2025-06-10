@@ -1,6 +1,7 @@
 {
-  "name": "espacio-anomalias",
+  "name": "cosmic-eye",
   "version": "1.0.0",
+  "description": "COSMIC EYE - Plataforma de monitoreo en tiempo real de objetos espaciales y señales anómalas",
   "private": true,
   "scripts": {
     "dev": "next dev",
