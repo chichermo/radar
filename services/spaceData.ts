@@ -33,17 +33,13 @@ interface JWSTStatus {
 }
 
 async function fetchNearEarthAsteroids(): Promise<SpaceObject[]> {
-  if (!NASA_API_KEY) {
-    throw new Error('NASA API key no configurada');
-  }
-
   const today = new Date();
   const startDate = today.toISOString().split('T')[0];
   const endDate = new Date(today.setDate(today.getDate() + 7)).toISOString().split('T')[0];
 
   try {
     const response = await fetch(
-      `https://api.nasa.gov/neo/rest/v1/feed?start_date=${startDate}&end_date=${endDate}&api_key=${NASA_API_KEY}`
+      `/api/nasa-asteroids?start_date=${startDate}&end_date=${endDate}`
     );
 
     if (!response.ok) {
@@ -51,6 +47,14 @@ async function fetchNearEarthAsteroids(): Promise<SpaceObject[]> {
     }
 
     const data = await response.json();
+    
+    // Verificar si hay error en la respuesta
+    if (data.error) {
+      console.warn('Error en respuesta de asteroides:', data.error);
+      // Retornar array vacío en lugar de fallar completamente
+      return [];
+    }
+    
     const asteroids: SpaceObject[] = [];
 
     Object.values(data.near_earth_objects).forEach((dayAsteroids: unknown) => {
@@ -104,7 +108,8 @@ async function fetchNearEarthAsteroids(): Promise<SpaceObject[]> {
     return asteroids;
   } catch (error) {
     console.error('Error al obtener datos de asteroides:', error);
-    throw error;
+    // En lugar de fallar completamente, retornar array vacío
+    return [];
   }
 }
 
@@ -112,7 +117,8 @@ export async function fetchSpaceTrackObjects(): Promise<SpaceObject[]> {
   try {
     const res = await fetch('/api/space-track');
     if (!res.ok) {
-      throw new Error('No se pudo obtener datos de Space-Track');
+      console.warn('No se pudo obtener datos de Space-Track:', res.statusText);
+      return [];
     }
     const data = await res.json();
     // Procesar los datos TLE como antes
@@ -161,21 +167,40 @@ export async function fetchSpaceTrackObjects(): Promise<SpaceObject[]> {
     return satellites;
   } catch (error) {
     console.error('Error al obtener datos espaciales:', error);
-    throw error;
+    // Retornar array vacío en lugar de fallar completamente
+    return [];
   }
 }
 
 export async function fetchAllSpaceObjects(): Promise<SpaceObject[]> {
   try {
-    const [asteroids, satellites] = await Promise.all([
+    // Usar Promise.allSettled para manejar errores individuales
+    const results = await Promise.allSettled([
       fetchNearEarthAsteroids(),
       fetchSpaceTrackObjects()
     ]);
 
-    return [...asteroids, ...satellites];
+    const allObjects: SpaceObject[] = [];
+    
+    // Procesar resultados de asteroides
+    if (results[0].status === 'fulfilled') {
+      allObjects.push(...results[0].value);
+    } else {
+      console.warn('Error al obtener asteroides:', results[0].reason);
+    }
+    
+    // Procesar resultados de satélites
+    if (results[1].status === 'fulfilled') {
+      allObjects.push(...results[1].value);
+    } else {
+      console.warn('Error al obtener satélites:', results[1].reason);
+    }
+
+    return allObjects;
   } catch (error) {
     console.error('Error al obtener datos espaciales:', error);
-    throw error;
+    // Retornar array vacío en lugar de fallar completamente
+    return [];
   }
 }
 
