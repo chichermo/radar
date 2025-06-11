@@ -120,13 +120,27 @@ export async function fetchSpaceTrackObjects(): Promise<SpaceObject[]> {
       console.warn('No se pudo obtener datos de Space-Track:', res.statusText);
       return [];
     }
-    const data = await res.json();
+    const response = await res.json();
+    
+    // Verificar que la respuesta tenga la estructura esperada
+    if (!response.success || !Array.isArray(response.data)) {
+      console.warn('Respuesta de Space-Track no tiene el formato esperado:', response);
+      return [];
+    }
+    
+    const data = response.data;
     // Procesar los datos TLE como antes
     const satellites: SpaceObject[] = [];
     const now = new Date();
     data.forEach((item: any) => {
       try {
-        const satrec = satellite.twoline2satrec(item.TLE_LINE1, item.TLE_LINE2);
+        // Verificar si el item tiene datos TLE
+        if (!item.tle || !item.tle.TLE_LINE1 || !item.tle.TLE_LINE2) {
+          console.warn(`Item ${item.NORAD_CAT_ID} no tiene datos TLE válidos`);
+          return;
+        }
+        
+        const satrec = satellite.twoline2satrec(item.tle.TLE_LINE1, item.tle.TLE_LINE2);
         const positionAndVelocity = satellite.propagate(satrec, now);
         if (!positionAndVelocity || !positionAndVelocity.position || !positionAndVelocity.velocity) {
           console.warn(`No se pudo calcular la posición para ${item.NORAD_CAT_ID}`);

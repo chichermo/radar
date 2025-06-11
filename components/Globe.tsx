@@ -3,9 +3,12 @@ import dynamic from 'next/dynamic';
 import { useEffect, useRef, useState, MutableRefObject, forwardRef, useCallback, useMemo } from 'react';
 import { GlobeMethods } from 'react-globe.gl';
 import * as satellite from 'satellite.js';
-import { Play, Pause, RotateCcw, RotateCw, ZoomIn, ZoomOut, Eye, EyeOff } from 'lucide-react';
+import { Play, Pause, RotateCcw, RotateCw, ZoomIn, ZoomOut, Eye, EyeOff, AlertTriangle } from 'lucide-react';
 import React from 'react';
+import CollisionAlert from './CollisionAlert';
+import SpaceParticles, { StarField } from './SpaceParticles';
 
+// Importar Three.js dinámicamente para evitar problemas de SSR
 const GlobeGL = dynamic(() => import('react-globe.gl'), {
   ssr: false,
   loading: () => <Loading />
@@ -81,6 +84,8 @@ interface GlobeProps {
   timeSpeed?: number;
   isPlaying?: boolean;
   onTimeControl?: (action: 'play' | 'pause' | 'reset' | 'speed') => void;
+  showCollisionAlerts?: boolean;
+  showParticles?: boolean;
 }
 
 const Globe = forwardRef<HTMLDivElement, GlobeProps>(({ 
@@ -91,7 +96,9 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
   showAtmosphere = true,
   timeSpeed = 1,
   isPlaying = true,
-  onTimeControl
+  onTimeControl,
+  showCollisionAlerts = true,
+  showParticles = true
 }, ref) => {
   const globeRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -101,6 +108,7 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
   const [error, setError] = useState<string | null>(null);
   const [currentTime, setCurrentTime] = useState<Date>(new Date());
   const [hoveredPoint, setHoveredPoint] = useState<OrbitalPoint | null>(null);
+  const [showCollisionModal, setShowCollisionModal] = useState(false);
 
   const validTLEObjects = useMemo(() => {
     if (!Array.isArray(objects)) {
@@ -121,6 +129,15 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
     return colors[type] || colors['unknown'];
   }, []);
 
+  // Actualizar tiempo cada segundo para animar los puntos
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 2000); // Actualizar cada 2 segundos para movimiento más suave
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Calcular posiciones orbitales usando useMemo
   const calculatedPoints = useMemo(() => {
     if (!Array.isArray(validTLEObjects) || validTLEObjects.length === 0) {
@@ -131,35 +148,40 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
     return validTLEObjects
       .map((tleObj: TLEObject, index: number): OrbitalPoint | null => {
         try {
-          // Generar posiciones mock basadas en el índice con rangos más seguros
-          const baseLat = 20 + (index * 5) % 60; // Latitudes entre 20 y 80
-          const baseLng = -120 + (index * 20) % 240; // Longitudes entre -120 y 120
-          const timeOffset = (currentTime.getTime() / 1000 + (index * 1000)) % 100000; // Offset de tiempo cíclico
+          // Generar posiciones más distribuidas alrededor del globo usando distribución Fibonacci
+          const goldenRatio = (1 + Math.sqrt(5)) / 2;
+          const angle = (index * 360 / goldenRatio) % 360;
+          const height = 1 - (index / validTLEObjects.length) * 2; // Distribuir uniformemente en altura
           
-          // Simular movimiento orbital con funciones trigonométricas y rangos limitados
-          const latVariation = Math.sin(timeOffset / 10000) * 10; // Variación de ±10 grados
-          const lngVariation = Math.cos(timeOffset / 8000) * 15; // Variación de ±15 grados
+          // Convertir a coordenadas esféricas
+          const lat = Math.asin(height) * 180 / Math.PI;
+          const lng = angle;
           
-          const lat = Math.max(-85, Math.min(85, baseLat + latVariation)); // Limitar entre -85 y 85
-          const lng = ((baseLng + lngVariation + 180) % 360) - 180; // Normalizar entre -180 y 180
+          // Agregar variación temporal para simular movimiento orbital
+          const timeOffset = (currentTime.getTime() / 1000 + (index * 1000)) % 100000;
+          const latVariation = Math.sin(timeOffset / 15000) * 3; // Variación de ±3 grados
+          const lngVariation = Math.cos(timeOffset / 12000) * 8; // Variación de ±8 grados
+          
+          const finalLat = Math.max(-85, Math.min(85, lat + latVariation));
+          const finalLng = ((lng + lngVariation + 180) % 360) - 180;
           
           // Validar coordenadas finales
-          if (isNaN(lat) || isNaN(lng) || lat < -85 || lat > 85 || lng < -180 || lng > 180) {
-            console.warn("Invalid coordinates calculated for:", tleObj.OBJECT_NAME, "lat:", lat, "lng:", lng);
+          if (isNaN(finalLat) || isNaN(finalLng) || finalLat < -85 || finalLat > 85 || finalLng < -180 || finalLng > 180) {
+            console.warn("Invalid coordinates calculated for:", tleObj.OBJECT_NAME, "lat:", finalLat, "lng:", finalLng);
             return null;
           }
           
           const point: OrbitalPoint = {
-            lat,
-            lng,
-            size: 0.3 + (index * 0.1), // Tamaños diferentes para cada satélite
-            color: '#888888',
+            lat: finalLat,
+            lng: finalLng,
+            size: 0.4 + (index * 0.05), // Tamaños más uniformes
+            color: getSatelliteColor(tleObj.OBJECT_TYPE || 'unknown'),
             name: tleObj.OBJECT_NAME || `Satellite ${index + 1}`,
             type: tleObj.OBJECT_TYPE || 'Unknown',
-            altitude: 400 + (index * 100), // Altitudes diferentes
-            velocity: 7.5 + (index * 0.5), // Velocidades diferentes
-            inclination: 45 + (index * 10), // Inclinaciones diferentes
-            period: 90 + (index * 10), // Períodos diferentes
+            altitude: 400 + (index * 50), // Altitudes más variadas
+            velocity: 7.5 + (index * 0.3), // Velocidades más variadas
+            inclination: 45 + (index * 8), // Inclinaciones más variadas
+            period: 90 + (index * 8), // Períodos más variados
             status: 'active'
           };
           
@@ -170,7 +192,7 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
         }
       })
       .filter((point): point is OrbitalPoint => point !== null);
-  }, [validTLEObjects, currentTime]);
+  }, [validTLEObjects, currentTime, getSatelliteColor]);
 
   // Calcular trayectorias orbitales usando useMemo
   const calculatedPaths = useMemo(() => {
@@ -275,6 +297,23 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
     return () => clearInterval(interval);
   }, [isPlaying, timeSpeed]);
 
+  // Configurar interacción del globo después del montaje
+  useEffect(() => {
+    if (globeRef.current && !isLoading) {
+      // Intentar configurar la interacción del globo
+      const globe = globeRef.current;
+      
+      // Configurar controles de cámara si están disponibles
+      if (globe.controls) {
+        globe.controls.enableDamping = true;
+        globe.controls.dampingFactor = 0.05;
+        globe.controls.enableZoom = true;
+        globe.controls.enablePan = true;
+        globe.controls.enableRotate = true;
+      }
+    }
+  }, [isLoading]);
+
   // Manejar clic en satélite
   const handlePointClick = useCallback((point: OrbitalPoint) => {
     onSatelliteSelect?.(point);
@@ -286,140 +325,165 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
   }, []);
 
   return (
-    <div 
-      ref={ref}
-      className="relative w-full h-[600px] rounded-xl overflow-hidden bg-gradient-to-br from-gray-900 via-black to-gray-900 border border-gray-700/50"
-    >
-      {/* Controles de tiempo */}
-      <div className="absolute top-4 left-4 z-10 flex items-center space-x-2 bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-gray-600/50">
-        <button
-          onClick={() => onTimeControl?.('play')}
-          className={`p-2 rounded-lg transition-all duration-200 ${
-            isPlaying 
-              ? 'bg-blue-600/50 text-blue-300' 
-              : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
-          }`}
-        >
-          {isPlaying ? <Pause size={16} /> : <Play size={16} />}
-        </button>
-        
-        <button
-          onClick={() => onTimeControl?.('reset')}
-          className="p-2 rounded-lg bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 transition-all duration-200"
-        >
-          <RotateCcw size={16} />
-        </button>
-        
-        <div className="flex items-center space-x-1">
+    <div className="relative w-full h-[600px] bg-gradient-to-b from-gray-900 via-blue-900 to-black rounded-lg overflow-hidden">
+      {/* Efectos de partículas espaciales */}
+      {/* {showParticles && (
+        <>
+          <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+            <StarField count={300} />
+          </div>
+          <div className="absolute inset-0 pointer-events-none" style={{ zIndex: 1 }}>
+            <SpaceParticles 
+              particleCount={500}
+              speed={0.0005}
+              size={1.5}
+              color="#87CEEB"
+            />
+          </div>
+        </>
+      )} */}
+
+      {/* Contenido principal del globo */}
+      <div className="relative z-10 h-full">
+        {/* Controles de tiempo */}
+        <div className="absolute top-4 left-4 z-10 flex items-center space-x-2 bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-gray-600/50">
           <button
-            onClick={() => onTimeControl?.('speed')}
-            className="px-2 py-1 text-xs bg-gray-700/50 text-gray-300 rounded hover:bg-gray-600/50 transition-all duration-200"
+            onClick={() => onTimeControl?.('play')}
+            className={`p-2 rounded-lg transition-all duration-200 ${
+              isPlaying 
+                ? 'bg-blue-600/50 text-blue-300' 
+                : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600/50'
+            }`}
           >
-            {timeSpeed}x
+            {isPlaying ? <Pause size={16} /> : <Play size={16} />}
           </button>
+          
+          <button
+            onClick={() => onTimeControl?.('reset')}
+            className="p-2 rounded-lg bg-gray-700/50 text-gray-400 hover:bg-gray-600/50 transition-all duration-200"
+          >
+            <RotateCcw size={16} />
+          </button>
+          
+          <div className="flex items-center space-x-1">
+            <button
+              onClick={() => onTimeControl?.('speed')}
+              className="px-2 py-1 text-xs bg-gray-700/50 text-gray-300 rounded hover:bg-gray-600/50 transition-all duration-200"
+            >
+              {timeSpeed}x
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Información de tiempo */}
-      <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-gray-600/50">
-        <div className="text-xs text-gray-300">
-          {currentTime.toLocaleString('es-ES', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
-          })}
+        {/* Información de tiempo */}
+        <div className="absolute top-4 right-4 z-10 bg-black/50 backdrop-blur-sm rounded-lg p-2 border border-gray-600/50">
+          <div className="text-xs text-gray-300">
+            {currentTime.toLocaleString('es-ES', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </div>
         </div>
-      </div>
 
-      {/* Tooltip de satélite */}
-      {hoveredPoint && (
-        <div className="absolute z-20 bg-black/80 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50 text-white text-sm max-w-xs">
-          <div className="font-semibold text-blue-300">{hoveredPoint.name}</div>
-          <div className="space-y-1 mt-2">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Altitud:</span>
-              <span>{hoveredPoint.altitude.toFixed(1)} km</span>
+        {/* Tooltip de satélite */}
+        {hoveredPoint && (
+          <div className="absolute z-20 bg-black/80 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50 text-white text-sm max-w-xs">
+            <div className="font-semibold text-blue-300">{hoveredPoint.name}</div>
+            <div className="space-y-1 mt-2">
+              <div className="flex justify-between">
+                <span className="text-gray-400">Altitud:</span>
+                <span>{hoveredPoint.altitude.toFixed(1)} km</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Velocidad:</span>
+                <span>{hoveredPoint.velocity.toFixed(2)} km/s</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Inclinación:</span>
+                <span>{hoveredPoint.inclination.toFixed(1)}°</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-400">Tipo:</span>
+                <span className="capitalize">{hoveredPoint.type}</span>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Velocidad:</span>
-              <span>{hoveredPoint.velocity.toFixed(2)} km/s</span>
+          </div>
+        )}
+
+        {/* Estadísticas */}
+        <div className="absolute bottom-4 left-4 z-10 bg-black/50 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
+          <div className="text-xs text-gray-300 space-y-1">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span>{points.length} satélites activos</span>
             </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Inclinación:</span>
-              <span>{hoveredPoint.inclination.toFixed(1)}°</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Tipo:</span>
-              <span className="capitalize">{hoveredPoint.type}</span>
+            <div className="text-gray-400">
+              {orbitalPaths.length} trayectorias visibles
             </div>
           </div>
         </div>
-      )}
 
-      {/* Estadísticas */}
-      <div className="absolute bottom-4 left-4 z-10 bg-black/50 backdrop-blur-sm rounded-lg p-3 border border-gray-600/50">
-        <div className="text-xs text-gray-300 space-y-1">
-          <div className="flex items-center space-x-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span>{points.length} satélites activos</span>
+        {/* Botón de alertas de colisión */}
+        {showCollisionAlerts && (
+          <div className="absolute top-4 right-4 z-20">
+            <button
+              onClick={() => setShowCollisionModal(true)}
+              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg shadow-lg transition-colors flex items-center space-x-2"
+            >
+              <AlertTriangle className="h-4 w-4" />
+              <span>Alertas</span>
+              <span className="bg-white text-red-500 px-2 py-1 rounded-full text-xs font-bold">
+                2
+              </span>
+            </button>
           </div>
-          <div className="text-gray-400">
-            {orbitalPaths.length} trayectorias visibles
+        )}
+
+        {isLoading ? (
+          <Loading />
+        ) : error ? (
+          <ErrorAlert message={error} />
+        ) : (
+          <div ref={containerRef} className="w-full h-full relative">
+            <GlobeGL
+              ref={globeRef}
+              globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
+              pointsData={points}
+              pointColor="color"
+              pointAltitude={0.02}
+              pointResolution={12}
+              pointLabel="name"
+              pointLat="lat"
+              pointLng="lng"
+              pointRadius="size"
+              onGlobeReady={() => {
+                setIsLoading(false);
+              }}
+              onGlobeClick={(point: any) => {
+                if (point && 'name' in point) {
+                  onSatelliteSelect?.(point as OrbitalPoint);
+                }
+              }}
+              onPointHover={(point: any) => {
+                setHoveredPoint(point as OrbitalPoint);
+              }}
+            />
           </div>
-        </div>
+        )}
       </div>
 
-      {isLoading ? (
-        <Loading />
-      ) : error ? (
-        <ErrorAlert message={error} />
-      ) : (
-        <div ref={containerRef} className="w-full h-full">
-          <GlobeGLWrapper
-            globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
-            bumpImageUrl="//unpkg.com/three-globe/example/img/earth-topology.png"
-            backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
-            pointsData={points}
-            pointColor="color"
-            pointAltitude="altitude"
-            pointResolution={12}
-            pointLabel="name"
-            pathsData={[]}
-            pathColor="color"
-            pathDashLength={0.02}
-            pathDashGap={0.01}
-            pathDashAnimateTime={1500}
-            onGlobeReady={() => {
-              setIsLoading(false);
-            }}
-            onGlobeClick={(point: GlobeClickPoint) => {
-              if (point && 'name' in point) {
-                onSatelliteSelect?.(point as OrbitalPoint);
-              }
-            }}
-            onPointHover={(point: GlobeClickPoint) => {
-              setHoveredPoint(point as OrbitalPoint);
-            }}
-          />
-        </div>
-      )}
+      {/* Modal de alertas de colisión */}
+      <CollisionAlert 
+        isOpen={showCollisionModal}
+        onClose={() => setShowCollisionModal(false)}
+      />
     </div>
   );
 });
 
 Globe.displayName = 'Globe';
-
-// Wrapper para GlobeGL que maneja las refs correctamente
-const GlobeGLWrapper = React.forwardRef<any, any>((props, ref) => {
-  return (
-    <div className="w-full h-full">
-      <GlobeGL {...props} />
-    </div>
-  );
-});
-
-GlobeGLWrapper.displayName = 'GlobeGLWrapper';
 
 export default Globe;

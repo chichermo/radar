@@ -9,10 +9,11 @@ export default function Navbar() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-    // Agregar o remover la clase que controla la visibilidad del sidebar
-    document.querySelector('main')?.classList.toggle('ml-64');
-    document.querySelector('aside')?.classList.toggle('hidden');
+    // Comentado temporalmente para evitar conflictos con el Sidebar
+    // setIsSidebarOpen(!isSidebarOpen);
+    // // Agregar o remover la clase que controla la visibilidad del sidebar
+    // document.querySelector('main')?.classList.toggle('ml-64');
+    // document.querySelector('aside')?.classList.toggle('hidden');
   };
 
   return (

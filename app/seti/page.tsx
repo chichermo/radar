@@ -54,7 +54,7 @@ export default function SetiPage() {
   const [selectedSignal, setSelectedSignal] = useState<Signal | null>(null);
 
   return (
-    <div className="space-y-6 ml-64">
+    <div className="space-y-6">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">
           SETI - Búsqueda de Inteligencia Extraterrestre

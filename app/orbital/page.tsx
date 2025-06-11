@@ -793,9 +793,9 @@ export default function OrbitalPage() {
       )}
 
       {/* Componente de alertas de colisión */}
-      <CollisionAlert 
-        isVisible={showCollisionAlert} 
-        onClose={() => setShowCollisionAlert(false)} 
+      <CollisionAlert
+        isOpen={showCollisionAlert}
+        onClose={() => setShowCollisionAlert(false)}
       />
     </div>
   );

@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import ClientWrapper from './ClientWrapper';
 import { 
   Globe, 
   Map, 
@@ -39,7 +40,8 @@ import {
   X,
   Eye,
   Zap,
-  Shield
+  Shield,
+  BarChart3
 } from 'lucide-react';
 
 // Menú reorganizado por categorías lógicas
@@ -52,6 +54,12 @@ const menuCategories = [
         href: '/',
         icon: Home,
         description: 'Vista general del sistema'
+      },
+      {
+        title: 'Métricas Históricas',
+        href: '/metrics',
+        icon: BarChart3,
+        description: 'Análisis de datos históricos'
       }
     ]
   },
@@ -157,7 +165,7 @@ const menuCategories = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [objectCount, setObjectCount] = useState(0);
+  const [objectCount, setObjectCount] = useState<number | null>(null);
 
   useEffect(() => {
     // Solo generar el número aleatorio en el cliente para evitar errores de hidratación
@@ -242,15 +250,17 @@ export default function Sidebar() {
 
           {/* Footer con información adicional */}
           <div className="absolute bottom-6 left-6 right-6">
-            <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
-              <div className="flex items-center space-x-2 mb-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-xs text-gray-400">Sistema Activo</span>
+            <ClientWrapper>
+              <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-xs text-gray-400">Sistema Activo</span>
+                </div>
+                <p className="text-xs text-gray-500">
+                  Monitoreando {objectCount !== null ? objectCount : '...'} objetos espaciales
+                </p>
               </div>
-              <p className="text-xs text-gray-500">
-                Monitoreando {objectCount > 0 ? objectCount : '...'} objetos espaciales
-              </p>
-            </div>
+            </ClientWrapper>
           </div>
         </div>
       </div>

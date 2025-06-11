@@ -1,6 +1,6 @@
 'use client';
 import React, { useEffect, useRef, useState } from 'react';
-import { Orbit, Target, MapPin, Clock, TrendingUp, Eye, EyeOff } from 'lucide-react';
+import { Orbit, Target, MapPin, Clock, TrendingUp, Eye, EyeOff, Activity } from 'lucide-react';
 
 interface OrbitalTrajectoryProps {
   satellite: {
