@@ -1,0 +1,27 @@
+{
+  "name": "COSMIC EYE - Monitoreo Espacial",
+  "short_name": "COSMIC EYE",
+  "description": "Plataforma de monitoreo en tiempo real de objetos espaciales y señales anómalas",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#1e40af",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["education", "science", "utilities"],
+  "lang": "es",
+  "dir": "ltr"
+} 

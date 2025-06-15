@@ -17,6 +17,10 @@ import {
   Sparkles
 } from 'lucide-react'
 import { menuCategories } from '@/components/Sidebar'
+import { VoiceCommands } from '@/components/VoiceCommands';
+import { AIPredictionsPanel } from '@/components/AIPredictions';
+import { AchievementsPanel } from '@/components/GamificationSystem';
+import { useNotifications } from '@/components/NotificationService';
 
 /* Definir un array de objetos TLE (mock) para el Globe */
 const mockTLEObjects = [
