@@ -1,4 +1,5 @@
 import { Bell, Globe, MapPin, Moon, Settings, Sun } from 'lucide-react';
+import { formatDate } from '@/utils/formatters';
 
 export default function SettingsPage() {
   return (
@@ -167,6 +168,24 @@ export default function SettingsPage() {
                     <option>Detallada</option>
                   </select>
                 </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Idioma
+                  </label>
+                  <select className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
+                    <option>Español</option>
+                    <option>Inglés</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                    Modo Oscuro Automático
+                  </label>
+                  <label className="flex items-center space-x-2">
+                    <input type="checkbox" className="rounded border-gray-600" />
+                    <span className="text-gray-300">Activar según hora local</span>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
@@ -218,8 +237,8 @@ export default function SettingsPage() {
               </div>
               <div className="p-4 bg-gray-700/50 rounded-lg">
                 <h3 className="font-medium text-white mb-2">Actualización</h3>
-                <p className="text-sm text-gray-300">
-                  Última actualización: {new Date().toLocaleString()}
+                <p className="text-sm text-gray-400" suppressHydrationWarning>
+                  Última actualización: {formatDate(new Date())}
                 </p>
               </div>
             </div>

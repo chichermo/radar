@@ -1,6 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, X, Satellite, Clock, MapPin } from 'lucide-react';
+import { formatTimeOnly } from '@/utils/formatters';
 
 interface CollisionEvent {
   id: string;
@@ -239,7 +240,7 @@ export default function CollisionAlert({ isOpen, onClose }: CollisionAlertProps)
               <span>ℹ️ Riesgo bajo</span>
             </div>
             <div className="text-right">
-              <p>Última actualización: {new Date().toLocaleTimeString()}</p>
+              <p>Última actualización: {formatTimeOnly(new Date())}</p>
               <p className="text-xs">
                 Datos simulados - En producción conectará con APIs reales
               </p>

@@ -54,6 +54,10 @@ export default function SpaceObjectsGlobe({ objects, className = "" }: SpaceObje
     const atmosphere = new THREE.Mesh(atmosphereGeometry, atmosphereMaterial);
     scene.add(atmosphere);
 
+    // Crear un grupo para todos los objetos espaciales
+    const objectsGroup = new THREE.Group();
+    scene.add(objectsGroup);
+
     // Crear objetos espaciales con posiciones más realistas
     const objectMeshes: THREE.Mesh[] = [];
     const objectData: SpaceObject[] = [];
@@ -89,7 +93,7 @@ export default function SpaceObjectsGlobe({ objects, className = "" }: SpaceObje
       mesh.position.set(x, y, z);
       mesh.userData = { object: obj, index };
       
-      scene.add(mesh);
+      objectsGroup.add(mesh);
       objectMeshes.push(mesh);
       objectData.push(obj);
       objectOrbits.push({ radius: orbitRadius, inclination, speed, phase });
@@ -133,10 +137,13 @@ export default function SpaceObjectsGlobe({ objects, className = "" }: SpaceObje
         // Limitar la rotación vertical para evitar volteretas
         earthRotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, earthRotation.x));
 
+        // Aplicar rotación a la Tierra, atmósfera y grupo de objetos
         earth.rotation.x = earthRotation.x;
         earth.rotation.y = earthRotation.y;
         atmosphere.rotation.x = earthRotation.x;
         atmosphere.rotation.y = earthRotation.y;
+        objectsGroup.rotation.x = earthRotation.x;
+        objectsGroup.rotation.y = earthRotation.y;
 
         previousMousePosition = { x: event.clientX, y: event.clientY };
       }
@@ -175,10 +182,18 @@ export default function SpaceObjectsGlobe({ objects, className = "" }: SpaceObje
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(new THREE.Vector2(x, y), camera);
 
-      const intersects = raycaster.intersectObjects(objectMeshes);
+      // Buscar intersecciones con todos los objetos en la escena
+      const allObjects = [earth, atmosphere, ...objectMeshes];
+      const intersects = raycaster.intersectObjects(allObjects);
+      
       if (intersects.length > 0) {
-        const clickedObject = intersects[0].object.userData.object;
-        setSelectedObject(clickedObject);
+        const clickedMesh = intersects[0].object;
+        if (clickedMesh.userData && clickedMesh.userData.object) {
+          const clickedObject = clickedMesh.userData.object;
+          setSelectedObject(clickedObject);
+        } else {
+          setSelectedObject(null);
+        }
       } else {
         setSelectedObject(null);
       }
@@ -198,36 +213,32 @@ export default function SpaceObjectsGlobe({ objects, className = "" }: SpaceObje
     document.addEventListener('mouseleave', handleMouseLeave);
 
     // Función de animación mejorada
+    let animationId: number;
+    let time = 0;
+
     const animate = () => {
-      requestAnimationFrame(animate);
+      animationId = requestAnimationFrame(animate);
+      time += 0.016; // Aproximadamente 60 FPS
 
-      const time = Date.now() * 0.001;
-
-      // Animar objetos espaciales con movimiento orbital más realista
+      // Animar objetos espaciales en sus órbitas
       objectMeshes.forEach((mesh, index) => {
         const orbit = objectOrbits[index];
         if (orbit) {
-          // Movimiento orbital más lento y realista
-          const angle = time * orbit.speed + orbit.phase;
-          
-          // Calcular posición en la órbita
+          const angle = orbit.phase + time * orbit.speed;
           const x = orbit.radius * Math.cos(angle);
           const y = orbit.radius * Math.sin(angle) * Math.cos(orbit.inclination);
           const z = orbit.radius * Math.sin(angle) * Math.sin(orbit.inclination);
           
           mesh.position.set(x, y, z);
-          
-          // Rotación lenta del objeto sobre sí mismo
-          mesh.rotation.y += 0.01;
-        }
-        
-        // Efecto de pulso para objetos peligrosos (más sutil)
-        const obj = objectData[index];
-        if (obj?.isHazardous) {
-          const pulse = Math.sin(time * 2) * 0.05 + 1;
-          mesh.scale.setScalar(pulse);
         }
       });
+
+      // Rotación automática lenta de la Tierra
+      if (!isDragging) {
+        earth.rotation.y += 0.001;
+        atmosphere.rotation.y += 0.001;
+        objectsGroup.rotation.y += 0.001;
+      }
 
       renderer.render(scene, camera);
     };
@@ -237,6 +248,7 @@ export default function SpaceObjectsGlobe({ objects, className = "" }: SpaceObje
 
     // Cleanup
     return () => {
+      cancelAnimationFrame(animationId);
       canvas.removeEventListener('mousedown', handleMouseDown);
       canvas.removeEventListener('mousemove', handleMouseMove);
       canvas.removeEventListener('mouseup', handleMouseUp);
@@ -245,107 +257,44 @@ export default function SpaceObjectsGlobe({ objects, className = "" }: SpaceObje
       canvas.removeEventListener('click', handleClick);
       document.removeEventListener('mouseup', handleMouseUp);
       document.removeEventListener('mouseleave', handleMouseLeave);
-      mountRef.current?.removeChild(renderer.domElement);
+      
+      if (mountRef.current && renderer.domElement) {
+        mountRef.current.removeChild(renderer.domElement);
+      }
+      
       renderer.dispose();
     };
   }, [objects]);
 
   return (
     <div className={`relative ${className}`}>
-      <div 
-        ref={mountRef} 
-        className="w-full h-96 rounded-lg overflow-hidden cursor-grab" 
-        style={{ 
-          userSelect: 'none',
-          WebkitUserSelect: 'none',
-          MozUserSelect: 'none',
-          msUserSelect: 'none'
-        }}
-      />
+      <div ref={mountRef} className="w-full h-full cursor-grab" />
       
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50 rounded-lg">
-          <div className="text-white">Cargando mapa 3D...</div>
-        </div>
-      )}
-
-      {/* Panel de información del objeto seleccionado */}
       {selectedObject && (
-        <div className="absolute top-4 right-4 bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg p-4 max-w-sm">
-          <h3 className="text-lg font-semibold text-gray-100 mb-2">
-            {selectedObject.name}
-          </h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <span className="text-gray-400">Tipo:</span>
-              <span className="text-gray-200">{selectedObject.type}</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Peligroso:</span>
-              <span className={selectedObject.isHazardous ? "text-red-400" : "text-green-400"}>
-                {selectedObject.isHazardous ? "Sí ⚠️" : "No ✅"}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-gray-400">Distancia:</span>
-              <span className="text-gray-200">
-                {selectedObject.distance?.toLocaleString()} km
-              </span>
-            </div>
+        <div className="absolute top-4 left-4 bg-gray-900/90 backdrop-blur-sm border border-gray-700 rounded-lg p-4 max-w-sm">
+          <h3 className="text-lg font-semibold text-white mb-2">{selectedObject.name}</h3>
+          <div className="space-y-1 text-sm text-gray-300">
+            <p><span className="font-medium">Tipo:</span> {selectedObject.type}</p>
+            <p><span className="font-medium">Distancia:</span> {selectedObject.distance?.toFixed(2)} km</p>
             {selectedObject.velocity && (
-              <div className="flex justify-between">
-                <span className="text-gray-400">Velocidad:</span>
-                <span className="text-gray-200">
-                  {Math.sqrt(
-                    selectedObject.velocity.x ** 2 + 
-                    selectedObject.velocity.y ** 2 + 
-                    selectedObject.velocity.z ** 2
-                  ).toFixed(2)} km/s
-                </span>
-              </div>
+              <p><span className="font-medium">Velocidad:</span> {Math.sqrt(
+                selectedObject.velocity.x ** 2 + 
+                selectedObject.velocity.y ** 2 + 
+                selectedObject.velocity.z ** 2
+              ).toFixed(2)} km/s</p>
+            )}
+            {selectedObject.isHazardous && (
+              <p className="text-red-400 font-medium">⚠️ Objeto peligroso</p>
             )}
           </div>
-          <button
-            onClick={() => setSelectedObject(null)}
-            className="mt-3 w-full bg-gray-700 hover:bg-gray-600 text-gray-200 px-3 py-1 rounded text-sm transition-colors"
-          >
-            Cerrar
-          </button>
         </div>
       )}
-
-      {/* Leyenda de colores */}
-      <div className="absolute bottom-4 left-4 bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg p-3">
-        <h4 className="text-sm font-semibold text-gray-100 mb-2">Leyenda</h4>
-        <div className="space-y-1 text-xs">
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-            <span className="text-gray-300">Satélites</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-            <span className="text-gray-300">Asteroides</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-            <span className="text-gray-300">Basura espacial</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-red-500"></div>
-            <span className="text-gray-300">Peligrosos</span>
-          </div>
+      
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900/50">
+          <div className="text-white">Cargando...</div>
         </div>
-      </div>
-
-      {/* Controles de navegación */}
-      <div className="absolute top-4 left-4 bg-gray-800/90 backdrop-blur-sm border border-gray-700 rounded-lg p-2">
-        <div className="text-xs text-gray-400 mb-1">Controles</div>
-        <div className="space-y-1 text-xs text-gray-300">
-          <div>🖱️ Arrastra para rotar</div>
-          <div>🔍 Rueda para zoom</div>
-          <div>👆 Clic para seleccionar</div>
-        </div>
-      </div>
+      )}
     </div>
   );
 } 

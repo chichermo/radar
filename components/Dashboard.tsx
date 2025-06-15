@@ -2,12 +2,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card } from './ui/Card'
+import CardComponents from './ui/card2'
 import { ErrorAlert } from './ui/ErrorAlert'
-import { LoadingSpinner } from './ui/LoadingSpinner'
+import LoadingSpinner from './ui/LoadingSpinner'
 import Globe from './Globe'
 import SkyMap from './SkyMap'
 import useSignalAlerts from '../hooks/useSignalAlerts'
+import { formatDate } from '@/utils/formatters'
+import { menuCategories } from './Sidebar'
 
 interface HeavensData {
   data?: {
@@ -98,10 +100,13 @@ const mockSpaceObjects = [
   }
 ];
 
+const { Card } = CardComponents;
+
 export default function Dashboard() {
   const [heavensData, setHeavensData] = useState<HeavensData | null>(null);
   const [satnogsData, setSatnogsData] = useState<SatnogsData | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -123,9 +128,9 @@ export default function Dashboard() {
         setHeavensData(heavens);
         setSatnogsData(satnogs);
       } catch (error) {
-        console.error('Error fetching data:', error);
-        setHeavensData({ error: (error as Error).message });
-        setSatnogsData({ error: (error as Error).message });
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+        console.error('Error fetching data:', errorMessage);
+        setError(`Error al cargar datos: ${errorMessage}`);
       } finally {
         setIsLoading(false);
       }
@@ -153,116 +158,22 @@ export default function Dashboard() {
         </p>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card title="Visualización Orbital">
-          <p className="mb-2 text-gray-300 text-sm">
-            Muestra la posición actual de satélites en órbita terrestre usando datos TLE (Two-Line Element). Ideal para monitoreo profesional y educativo.
-          </p>
-          <Globe objects={mockTLEObjects} />
-        </Card>
-        <Card title="Mapa del Cielo (SkyMap)">
-          <p className="mb-2 text-gray-300 text-sm">
-            Visualiza los objetos espaciales como puntos en el cielo. Útil para aficionados a la astronomía y para el monitoreo visual de eventos espaciales. El mapa es generado en tiempo real y se adapta al tamaño de la ventana.
-          </p>
-          <SkyMap objects={mockSpaceObjects} />
-        </Card>
-      </section>
-
-      <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card title="Próximos Pasos Satelitales">
-          <p className="mb-2 text-gray-300 text-sm">
-            Lista los próximos eventos de paso de satélites visibles desde la ubicación seleccionada. Permite planificar observaciones y experimentos.
-          </p>
-          {heavensData?.error ? (
-            <ErrorAlert message={heavensData.error} />
-          ) : (
-            <div className="space-y-2">
-              {heavensData?.data?.passes?.map((pass, index) => (
-                <div key={index} className="p-2 bg-white/5 rounded">
-                  <p className="font-medium">{pass.satName}</p>
-                  <p className="text-sm text-gray-400">
-                    Inicio: {new Date(pass.startTime).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-400">
-                    Máxima elevación: {pass.maxElevation}°
-                  </p>
-                </div>
+      {/* Renderizar todas las páginas del menú como tarjetas agrupadas por categoría */}
+      <div className="space-y-10">
+        {menuCategories.map((category) => (
+          <section key={category.title}>
+            <h2 className="text-2xl font-semibold mb-4 text-primary-light">{category.title}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {category.items.map((item) => (
+                <Card key={item.href} title={item.title}>
+                  <p className="mb-2 text-gray-300 text-sm">{item.description}</p>
+                  <a href={item.href} className="inline-block mt-2 px-4 py-2 bg-primary-light text-white rounded hover:scale-105 hover:bg-primary transition">Explorar</a>
+                </Card>
               ))}
             </div>
-          )}
-        </Card>
-        <Card title="Señales Detectadas">
-          <p className="mb-2 text-gray-300 text-sm">
-            Monitorea señales de radiofrecuencia captadas por estaciones terrestres. Muestra frecuencia, hora y descripción de cada señal. El sistema te alertará automáticamente cuando se detecten nuevas señales.
-          </p>
-          {satnogsData?.error ? (
-            <ErrorAlert message={satnogsData.error} />
-          ) : (
-            <div className="space-y-2">
-              {satnogsData?.data?.signals?.map((signal) => (
-                <div key={signal.id} className="p-2 bg-white/5 rounded">
-                  <p className="font-medium">Frecuencia: {signal.frequency} MHz</p>
-                  <p className="text-sm text-gray-400">
-                    Detectado: {new Date(signal.timestamp).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-400">{signal.description}</p>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      </section>
-
-      <section className="mt-10">
-        <Card title="¿Qué más puedes agregar?">
-          <ul className="list-disc pl-6 text-gray-300 text-sm space-y-1">
-            <li><b>Mapa de calor de actividad de señales:</b> Visualiza en un mapa la intensidad/frecuencia de señales detectadas por región.</li>
-            <li><b>Historial de anomalías:</b> Un timeline o tabla con eventos históricos detectados.</li>
-            <li><b>Alertas configurables:</b> Permite definir umbrales para recibir notificaciones personalizadas.</li>
-            <li><b>Panel de configuración:</b> Cambia parámetros como ubicación, tipo de satélites, bandas de frecuencia, etc.</li>
-            <li><b>Integración con APIs de clima espacial:</b> Muestra alertas de tormentas solares o actividad geomagnética.</li>
-          </ul>
-        </Card>
-      </section>
-
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-10">
-        <Card title="Imagen del Día (NASA APOD)">
-          <p className="mb-2 text-gray-300 text-sm">
-            Descubre la imagen astronómica del día seleccionada por la NASA. Inspiración diaria para astrónomos y entusiastas del espacio.
-          </p>
-          <a href="/nasa-apod" className="inline-block mt-2 px-4 py-2 bg-primary-light text-white rounded hover:scale-105 hover:bg-primary transition">Ver Imagen</a>
-        </Card>
-        <Card title="Asteroides Cercanos (NEO)">
-          <p className="mb-2 text-gray-300 text-sm">
-            Consulta información sobre asteroides cercanos a la Tierra, trayectorias y riesgos potenciales. Datos en tiempo real de la NASA.
-          </p>
-          <a href="/asteroids" className="inline-block mt-2 px-4 py-2 bg-primary-light text-white rounded hover:scale-105 hover:bg-primary transition">Ver Asteroides</a>
-        </Card>
-        <Card title="Clima Espacial">
-          <p className="mb-2 text-gray-300 text-sm">
-            Monitorea la actividad solar, tormentas geomagnéticas y alertas de clima espacial que pueden afectar satélites y comunicaciones.
-          </p>
-          <a href="/space-weather" className="inline-block mt-2 px-4 py-2 bg-primary-light text-white rounded hover:scale-105 hover:bg-primary transition">Ver Clima Espacial</a>
-        </Card>
-        <Card title="Basura Espacial">
-          <p className="mb-2 text-gray-300 text-sm">
-            Visualiza y estudia la distribución de basura espacial en órbita. Información clave para la seguridad espacial y la investigación.
-          </p>
-          <a href="/space-debris" className="inline-block mt-2 px-4 py-2 bg-primary-light text-white rounded hover:scale-105 hover:bg-primary transition">Ver Basura Espacial</a>
-        </Card>
-        <Card title="SETI: Inteligencia Extraterrestre">
-          <p className="mb-2 text-gray-300 text-sm">
-            Explora señales y hallazgos del proyecto SETI. Accede a datos de radio y anomalías en la búsqueda de vida inteligente.
-          </p>
-          <a href="/seti" className="inline-block mt-2 px-4 py-2 bg-primary-light text-white rounded hover:scale-105 hover:bg-primary transition">Ver SETI</a>
-        </Card>
-        <Card title="Hallazgos Arqueológicos">
-          <p className="mb-2 text-gray-300 text-sm">
-            Descubre artefactos y noticias arqueológicas relevantes para la ciencia espacial y la historia humana.
-          </p>
-          <a href="/archaeology" className="inline-block mt-2 px-4 py-2 bg-primary-light text-white rounded hover:scale-105 hover:bg-primary transition">Ver Hallazgos</a>
-        </Card>
-      </section>
+          </section>
+        ))}
+      </div>
     </div>
   );
 }

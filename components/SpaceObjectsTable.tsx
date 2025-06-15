@@ -10,6 +10,7 @@ import {
   createColumnHelper,
   SortingState,
   ColumnFiltersState,
+  GlobalFilterTableState,
 } from "@tanstack/react-table";
 import type { SpaceObject } from "@/types/space";
 import { 
@@ -28,8 +29,10 @@ import {
   SortDesc,
   Calendar,
   MapPin,
-  Zap
+  Zap,
+  EyeOff,
 } from "lucide-react";
+import { formatDateOnly } from '@/utils/formatters';
 
 interface SpaceObjectsTableProps {
   objects: SpaceObject[];
@@ -252,7 +255,7 @@ export default function SpaceObjectsTable({ objects = [], error }: SpaceObjectsT
                   <div className="flex items-center space-x-1">
                     <Calendar className="w-3 h-3 text-gray-400" />
                     <span className={`${nextApproach.isDangerous ? 'text-red-400 font-semibold' : nextApproach.isClose ? 'text-orange-400' : 'text-gray-400'}`}>
-                      Próximo: {nextApproach.date.toLocaleDateString("es-ES")}
+                      Próximo: {formatDateOnly(nextApproach.date)}
                     </span>
                   </div>
                   <div className="flex items-center space-x-1">
@@ -329,7 +332,7 @@ export default function SpaceObjectsTable({ objects = [], error }: SpaceObjectsT
           <div>
             <h2 className="text-2xl font-bold text-gray-100">Objetos Espaciales</h2>
             <p className="text-gray-400 mt-1">
-              {objects.length} objetos detectados • Última actualización: {new Date().toLocaleString("es-ES")}
+              {objects.length} objetos detectados • Última actualización: {formatDateOnly(new Date())}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

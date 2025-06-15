@@ -28,24 +28,35 @@ import {
   Camera,
   Calendar,
   Info,
-  HomeIcon,
-  MapIcon,
-  CalendarIcon,
-  SignalIcon,
-  SparklesIcon,
-  SunIcon,
-  TrashIcon,
-  CogIcon,
   Menu,
   X,
   Eye,
   Zap,
   Shield,
-  BarChart3
+  BarChart3,
+  Activity,
+  Brain,
+  MessageCircle,
+  Database,
+  Star,
+  Circle,
+  Waves,
+  SatelliteDish,
+  Cpu,
+  Network,
+  Target,
+  Lightbulb,
+  Atom,
+  Magnet,
+  Radiation,
+  Snowflake,
+  TrendingUp,
+  Tags,
+  Building
 } from 'lucide-react';
 
 // Menú reorganizado por categorías lógicas
-const menuCategories = [
+export const menuCategories = [
   {
     title: "Vista General",
     items: [
@@ -87,42 +98,164 @@ const menuCategories = [
     ]
   },
   {
-    title: "Monitoreo en Tiempo Real",
+    title: "Exploración y Descubrimientos",
     items: [
       {
-        title: 'Próximos Pasos',
-        href: '/passes',
-        icon: Satellite,
-        description: 'Próximos pasos satelitales'
+        title: 'Exoplanetas',
+        href: '/exoplanets',
+        icon: Circle,
+        description: 'Planetas fuera del sistema solar'
       },
       {
-        title: 'Señales Detectadas',
-        href: '/signals',
-        icon: Radio,
-        description: 'Monitoreo de señales anómalas'
+        title: 'Agujeros Negros',
+        href: '/black-holes',
+        icon: Circle,
+        description: 'Monitoreo de eventos y descubrimientos'
       },
       {
-        title: 'Clima Espacial',
-        href: '/space-weather',
-        icon: Sun,
-        description: 'Condiciones del clima espacial'
+        title: 'Ondas Gravitacionales',
+        href: '/gravitational-waves',
+        icon: Waves,
+        description: 'Detecciones de LIGO/Virgo'
+      },
+      {
+        title: 'Materia Oscura',
+        href: '/dark-matter',
+        icon: Atom,
+        description: 'Investigaciones y experimentos'
+      },
+      {
+        title: 'Neutrinos Cósmicos',
+        href: '/neutrinos',
+        icon: Snowflake,
+        description: 'Detecciones de IceCube'
       }
     ]
   },
   {
-    title: "Amenazas y Riesgos",
+    title: "Tecnología Espacial",
     items: [
       {
-        title: 'Asteroides NEO',
+        title: 'Starlink Tracker',
+        href: '/starlink',
+        icon: Satellite,
+        description: 'Seguimiento de constelaciones'
+      },
+      {
+        title: 'Estación Espacial China',
+        href: '/tiangong',
+        icon: Building,
+        description: 'Tiangong - Estación espacial china'
+      },
+      {
+        title: 'Misiones a Marte',
+        href: '/mars-missions',
+        icon: Circle,
+        description: 'Perseverance, Curiosity, etc.'
+      },
+      {
+        title: 'Sondas Interestelares',
+        href: '/interstellar-probes',
+        icon: Rocket,
+        description: 'Voyager, New Horizons'
+      },
+      {
+        title: 'Cohetes Reutilizables',
+        href: '/reusable-rockets',
+        icon: Rocket,
+        description: 'SpaceX, Blue Origin'
+      }
+    ]
+  },
+  {
+    title: "Fenómenos Espaciales",
+    items: [
+      {
+        title: 'Clima Espacial',
+        href: '/space-weather',
+        icon: Sun,
+        description: 'Tormentas solares y actividad'
+      },
+      {
+        title: 'Asteroides',
         href: '/asteroids',
-        icon: AlertCircle,
+        icon: Circle,
         description: 'Objetos cercanos a la Tierra'
       },
       {
         title: 'Basura Espacial',
         href: '/space-debris',
-        icon: AlertTriangle,
-        description: 'Objetos espaciales en órbita'
+        icon: Circle,
+        description: 'Seguimiento de desechos'
+      },
+      {
+        title: 'Supernovas',
+        href: '/supernovae',
+        icon: Star,
+        description: 'Explosiones estelares'
+      }
+    ]
+  },
+  {
+    title: "Inteligencia Artificial",
+    items: [
+      {
+        title: 'Predicciones IA',
+        href: '/ai-predictions',
+        icon: Brain,
+        description: 'Análisis predictivo'
+      },
+      {
+        title: 'Machine Learning',
+        href: '/machine-learning',
+        icon: Cpu,
+        description: 'Algoritmos de detección'
+      },
+      {
+        title: 'Análisis de Patrones',
+        href: '/pattern-analysis',
+        icon: Target,
+        description: 'Detección de anomalías'
+      },
+      {
+        title: 'Predicciones Climáticas',
+        href: '/climate-predictions',
+        icon: TrendingUp,
+        description: 'Modelos avanzados'
+      },
+      {
+        title: 'Clasificación Automática',
+        href: '/auto-classification',
+        icon: Tags,
+        description: 'Objetos celestes'
+      },
+      {
+        title: 'Detección de Señales',
+        href: '/signal-detection',
+        icon: Search,
+        description: 'SETI mejorado'
+      }
+    ]
+  },
+  {
+    title: "Integración Global",
+    items: [
+      {
+        title: 'APIs Múltiples',
+        href: '/global-integration',
+        icon: Database,
+        description: 'NASA, ESA, JAXA, Roscosmos'
+      }
+    ]
+  },
+  {
+    title: "Comunidad e Interacción",
+    items: [
+      {
+        title: 'Chat Interactivo',
+        href: '/chat',
+        icon: MessageCircle,
+        description: 'Comunidad y sugerencias'
       }
     ]
   },
@@ -188,7 +321,7 @@ export default function Sidebar() {
         border-r border-gray-700/50 shadow-2xl
         ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
       `}>
-        <div className="p-6">
+        <div className="flex flex-col h-full p-6">
           {/* Header mejorado */}
           <div className="mb-8">
             <div className="flex items-center space-x-3 mb-2">
@@ -204,10 +337,10 @@ export default function Sidebar() {
             <p className="text-gray-400 text-sm">Monitoreo de anomalías espaciales</p>
           </div>
 
-          {/* Navegación por categorías */}
-          <nav className="space-y-6">
+          {/* Navegación por categorías scrollable */}
+          <nav className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
             {menuCategories.map((category) => (
-              <div key={category.title}>
+              <div key={category.title} className="mb-6">
                 <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
                   {category.title}
                 </h3>
@@ -249,7 +382,7 @@ export default function Sidebar() {
           </nav>
 
           {/* Footer con información adicional */}
-          <div className="absolute bottom-6 left-6 right-6">
+          <div className="mt-6 pt-4 border-t border-gray-700/50">
             <ClientWrapper>
               <div className="bg-gray-800/50 rounded-xl p-4 border border-gray-700/50">
                 <div className="flex items-center space-x-2 mb-2">

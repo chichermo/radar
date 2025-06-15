@@ -1,0 +1,204 @@
+"use client";
+import { useState, useEffect } from 'react';
+import { Snowflake, Activity, TrendingUp, AlertCircle } from 'lucide-react';
+
+interface NeutrinoData {
+  detector: string;
+  location: string;
+  status: string;
+  events: number;
+  lastUpdate: string;
+  description: string;
+}
+
+export default function NeutrinosPage() {
+  const [neutrinoData, setNeutrinoData] = useState<NeutrinoData[]>([
+    {
+      detector: "IceCube",
+      location: "Antártida",
+      status: "Activo",
+      events: 156,
+      lastUpdate: "2024-01-15",
+      description: "Detector de neutrinos enterrado en el hielo antártico"
+    },
+    {
+      detector: "Super-Kamiokande",
+      location: "Japón",
+      status: "Activo",
+      events: 89,
+      lastUpdate: "2024-01-12",
+      description: "Detector de agua ultra-pura en mina subterránea"
+    },
+    {
+      detector: "ANTARES",
+      location: "Mediterráneo",
+      status: "Activo",
+      events: 23,
+      lastUpdate: "2024-01-10",
+      description: "Telescopio de neutrinos submarino"
+    },
+    {
+      detector: "KM3NeT",
+      location: "Mediterráneo",
+      status: "En construcción",
+      events: 0,
+      lastUpdate: "2024-01-08",
+      description: "Red de telescopios de neutrinos en desarrollo"
+    }
+  ]);
+
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 text-white p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-700 rounded w-1/4 mb-4"></div>
+            <div className="h-4 bg-gray-700 rounded w-1/2 mb-8"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-gray-800 rounded-lg p-6 h-48"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="p-3 bg-blue-600/20 rounded-xl">
+              <Snowflake className="h-8 w-8 text-blue-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                Neutrinos Cósmicos
+              </h1>
+              <p className="text-gray-400">Detecciones de IceCube y otros observatorios</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Estadísticas */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+            <div className="flex items-center space-x-3">
+              <Activity className="h-6 w-6 text-green-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">268</p>
+                <p className="text-gray-400 text-sm">Eventos Totales</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+            <div className="flex items-center space-x-3">
+              <TrendingUp className="h-6 w-6 text-blue-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">4</p>
+                <p className="text-gray-400 text-sm">Detectores Activos</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+            <div className="flex items-center space-x-3">
+              <AlertCircle className="h-6 w-6 text-yellow-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">156</p>
+                <p className="text-gray-400 text-sm">IceCube Events</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+            <div className="flex items-center space-x-3">
+              <Snowflake className="h-6 w-6 text-cyan-400" />
+              <div>
+                <p className="text-2xl font-bold text-white">1 km³</p>
+                <p className="text-gray-400 text-sm">Volumen IceCube</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Detectores */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {neutrinoData.map((detector, index) => (
+            <div key={index} className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">{detector.detector}</h3>
+                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                  detector.status === 'Activo' 
+                    ? 'bg-green-500/20 text-green-400' 
+                    : 'bg-yellow-500/20 text-yellow-400'
+                }`}>
+                  {detector.status}
+                </span>
+              </div>
+              
+              <div className="space-y-3">
+                <div>
+                  <p className="text-gray-400 text-sm">Ubicación</p>
+                  <p className="text-white text-sm">{detector.location}</p>
+                </div>
+                
+                <div>
+                  <p className="text-gray-400 text-sm">Eventos detectados</p>
+                  <p className="text-white font-bold text-lg">{detector.events}</p>
+                </div>
+                
+                <div>
+                  <p className="text-gray-400 text-sm">Última actualización</p>
+                  <p className="text-white text-sm">{detector.lastUpdate}</p>
+                </div>
+                
+                <div>
+                  <p className="text-gray-400 text-sm">Descripción</p>
+                  <p className="text-gray-300 text-sm">{detector.description}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Información adicional */}
+        <div className="mt-12 bg-gray-800/30 rounded-xl p-8 border border-gray-700/50">
+          <h2 className="text-2xl font-bold text-white mb-4">¿Qué son los Neutrinos Cósmicos?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h3 className="text-lg font-semibold text-blue-400 mb-3">Los Mensajeros Cósmicos</h3>
+              <p className="text-gray-300 leading-relaxed">
+                Los neutrinos son partículas subatómicas que viajan casi a la velocidad de la luz 
+                y pueden atravesar la materia sin interactuar. Los neutrinos cósmicos de alta energía 
+                provienen de fuentes astrofísicas extremas como agujeros negros y supernovas.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-cyan-400 mb-3">IceCube Observatory</h3>
+              <p className="text-gray-300 leading-relaxed">
+                IceCube es el detector de neutrinos más grande del mundo, enterrado en 1 km³ de hielo 
+                en la Antártida. Utiliza más de 5,000 sensores ópticos para detectar la luz azul 
+                producida cuando los neutrinos interactúan con el hielo.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+} 

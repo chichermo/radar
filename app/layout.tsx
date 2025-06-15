@@ -28,6 +28,9 @@ export default function RootLayout({
             </main>
           </div>
         </div>
+        <footer className="w-full text-center text-xs text-gray-400 py-4 border-t border-gray-800 mt-8">
+          Este sitio utiliza datos públicos de NASA, NOAA, JPL, ESA y otras agencias. Todos los datos y visualizaciones son solo para fines educativos y de divulgación. Las imágenes y datos pertenecen a sus respectivos autores y fuentes. Si tienes dudas sobre el uso de algún dato o imagen, contáctanos.
+        </footer>
       </body>
     </html>
   );

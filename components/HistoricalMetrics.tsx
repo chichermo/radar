@@ -13,6 +13,7 @@ import {
   Clock,
   MapPin
 } from 'lucide-react';
+import { formatNumber, formatTimeOnly } from '@/utils/formatters';
 
 interface MetricData {
   id: string;
@@ -147,13 +148,8 @@ export default function HistoricalMetrics({ timeRange = '7d' }: HistoricalMetric
     }
   };
 
-  const formatValue = (value: number, unit: string) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M ${unit}`;
-    } else if (value >= 1000) {
-      return `${(value / 1000).toFixed(1)}K ${unit}`;
-    }
-    return `${value.toLocaleString()} ${unit}`;
+  const formatMetric = (value: number, unit: string) => {
+    return `${formatNumber(value)} ${unit}`;
   };
 
   if (isLoading) {
@@ -208,7 +204,7 @@ export default function HistoricalMetrics({ timeRange = '7d' }: HistoricalMetric
 
             <div className="mb-3">
               <div className="text-2xl font-bold text-gray-900">
-                {formatValue(metric.value, metric.unit)}
+                {formatMetric(metric.value, metric.unit)}
               </div>
               <p className="text-sm text-gray-600">{metric.description}</p>
             </div>
@@ -257,7 +253,7 @@ export default function HistoricalMetrics({ timeRange = '7d' }: HistoricalMetric
                 <span className="font-semibold">Valor Actual</span>
               </div>
               <div className="text-2xl font-bold text-gray-900">
-                {formatValue(selectedMetric.value, selectedMetric.unit)}
+                {formatMetric(selectedMetric.value, selectedMetric.unit)}
               </div>
             </div>
 
@@ -320,7 +316,7 @@ export default function HistoricalMetrics({ timeRange = '7d' }: HistoricalMetric
             <span>🔄 Actualización automática cada 5 minutos</span>
           </div>
           <div className="text-right">
-            <p>Última actualización: {new Date().toLocaleTimeString()}</p>
+            <p>Última actualización: {formatTimeOnly(new Date())}</p>
             <p className="text-xs">Fuente: APIs de Space-Track.org y NASA</p>
           </div>
         </div>

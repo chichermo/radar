@@ -1,204 +1,78 @@
-import { AlertCircle, Clock, MapPin, Radio } from 'lucide-react';
+"use client";
 
-// Mock data - esto será reemplazado por datos reales de la API
-const mockSignals = [
-  {
-    id: 1,
-    frequency: '1420.405751 MHz',
-    strength: -85,
-    bandwidth: '2.4 kHz',
-    source: 'Desconocido',
-    location: {
-      lat: 40.7128,
-      lng: -74.0060
-    },
-    timestamp: '2024-02-25T20:15:00Z',
-    status: 'investigando',
-    description: 'Señal pulsante con patrón no identificado'
-  },
-  {
-    id: 2,
-    frequency: '408.0 MHz',
-    strength: -92,
-    bandwidth: '1.0 MHz',
-    source: 'Posible interferencia',
-    location: {
-      lat: 34.0522,
-      lng: -118.2437
-    },
-    timestamp: '2024-02-25T19:45:00Z',
-    status: 'resuelto',
-    description: 'Interferencia de transmisión terrestre'
-  }
-];
-
-const statusColors = {
-  investigando: 'bg-yellow-500',
-  resuelto: 'bg-green-500',
-  crítico: 'bg-red-500'
-};
+import React from 'react';
 
 export default function SignalsPage() {
   return (
-    <div className="space-y-6 ml-64">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          Señales Detectadas
-        </h1>
-        <p className="text-gray-300">
-          Monitoreo en tiempo real de señales anómalas y eventos electromagnéticos.
-          Sistema de alerta y análisis automático de patrones.
-        </p>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Señales Recientes
-            </h2>
-            <div className="space-y-4">
-              {mockSignals.map((signal) => (
-                <div
-                  key={signal.id}
-                  className="p-4 bg-gray-700 rounded-lg space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Radio className="h-5 w-5 text-primary" />
-                      <div>
-                        <h3 className="font-medium text-white">
-                          {signal.frequency}
-                        </h3>
-                        <p className="text-sm text-gray-400">
-                          {signal.description}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <div
-                        className={`px-2 py-1 rounded text-xs font-medium ${
-                          statusColors[signal.status as keyof typeof statusColors]
-                        } text-white`}
-                      >
-                        {signal.status}
-                      </div>
-                      <div className="flex items-center space-x-1 text-sm text-gray-400">
-                        <Clock className="h-4 w-4" />
-                        <span>
-                          {new Date(signal.timestamp).toLocaleTimeString()}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-400">Fuerza</p>
-                      <p className="text-white">{signal.strength} dBm</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Ancho de Banda</p>
-                      <p className="text-white">{signal.bandwidth}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Fuente</p>
-                      <p className="text-white">{signal.source}</p>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-400">Ubicación</p>
-                      <p className="text-white">
-                        {signal.location.lat.toFixed(2)}°,{' '}
-                        {signal.location.lng.toFixed(2)}°
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+    <div className="ml-64 p-8">
+      <h1 className="text-3xl font-bold text-white mb-4">Señales y Sonidos Espaciales</h1>
+      <p className="text-xs text-gray-400 mb-4">Panel experimental para visualizar y escuchar señales espaciales. Los audios y espectrogramas son solo para fines educativos. Derechos de audio pertenecen a sus respectivas fuentes (NASA, SETI, SKA, etc).</p>
+      
+      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-6">
+        <h2 className="text-xl font-semibold text-white mb-4">Ejemplo de Espectrograma</h2>
+        <div className="w-full max-w-lg h-48 bg-gradient-to-r from-blue-900 via-purple-900 to-pink-900 rounded-lg border border-gray-700 flex items-center justify-center">
+          <div className="text-center text-gray-300">
+            <div className="text-4xl mb-2">📊</div>
+            <p>Espectrograma de señal espacial</p>
+            <p className="text-sm text-gray-400">(Simulación visual)</p>
           </div>
         </div>
-
-        <div className="space-y-6">
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Filtros
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Rango de Frecuencia
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    type="number"
-                    placeholder="Min"
-                    className="w-full rounded-lg border-gray-600 bg-gray-700 text-white"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Max"
-                    className="w-full rounded-lg border-gray-600 bg-gray-700 text-white"
-                  />
-                </div>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Estado
-                </label>
-                <select className="w-full rounded-lg border-gray-600 bg-gray-700 text-white">
-                  <option>Todos</option>
-                  <option>Investigando</option>
-                  <option>Resuelto</option>
-                  <option>Crítico</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
-                  Fuerza Mínima
-                </label>
-                <input
-                  type="range"
-                  min="-120"
-                  max="-40"
-                  className="w-full"
-                />
-              </div>
+        
+        <div className="mt-4 p-4 bg-gray-700 rounded-lg">
+          <h3 className="text-white font-medium mb-2">Reproductor de Audio Simulado</h3>
+          <div className="flex items-center space-x-4">
+            <button className="p-3 bg-blue-600 hover:bg-blue-700 rounded-full transition-colors">
+              <span className="text-white">▶️</span>
+            </button>
+            <div className="flex-1 bg-gray-600 rounded-full h-2">
+              <div className="bg-blue-500 h-2 rounded-full w-1/3"></div>
             </div>
+            <span className="text-gray-300 text-sm">00:00 / 02:30</span>
           </div>
-
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              Estadísticas
-            </h2>
-            <div className="space-y-4">
-              <div className="p-4 bg-gray-700 rounded-lg">
-                <h3 className="font-medium text-white mb-2">Hoy</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-400">Señales detectadas</p>
-                    <p className="text-lg font-medium text-white">24</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-400">En investigación</p>
-                    <p className="text-lg font-medium text-white">3</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-4 bg-gray-700 rounded-lg">
-                <h3 className="font-medium text-white mb-2">Alertas</h3>
-                <div className="space-y-2">
-                  <div className="flex items-center space-x-2 text-yellow-500">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="text-sm">2 señales no identificadas</span>
-                  </div>
-                  <div className="flex items-center space-x-2 text-red-500">
-                    <AlertCircle className="h-4 w-4" />
-                    <span className="text-sm">1 señal crítica</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <p className="text-xs text-gray-400 mt-2">Señal de radio pulsante - Frecuencia: 1420 MHz</p>
+        </div>
+      </div>
+      
+      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-6">
+        <h2 className="text-xl font-semibold text-white mb-4">Tipos de Señales Detectadas</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 bg-gray-700 rounded-lg">
+            <h3 className="text-green-400 font-medium mb-2">🔴 Señales Pulsantes</h3>
+            <p className="text-gray-300 text-sm">Pulsos regulares que pueden indicar objetos astronómicos como púlsares.</p>
+          </div>
+          <div className="p-4 bg-gray-700 rounded-lg">
+            <h3 className="text-blue-400 font-medium mb-2">📡 Señales Repetitivas</h3>
+            <p className="text-gray-300 text-sm">Patrones que se repiten en intervalos regulares.</p>
+          </div>
+          <div className="p-4 bg-gray-700 rounded-lg">
+            <h3 className="text-yellow-400 font-medium mb-2">🌌 Señales de Banda Ancha</h3>
+            <p className="text-gray-300 text-sm">Señales que cubren un amplio rango de frecuencias.</p>
+          </div>
+          <div className="p-4 bg-gray-700 rounded-lg">
+            <h3 className="text-purple-400 font-medium mb-2">🎵 Tones Modulados</h3>
+            <p className="text-gray-300 text-sm">Señales con variaciones en amplitud o frecuencia.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <h2 className="text-xl font-semibold text-white mb-4">Integración Futura</h2>
+        <div className="space-y-4">
+          <div className="flex items-center space-x-3">
+            <div className="w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
+            <span className="text-gray-300">Integración con SETI para señales reales</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-3 h-3 bg-blue-400 rounded-full animate-pulse"></div>
+            <span className="text-gray-300">Filtros avanzados por tipo de señal</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+            <span className="text-gray-300">Análisis en tiempo real de frecuencias</span>
+          </div>
+          <div className="flex items-center space-x-3">
+            <div className="w-3 h-3 bg-purple-400 rounded-full animate-pulse"></div>
+            <span className="text-gray-300">Base de datos de señales conocidas</span>
           </div>
         </div>
       </div>

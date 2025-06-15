@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Camera, Star, Info, Calendar, MapPin, Thermometer, Activity, Zap, Eye, Settings } from 'lucide-react';
+import { formatDateOnly } from '@/utils/formatters';
 
 interface JWSTImage {
   id: string;
@@ -266,7 +267,7 @@ export default function JWSTPage() {
                           <span className="font-medium">Distancia:</span> {image.distance}
                         </div>
                         <div>
-                          <span className="font-medium">Fecha:</span> {image.date.toLocaleDateString()}
+                          <span className="font-medium">Fecha:</span> {formatDateOnly(image.date)}
                         </div>
                       </div>
                     </div>
@@ -382,7 +383,7 @@ export default function JWSTPage() {
                 </div>
                 <div>
                   <span className="text-gray-400">Fecha:</span>
-                  <p className="text-white">{selectedImage.date.toLocaleDateString()}</p>
+                  <p className="text-white">{formatDateOnly(selectedImage.date)}</p>
                 </div>
               </div>
             </div>

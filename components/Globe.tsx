@@ -100,7 +100,6 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
   showCollisionAlerts = true,
   showParticles = true
 }, ref) => {
-  const globeRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [points, setPoints] = useState<OrbitalPoint[]>([]);
   const [orbitalPaths, setOrbitalPaths] = useState<OrbitalPath[]>([]);
@@ -187,7 +186,8 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
           
           return point;
         } catch (error) {
-          console.error("Error calculating mock point for", tleObj.OBJECT_NAME, ":", error);
+          // Silenciar errores de cálculo de puntos mock para evitar spam en consola
+          // Los errores son esperados en algunos casos con datos TLE inválidos
           return null;
         }
       })
@@ -237,7 +237,7 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
           
           return path;
         } catch (error) {
-          console.error("Error calculating mock path for", tleObj.OBJECT_NAME, ":", error);
+          // Silenciar errores de cálculo de trayectorias mock
           return null;
         }
       })
@@ -280,8 +280,8 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
       
       setIsLoading(false);
     } catch (error) {
-      console.error("Error updating points and paths:", error);
-      setError("Error al actualizar los datos orbitales");
+      const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
+      setError(`Error al actualizar los datos orbitales: ${errorMessage}`);
       setIsLoading(false);
     }
   }, [calculatedPoints, calculatedPaths]);
@@ -296,23 +296,6 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
 
     return () => clearInterval(interval);
   }, [isPlaying, timeSpeed]);
-
-  // Configurar interacción del globo después del montaje
-  useEffect(() => {
-    if (globeRef.current && !isLoading) {
-      // Intentar configurar la interacción del globo
-      const globe = globeRef.current;
-      
-      // Configurar controles de cámara si están disponibles
-      if (globe.controls) {
-        globe.controls.enableDamping = true;
-        globe.controls.dampingFactor = 0.05;
-        globe.controls.enableZoom = true;
-        globe.controls.enablePan = true;
-        globe.controls.enableRotate = true;
-      }
-    }
-  }, [isLoading]);
 
   // Manejar clic en satélite
   const handlePointClick = useCallback((point: OrbitalPoint) => {
@@ -449,7 +432,6 @@ const Globe = forwardRef<HTMLDivElement, GlobeProps>(({
         ) : (
           <div ref={containerRef} className="w-full h-full relative">
             <GlobeGL
-              ref={globeRef}
               globeImageUrl="//unpkg.com/three-globe/example/img/earth-blue-marble.jpg"
               pointsData={points}
               pointColor="color"

@@ -25,6 +25,7 @@ Un dashboard avanzado para el monitoreo en tiempo real de objetos espaciales, al
 ### 🔗 **Integración con APIs Reales**
 - **Space-Track.org**: Datos de satélites y TLEs
 - **NASA APIs**: Imágenes astronómicas y datos de asteroides
+- **NOAA**: Datos de clima espacial
 - Sistema de cache y rate limiting
 - Autenticación segura
 
@@ -39,6 +40,7 @@ Un dashboard avanzado para el monitoreo en tiempo real de objetos espaciales, al
 ### ✅ **Fase 1: Integración de APIs (Completada)**
 - [x] Space-Track.org API para datos de satélites
 - [x] NASA APIs para imágenes y asteroides
+- [x] NOAA APIs para clima espacial
 - [x] Sistema de cache y rate limiting
 - [x] Manejo de errores robusto
 
@@ -62,10 +64,10 @@ Un dashboard avanzado para el monitoreo en tiempo real de objetos espaciales, al
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **Frontend**: Next.js 13, React 18, TypeScript
+- **Frontend**: Next.js 14, React 18, TypeScript
 - **Estilos**: Tailwind CSS, Lucide React Icons
 - **3D**: Three.js, React Globe GL
-- **APIs**: Space-Track.org, NASA APIs
+- **APIs**: Space-Track.org, NASA APIs, NOAA
 - **Datos**: Satellite.js para cálculos orbitales
 
 ## 📦 Instalación
@@ -88,9 +90,12 @@ cp .env.local.example .env.local
 
 Editar `.env.local` con tus credenciales:
 ```env
+# API Keys (opcionales - la app funciona con datos simulados)
+NEXT_PUBLIC_NASA_API_KEY=tu_api_key_de_nasa
+
+# Configuración de Space-Track (opcional)
 SPACE_TRACK_USERNAME=tu_usuario
 SPACE_TRACK_PASSWORD=tu_password
-NASA_API_KEY=tu_api_key
 ```
 
 4. **Ejecutar en desarrollo**
@@ -100,28 +105,56 @@ npm run dev
 
 ## 🔧 Configuración
 
-### APIs Requeridas
+### APIs Requeridas (Opcionales)
+
+#### NASA API
+1. Ve a [NASA API Portal](https://api.nasa.gov/)
+2. Solicita una API key gratuita
+3. Agrega la key a tu `.env.local`:
+```env
+NEXT_PUBLIC_NASA_API_KEY=tu_api_key_aqui
+```
 
 #### Space-Track.org
-1. Registrarse en [Space-Track.org](https://www.space-track.org/)
-2. Obtener credenciales de usuario
-3. Configurar en `.env.local`
+1. Regístrate en [Space-Track.org](https://www.space-track.org/)
+2. Agrega las credenciales a tu `.env.local`:
+```env
+SPACE_TRACK_USERNAME=tu_usuario
+SPACE_TRACK_PASSWORD=tu_password
+```
 
-#### NASA APIs
-1. Obtener API key en [api.nasa.gov](https://api.nasa.gov/)
-2. Configurar en `.env.local`
+## 🔧 Solución de Problemas
+
+### Errores CORS
+Si ves errores de CORS con las APIs externas, no te preocupes. La aplicación está diseñada para funcionar con datos simulados cuando las APIs no están disponibles.
+
+### Errores 403/404
+- **NASA API**: Verifica que tu API key sea válida
+- **NOAA**: Los servicios públicos pueden tener limitaciones temporales
+- **Space-Track**: Verifica tus credenciales
+
+### Datos Simulados
+La aplicación incluye datos simulados realistas para todas las funcionalidades:
+- Satélites con órbitas realistas
+- Asteroides con datos científicos
+- Señales de radio simuladas
+- Clima espacial simulado
+
+### Errores de Imágenes
+Si algunas imágenes no cargan, es normal. La aplicación usa imágenes de ejemplo y puede mostrar placeholders.
 
 ## 📱 Páginas Disponibles
 
 - **Dashboard Principal** (`/`): Vista general del sistema
 - **Visualización Orbital** (`/orbital`): Globo 3D con satélites
 - **Mapa del Cielo** (`/skymap`): Visualización de objetos espaciales
+- **Telescopio James Webb** (`/jwst`): Imágenes del universo profundo
+- **Próximos Pasos** (`/passes`): Predicciones de satélites visibles
+- **Señales Detectadas** (`/signals`): Monitoreo de señales espaciales
 - **Métricas Históricas** (`/metrics`): Análisis de datos históricos
-- **Alertas de Colisión**: Modal integrado en el globo
 - **NASA APOD** (`/nasa-apod`): Imagen astronómica del día
 - **Asteroides NEO** (`/asteroids`): Objetos cercanos a la Tierra
 - **Clima Espacial** (`/space-weather`): Condiciones espaciales
-- **Configuración** (`/settings`): Ajustes del sistema
 
 ## 🎯 Próximas Funcionalidades
 
@@ -156,6 +189,7 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 - **Space-Track.org** por proporcionar datos de satélites
 - **NASA** por sus APIs públicas
+- **NOAA** por datos de clima espacial
 - **Three.js** por la librería 3D
 - **React Globe GL** por el componente de globo
 

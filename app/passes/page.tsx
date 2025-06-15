@@ -1,6 +1,7 @@
 "use client";
 import { Clock, MapPin, Satellite } from 'lucide-react';
 import { useState } from 'react';
+import { formatDate } from '@/utils/formatters';
 
 // Mock data - esto será reemplazado por datos reales de la API
 const mockPasses = [
@@ -64,7 +65,9 @@ export default function PassesPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <h3 className="text-lg font-medium text-white">{pass.satellite}</h3>
-                      <p className="text-gray-400 text-sm">Inicio: {new Date(pass.startTime).toLocaleString()}</p>
+                      <p className="text-gray-400 text-sm" suppressHydrationWarning>
+                        Inicio: {formatDate(pass.startTime)}
+                      </p>
                       <p className="text-gray-400 text-sm">Elevación máxima: {pass.maxElevation}°</p>
                       <p className="text-gray-400 text-sm">Magnitud: {pass.magnitude}</p>
                     </div>

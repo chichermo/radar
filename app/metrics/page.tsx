@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import HistoricalMetrics from '@/components/HistoricalMetrics';
 import { Calendar, BarChart3, TrendingUp, Activity } from 'lucide-react';
+import { formatDate } from '@/utils/formatters';
 
 export default function MetricsPage() {
   const [selectedTimeRange, setSelectedTimeRange] = useState<'24h' | '7d' | '30d' | '1y'>('7d');
@@ -139,8 +140,8 @@ export default function MetricsPage() {
                 </div>
               </div>
               <div className="mt-4 pt-4 border-t border-gray-200">
-                <p className="text-xs text-gray-500">
-                  Última actualización: {new Date().toLocaleString()}
+                <p className="text-sm text-gray-400" suppressHydrationWarning>
+                  Última actualización: {formatDate(new Date())}
                 </p>
               </div>
             </div>

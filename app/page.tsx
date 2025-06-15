@@ -16,6 +16,7 @@ import {
   ArrowRight,
   Sparkles
 } from 'lucide-react'
+import { menuCategories } from '@/components/Sidebar'
 
 /* Definir un array de objetos TLE (mock) para el Globe */
 const mockTLEObjects = [
@@ -166,43 +167,39 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Secciones principales */}
-      <div className="max-w-7xl mx-auto px-6 pb-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sections.map((section) => (
-            <Link
-              key={section.title}
-              href={section.href}
-              className="group relative overflow-hidden rounded-2xl border border-gray-700/50 bg-gray-800/50 backdrop-blur-sm p-8 transition-all duration-300 hover:scale-105 hover:border-gray-600/50 hover:bg-gray-800/70 hover:shadow-2xl"
-            >
-              {/* Fondo con gradiente sutil */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${section.bgColor} opacity-0 group-hover:opacity-100 transition-opacity duration-300`}></div>
-              
-              {/* Contenido */}
-              <div className="relative z-10">
-                <div className={`inline-flex p-3 rounded-xl bg-gradient-to-br ${section.color} mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                  <section.icon className="h-6 w-6 text-white" />
-                </div>
-                
-                <h2 className="text-xl font-bold text-white mb-4 group-hover:text-gray-100 transition-colors duration-300">
-                  {section.title}
-                </h2>
-                
-                <p className="text-gray-400 text-sm leading-relaxed mb-6 group-hover:text-gray-300 transition-colors duration-300">
-                  {section.description}
-                </p>
-                
-                <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors duration-300">
-                  <span className="text-sm font-medium">Explorar</span>
-                  <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
-                </div>
-              </div>
-              
-              {/* Efecto de brillo en hover */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
-            </Link>
-          ))}
-        </div>
+      {/* Secciones principales usando menuCategories */}
+      <div className="max-w-7xl mx-auto px-6 pb-16 space-y-12">
+        {menuCategories.map((category) => (
+          <section key={category.title}>
+            <h2 className="text-2xl font-semibold mb-4 text-primary-light">{category.title}</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {category.items.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group relative overflow-hidden rounded-2xl border border-gray-700/50 bg-gray-800/50 backdrop-blur-sm p-8 transition-all duration-300 hover:scale-105 hover:border-gray-600/50 hover:bg-gray-800/70 hover:shadow-2xl"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="relative z-10">
+                    <div className="inline-flex p-3 rounded-xl bg-gradient-to-br from-blue-400 to-purple-400 mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <item.icon className="h-6 w-6 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-4 group-hover:text-gray-100 transition-colors duration-300">
+                      {item.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed mb-6 group-hover:text-gray-300 transition-colors duration-300">
+                      {item.description}
+                    </p>
+                    <div className="flex items-center text-blue-400 group-hover:text-blue-300 transition-colors duration-300">
+                      <span className="text-sm font-medium">Explorar</span>
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform duration-300" />
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ))}
       </div>
 
       {/* Footer con información adicional */}

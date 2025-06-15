@@ -1,6 +1,9 @@
 'use client';
 import { AlertTriangle, Globe, Layers, Rocket, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { formatNumber, formatDate } from '@/utils/formatters';
+import maplibregl from 'maplibre-gl';
+import 'maplibre-gl/dist/maplibre-gl.css';
 
 // Mock data - esto será reemplazado por datos reales de la API de ESA
 const mockDebris = {
@@ -65,6 +68,157 @@ const riskLevels = {
   Alto: 'bg-red-500/10 text-red-400'
 };
 
+// Componente de mapa MapLibre integrado
+function SpaceDebrisMap() {
+  const mapContainer = useRef<HTMLDivElement>(null);
+  const map = useRef<maplibregl.Map | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Datos simulados de desechos espaciales
+  const debrisData = [
+    { id: '1', name: 'SL-8 R/B', lat: 45.0, lng: -75.0, type: 'debris', size: 5 },
+    { id: '2', name: 'COSMOS 2251', lat: 30.0, lng: 45.0, type: 'debris', size: 3 },
+    { id: '3', name: 'CZ-4B R/B', lat: -20.0, lng: 120.0, type: 'debris', size: 4 },
+    { id: '4', name: 'IRIDIUM 33', lat: 60.0, lng: -120.0, type: 'satellite', size: 2 },
+  ];
+
+  useEffect(() => {
+    if (!mapContainer.current) return;
+
+    map.current = new maplibregl.Map({
+      container: mapContainer.current,
+      style: {
+        version: 8,
+        glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+        sources: {
+          'osm': {
+            type: 'raster',
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+            tileSize: 256,
+            attribution: '© OpenStreetMap contributors'
+          }
+        },
+        layers: [
+          {
+            id: 'osm-tiles',
+            type: 'raster',
+            source: 'osm',
+            paint: {
+              'raster-opacity': 0.8
+            }
+          }
+        ]
+      },
+      center: [0, 0],
+      zoom: 2,
+      pitch: 45,
+      bearing: 0
+    });
+
+    map.current.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    map.current.on('load', () => {
+      setIsLoading(false);
+      
+      // Agregar fuente de datos de desechos
+      map.current?.addSource('debris', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: debrisData.map(item => ({
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [item.lng, item.lat]
+            },
+            properties: {
+              id: item.id,
+              name: item.name,
+              type: item.type,
+              size: item.size
+            }
+          }))
+        }
+      });
+
+      // Agregar capa de desechos
+      map.current?.addLayer({
+        id: 'debris-points',
+        type: 'circle',
+        source: 'debris',
+        paint: {
+          'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'size'],
+            1, 4,
+            5, 12
+          ],
+          'circle-color': [
+            'match',
+            ['get', 'type'],
+            'satellite', '#00ff00',
+            'debris', '#ff0000',
+            '#ffffff'
+          ],
+          'circle-opacity': 0.8,
+          'circle-stroke-width': 2,
+          'circle-stroke-color': '#ffffff'
+        }
+      });
+
+      // Agregar etiquetas
+      map.current?.addLayer({
+        id: 'debris-labels',
+        type: 'symbol',
+        source: 'debris',
+        layout: {
+          'text-field': ['get', 'name'],
+          'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+          'text-size': 10,
+          'text-offset': [0, -1.5],
+          'text-anchor': 'top'
+        },
+        paint: {
+          'text-color': '#ffffff',
+          'text-halo-color': '#000000',
+          'text-halo-width': 1
+        }
+      });
+    });
+
+    return () => {
+      if (map.current) {
+        map.current.remove();
+      }
+    };
+  }, []);
+
+  return (
+    <div className="relative w-full h-96 rounded-lg overflow-hidden">
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-10">
+          <div className="text-white text-lg">Cargando mapa...</div>
+        </div>
+      )}
+      <div ref={mapContainer} className="w-full h-full" />
+      
+      {/* Leyenda */}
+      <div className="absolute bottom-4 left-4 bg-black bg-opacity-70 text-white p-3 rounded-lg text-sm">
+        <div className="font-semibold mb-2">Desechos Espaciales</div>
+        <div className="flex items-center mb-1">
+          <div className="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
+          <span>Desechos</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-3 h-3 bg-green-500 rounded-full mr-2"></div>
+          <span>Satélites</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function SpaceDebrisPage() {
   const [selectedEvent, setSelectedEvent] = useState<(typeof mockDebris.recent_events[0]) | null>(null);
   return (
@@ -92,8 +246,8 @@ export default function SpaceDebrisPage() {
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-400">Total de Objetos</p>
-                  <p className="text-2xl font-bold text-white">
-                    {mockDebris.total_objects.toLocaleString()}
+                  <p className="text-2xl font-bold text-white" suppressHydrationWarning>
+                    {formatNumber(mockDebris.total_objects)}
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
@@ -102,20 +256,20 @@ export default function SpaceDebrisPage() {
                     <div className="mt-2 space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-300">Payloads</span>
-                        <span className="text-white">
-                          {mockDebris.by_type.payloads.toLocaleString()}
+                        <span className="text-white" suppressHydrationWarning>
+                          {formatNumber(mockDebris.by_type.payloads)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">Rocket Bodies</span>
-                        <span className="text-white">
-                          {mockDebris.by_type.rocket_bodies.toLocaleString()}
+                        <span className="text-white" suppressHydrationWarning>
+                          {formatNumber(mockDebris.by_type.rocket_bodies)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">Debris</span>
-                        <span className="text-white">
-                          {mockDebris.by_type.debris.toLocaleString()}
+                        <span className="text-white" suppressHydrationWarning>
+                          {formatNumber(mockDebris.by_type.debris)}
                         </span>
                       </div>
                     </div>
@@ -125,20 +279,20 @@ export default function SpaceDebrisPage() {
                     <div className="mt-2 space-y-2">
                       <div className="flex justify-between">
                         <span className="text-gray-300">LEO</span>
-                        <span className="text-white">
-                          {mockDebris.by_orbit.leo.toLocaleString()}
+                        <span className="text-white" suppressHydrationWarning>
+                          {formatNumber(mockDebris.by_orbit.leo)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">MEO</span>
-                        <span className="text-white">
-                          {mockDebris.by_orbit.meo.toLocaleString()}
+                        <span className="text-white" suppressHydrationWarning>
+                          {formatNumber(mockDebris.by_orbit.meo)}
                         </span>
                       </div>
                       <div className="flex justify-between">
                         <span className="text-gray-300">GEO</span>
-                        <span className="text-white">
-                          {mockDebris.by_orbit.geo.toLocaleString()}
+                        <span className="text-white" suppressHydrationWarning>
+                          {formatNumber(mockDebris.by_orbit.geo)}
                         </span>
                       </div>
                     </div>
@@ -159,7 +313,9 @@ export default function SpaceDebrisPage() {
                   <div key={event.id} className="p-3 bg-gray-700 rounded cursor-pointer hover:bg-yellow-900/30" onClick={() => setSelectedEvent(event)}>
                     <div className="flex justify-between items-center">
                       <span className="font-medium text-white">{event.type}</span>
-                      <span className="text-xs text-gray-400">{new Date(event.timestamp).toLocaleString()}</span>
+                      <span className="text-xs text-gray-400" suppressHydrationWarning>
+                        {formatDate(event.timestamp)}
+                      </span>
                     </div>
                     <div className="text-gray-300 text-sm">{event.description}</div>
                   </div>
@@ -172,7 +328,7 @@ export default function SpaceDebrisPage() {
                   <p><b>Descripción:</b> {selectedEvent.description}</p>
                   <p><b>Objetos:</b> {selectedEvent.objects ? selectedEvent.objects.join(', ') : selectedEvent.object}</p>
                   <p><b>Riesgo:</b> {selectedEvent.risk_level}</p>
-                  <p><b>Fecha:</b> {new Date(selectedEvent.timestamp).toLocaleString()}</p>
+                  <p><b>Fecha:</b> <span suppressHydrationWarning>{formatDate(selectedEvent.timestamp)}</span></p>
                   <button className="mt-2 px-3 py-1 bg-yellow-700 rounded" onClick={() => setSelectedEvent(null)}>Cerrar</button>
                 </div>
               )}
@@ -300,6 +456,17 @@ export default function SpaceDebrisPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Mapa de Desechos Espaciales */}
+      <div className="mt-6 bg-gray-800 rounded-lg border border-gray-700 p-6">
+        <div className="flex items-center space-x-2 mb-4">
+          <Globe className="h-5 w-5 text-blue-400" />
+          <h2 className="text-xl font-semibold text-white">
+            Mapa de Desechos Espaciales
+          </h2>
+        </div>
+        <SpaceDebrisMap />
       </div>
     </div>
   );

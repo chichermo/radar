@@ -1,6 +1,8 @@
-'use client';
+"use client";
 import { AlertTriangle, ArrowRight, Globe, Radar, Rocket } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { getNeoAsteroids } from '../../services/neoAsteroids';
+import { formatNumber, formatDate, formatTimeOnly } from '@/utils/formatters';
 
 // Mock data - esto será reemplazado por datos reales de la API de NASA
 const mockNeos = [
@@ -37,13 +39,91 @@ const hazardLevels = {
 };
 
 export default function AsteroidsPage() {
-  const [neos, setNeos] = useState(mockNeos);
+  const [asteroids, setAsteroids] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    const interval = setInterval(() => {
-      setNeos(prev => prev.map(neo => ({ ...neo, last_updated: new Date().toISOString() })));
-    }, 10000);
-    return () => clearInterval(interval);
+    async function fetchData() {
+      try {
+        const data = await getNeoAsteroids();
+        if (data && data.near_earth_objects) {
+          // Unir todos los días en un solo array
+          const all = Object.values(data.near_earth_objects).flat();
+          setAsteroids(all);
+        } else {
+          // Si no hay datos reales, usar mock data
+          setAsteroids(mockNeos);
+        }
+      } catch (error) {
+        console.error('Error cargando asteroides:', error);
+        setAsteroids(mockNeos);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
   }, []);
+
+  // Función helper para obtener el diámetro de forma segura
+  const getDiameter = (ast: any) => {
+    try {
+      if (ast.estimated_diameter?.meters?.estimated_diameter_max) {
+        return Math.round(ast.estimated_diameter.meters.estimated_diameter_max);
+      }
+      if (ast.diameter) {
+        return ast.diameter;
+      }
+      return 'N/A';
+    } catch {
+      return 'N/A';
+    }
+  };
+
+  // Función helper para obtener la distancia de forma segura
+  const getDistance = (ast: any) => {
+    try {
+      if (ast.close_approach_data?.[0]?.miss_distance?.kilometers) {
+        return formatNumber(Math.round(ast.close_approach_data[0].miss_distance.kilometers));
+      }
+      if (ast.distance) {
+        return formatNumber(Math.round(ast.distance * 149597870.7));
+      }
+      return 'N/A';
+    } catch {
+      return 'N/A';
+    }
+  };
+
+  // Función helper para obtener la velocidad de forma segura
+  const getVelocity = (ast: any) => {
+    try {
+      if (ast.close_approach_data?.[0]?.relative_velocity?.kilometers_per_hour) {
+        return ast.close_approach_data[0].relative_velocity.kilometers_per_hour;
+      }
+      if (ast.velocity) {
+        return ast.velocity;
+      }
+      return 'N/A';
+    } catch {
+      return 'N/A';
+    }
+  };
+
+  // Función helper para obtener la fecha de acercamiento de forma segura
+  const getApproachDate = (ast: any) => {
+    try {
+      if (ast.close_approach_data?.[0]?.close_approach_date_full) {
+        return ast.close_approach_data[0].close_approach_date_full;
+      }
+      if (ast.approach_date) {
+        return formatDate(new Date(ast.approach_date));
+      }
+      return 'N/A';
+    } catch {
+      return 'N/A';
+    }
+  };
+
   return (
     <div className="space-y-6 ml-64">
       <header className="mb-8">
@@ -63,18 +143,18 @@ export default function AsteroidsPage() {
               Próximos Acercamientos
             </h2>
             <div className="space-y-4">
-              {neos.map((neo) => (
+              {asteroids.map((ast: any, index: number) => (
                 <div
-                  key={neo.id}
+                  key={ast.id || index}
                   className="bg-gray-700/50 rounded-lg p-4 border border-gray-600"
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center space-x-2">
                         <h3 className="text-lg font-medium text-white">
-                          {neo.name}
+                          {ast.name || `Asteroide ${index + 1}`}
                         </h3>
-                        {neo.hazard && (
+                        {(ast.is_potentially_hazardous_asteroid || ast.hazard) && (
                           <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-500/10 text-red-400">
                             Potencialmente Peligroso
                           </span>
@@ -83,31 +163,27 @@ export default function AsteroidsPage() {
                       <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
                         <div>
                           <p className="text-gray-400">Diámetro</p>
-                          <p className="text-white">{neo.diameter} metros</p>
+                          <p className="text-white">{getDiameter(ast)} metros</p>
                         </div>
                         <div>
                           <p className="text-gray-400">Distancia</p>
-                          <p className="text-white">
-                            {(neo.distance * 149597870.7).toLocaleString()} km
-                          </p>
+                          <p className="text-white">{getDistance(ast)} km</p>
                         </div>
                         <div>
                           <p className="text-gray-400">Velocidad</p>
-                          <p className="text-white">{neo.velocity} km/s</p>
+                          <p className="text-white">{getVelocity(ast)} km/h</p>
                         </div>
                         <div>
                           <p className="text-gray-400">Magnitud</p>
-                          <p className="text-white">{neo.magnitude}</p>
+                          <p className="text-white">{ast.absolute_magnitude_h || ast.magnitude || 'N/A'}</p>
                         </div>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className="text-sm text-gray-400">Acercamiento</p>
-                      <p className="text-white">
-                        {new Date(neo.approach_date).toLocaleString()}
-                      </p>
+                      <p className="text-white">{getApproachDate(ast)}</p>
                       <p className="text-xs text-gray-400 mt-1">
-                        Última actualización: {new Date(neo.last_updated).toLocaleTimeString()}
+                        Última actualización: {formatTimeOnly(new Date())}
                       </p>
                     </div>
                   </div>
@@ -192,6 +268,39 @@ export default function AsteroidsPage() {
             </div>
           </div>
         </div>
+      </div>
+
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold text-white mb-4">Asteroides Cercanos a la Tierra (NEO)</h2>
+        <p className="text-xs text-gray-400 mb-4">Datos proporcionados por NASA/JPL (<a href='https://cneos.jpl.nasa.gov/' className='underline' target='_blank' rel='noopener noreferrer'>cneos.jpl.nasa.gov</a>)</p>
+        {loading ? (
+          <div className="text-white">Cargando asteroides...</div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-gray-800 rounded-lg">
+              <thead>
+                <tr>
+                  <th className="px-4 py-2 text-left text-gray-300">Nombre</th>
+                  <th className="px-4 py-2 text-left text-gray-300">Fecha</th>
+                  <th className="px-4 py-2 text-left text-gray-300">Tamaño (m)</th>
+                  <th className="px-4 py-2 text-left text-gray-300">Distancia (km)</th>
+                  <th className="px-4 py-2 text-left text-gray-300">Riesgo</th>
+                </tr>
+              </thead>
+              <tbody>
+                {asteroids.map((ast: any, index: number) => (
+                  <tr key={ast.id || index} className="border-b border-gray-700">
+                    <td className="px-4 py-2 text-white">{ast.name || `Asteroide ${index + 1}`}</td>
+                    <td className="px-4 py-2 text-gray-300">{getApproachDate(ast)}</td>
+                    <td className="px-4 py-2 text-gray-300">{getDiameter(ast)}</td>
+                    <td className="px-4 py-2 text-gray-300">{getDistance(ast)}</td>
+                    <td className="px-4 py-2 text-red-400">{(ast.is_potentially_hazardous_asteroid || ast.hazard) ? 'Sí' : 'No'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
