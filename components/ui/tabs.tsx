@@ -1,5 +1,12 @@
 import * as React from "react"
 
+interface TabsContextType {
+  activeTab: string
+  onTabChange: (value: string) => void
+}
+
+const TabsContext = React.createContext<TabsContextType | undefined>(undefined)
+
 interface TabsProps {
   defaultValue?: string
   value?: string
@@ -18,21 +25,15 @@ const Tabs = React.forwardRef<HTMLDivElement, TabsProps>(
     }
 
     return (
-      <div
-        ref={ref}
-        className={`w-full ${className || ''}`}
-        {...props}
-      >
-        {React.Children.map(children, (child) => {
-          if (React.isValidElement(child)) {
-            return React.cloneElement(child, {
-              activeTab,
-              onTabChange: handleTabChange,
-            } as any)
-          }
-          return child
-        })}
-      </div>
+      <TabsContext.Provider value={{ activeTab, onTabChange: handleTabChange }}>
+        <div
+          ref={ref}
+          className={`w-full ${className || ''}`}
+          {...props}
+        >
+          {children}
+        </div>
+      </TabsContext.Provider>
     )
   }
 )
@@ -62,12 +63,16 @@ interface TabsTriggerProps {
   value: string
   children: React.ReactNode
   className?: string
-  activeTab?: string
-  onTabChange?: (value: string) => void
 }
 
 const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
-  ({ value, children, className, activeTab, onTabChange, ...props }, ref) => {
+  ({ value, children, className, ...props }, ref) => {
+    const context = React.useContext(TabsContext)
+    if (!context) {
+      throw new Error('TabsTrigger must be used within a Tabs component')
+    }
+    
+    const { activeTab, onTabChange } = context
     const isActive = activeTab === value
 
     return (
@@ -78,7 +83,7 @@ const TabsTrigger = React.forwardRef<HTMLButtonElement, TabsTriggerProps>(
             ? 'bg-white text-gray-900 shadow-sm'
             : 'text-gray-500 hover:text-gray-900'
         } ${className || ''}`}
-        onClick={() => onTabChange?.(value)}
+        onClick={() => onTabChange(value)}
         {...props}
       >
         {children}
@@ -92,11 +97,16 @@ interface TabsContentProps {
   value: string
   children: React.ReactNode
   className?: string
-  activeTab?: string
 }
 
 const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
-  ({ value, children, className, activeTab, ...props }, ref) => {
+  ({ value, children, className, ...props }, ref) => {
+    const context = React.useContext(TabsContext)
+    if (!context) {
+      throw new Error('TabsContent must be used within a Tabs component')
+    }
+    
+    const { activeTab } = context
     const isActive = activeTab === value
 
     if (!isActive) return null

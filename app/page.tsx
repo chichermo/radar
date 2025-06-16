@@ -24,6 +24,8 @@ import { VoiceCommands } from '@/components/VoiceCommands';
 import { AIPredictionsPanel } from '@/components/AIPredictions';
 import { AchievementsPanel } from '@/components/GamificationSystem';
 import { useNotifications } from '@/components/NotificationService';
+import CardComponents from '@/components/ui/card2';
+const { Card, CardHeader, CardTitle, CardDescription, CardContent } = CardComponents;
 
 /* Definir un array de objetos TLE (mock) para el Globe */
 const mockTLEObjects = [
