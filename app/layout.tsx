@@ -16,6 +16,25 @@ export default function RootLayout({
 }) {
   return (
     <html lang="es" className="h-full bg-gray-900">
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <meta name="theme-color" content="#1e40af" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="COSMIC EYE" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon-192x192.png" />
+        <meta name="description" content="Plataforma de monitoreo en tiempo real de objetos espaciales y señales anómalas" />
+        <meta name="keywords" content="espacio, astronomía, satélites, exoplanetas, NASA, ESA, monitoreo espacial" />
+        <meta property="og:title" content="COSMIC EYE - Monitoreo Espacial" />
+        <meta property="og:description" content="Plataforma de monitoreo en tiempo real de objetos espaciales" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="/icon-512x512.png" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="COSMIC EYE - Monitoreo Espacial" />
+        <meta name="twitter:description" content="Plataforma de monitoreo en tiempo real de objetos espaciales" />
+        <meta name="twitter:image" content="/icon-512x512.png" />
+      </head>
       <body className="h-full font-sans">
         <div className="min-h-full flex flex-col">
           <Navbar />

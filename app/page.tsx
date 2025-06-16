@@ -14,7 +14,10 @@ import {
   Search,
   Camera,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  BarChart3,
+  Download,
+  Bell
 } from 'lucide-react'
 import { menuCategories } from '@/components/Sidebar'
 import { VoiceCommands } from '@/components/VoiceCommands';
@@ -204,24 +207,24 @@ export default function Home() {
             </div>
           </section>
         ))}
-      </div>
 
-      {/* Footer con información adicional */}
-      <div className="border-t border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-white mb-4">¿Listo para explorar el cosmos?</h3>
-            <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
-              Nuestro sistema de monitoreo espacial te mantiene informado sobre todo lo que sucede en el espacio exterior. 
-              Desde satélites hasta asteroides, nunca te perderás nada importante.
-            </p>
-            <div className="flex items-center justify-center space-x-4">
-              <div className="flex items-center space-x-2 text-green-400">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm">Sistema Activo</span>
+        {/* Footer con información adicional */}
+        <div className="border-t border-gray-700/50 bg-gray-900/50 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-6 py-12">
+            <div className="text-center">
+              <h3 className="text-2xl font-bold text-white mb-4">¿Listo para explorar el cosmos?</h3>
+              <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+                Nuestro sistema de monitoreo espacial te mantiene informado sobre todo lo que sucede en el espacio exterior. 
+                Desde satélites hasta asteroides, nunca te perderás nada importante.
+              </p>
+              <div className="flex items-center justify-center space-x-4">
+                <div className="flex items-center space-x-2 text-green-400">
+                  <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                  <span className="text-sm">Sistema Activo</span>
+                </div>
+                <div className="text-gray-500">•</div>
+                <div className="text-gray-400 text-sm">Última actualización: hace 2 minutos</div>
               </div>
-              <div className="text-gray-500">•</div>
-              <div className="text-gray-400 text-sm">Última actualización: hace 2 minutos</div>
             </div>
           </div>
         </div>

@@ -94,6 +94,12 @@ export const menuCategories = [
         href: '/jwst',
         icon: Camera,
         description: 'Telescopio Espacial James Webb'
+      },
+      {
+        title: 'Vera C. Rubin',
+        href: '/vera-rubin',
+        icon: Camera,
+        description: 'Legacy Survey of Space and Time (LSST)'
       }
     ]
   },
