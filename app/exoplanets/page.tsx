@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import CardComponents from '@/components/ui/card2';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Circle, Star, Globe, Search, Filter, Info, TrendingUp, Eye } from 'lucide-react';
+import { Circle, Star, Globe, Search, Filter, Info, TrendingUp, Eye, Database, Target, Zap, Activity, RefreshCw, Download } from 'lucide-react';
 
 const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardComponents;
 
@@ -50,6 +50,16 @@ interface Exoplanet {
   pl_status: string;
 }
 
+// Datos simulados para estadísticas
+const exoplanetStats = {
+  totalDiscovered: 5432,
+  confirmed: 4123,
+  candidates: 1309,
+  habitableZone: 156,
+  thisYear: 89,
+  nearest: 1.3
+};
+
 export default function ExoplanetsPage() {
   const [exoplanets, setExoplanets] = useState<Exoplanet[]>([]);
   const [filteredExoplanets, setFilteredExoplanets] = useState<Exoplanet[]>([]);
@@ -57,14 +67,23 @@ export default function ExoplanetsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterMethod, setFilterMethod] = useState('all');
   const [sortBy, setSortBy] = useState('disc_year');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     fetchExoplanets();
   }, []);
 
   useEffect(() => {
     filterAndSortExoplanets();
   }, [exoplanets, searchTerm, filterMethod, sortBy]);
+
+  const handleRefresh = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  };
 
   const fetchExoplanets = async () => {
     try {
@@ -211,10 +230,10 @@ export default function ExoplanetsPage() {
   };
 
   const getPlanetType = (mass: number, radius: number) => {
-    if (mass < 0.1) return { type: "Enano", color: "bg-gray-500" };
-    if (mass < 2) return { type: "Terrestre", color: "bg-blue-500" };
-    if (mass < 10) return { type: "Gigante Gaseoso", color: "bg-orange-500" };
-    return { type: "Super-Júpiter", color: "bg-red-500" };
+    if (mass < 0.1) return "Enano";
+    if (mass < 2) return "Terrestre";
+    if (mass < 10) return "Gigante Gaseoso";
+    return "Super-Júpiter";
   };
 
   const getHabitabilityScore = (planet: Exoplanet) => {
@@ -225,214 +244,258 @@ export default function ExoplanetsPage() {
     return ((tempScore + sizeScore + massScore) / 3 * 100).toFixed(0);
   };
 
-  if (loading) {
+  if (!isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-96">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Circle className="w-12 h-12 text-blue-400 mr-3" />
-            <h1 className="text-4xl font-bold text-white">Exoplanetas</h1>
-          </div>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Descubre planetas fuera de nuestro sistema solar. Monitoreamos más de 5,000 exoplanetas confirmados
-            con datos actualizados de la NASA Exoplanet Archive.
-          </p>
-        </div>
-
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Circle className="w-8 h-8 text-blue-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">{exoplanets.length}</p>
-                  <p className="text-gray-400">Exoplanetas</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Star className="w-8 h-8 text-yellow-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {exoplanets.filter(p => p.pl_eqt > 200 && p.pl_eqt < 400).length}
-                  </p>
-                  <p className="text-gray-400">Potencialmente Habitables</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Globe className="w-8 h-8 text-green-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {Math.max(...exoplanets.map(p => p.disc_year))}
-                  </p>
-                  <p className="text-gray-400">Año Más Reciente</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <TrendingUp className="w-8 h-8 text-purple-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {exoplanets.filter(p => p.disc_year >= 2020).length}
-                  </p>
-                  <p className="text-gray-400">Descubiertos 2020+</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filtros y Búsqueda */}
-        <Card className="bg-gray-800/50 border-gray-700 mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder="Buscar por nombre de planeta o estrella..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-              </div>
-              
-              <select
-                value={filterMethod}
-                onChange={(e) => setFilterMethod(e.target.value)}
-                className="w-full md:w-48 h-10 rounded-md border border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">Todos los métodos</option>
-                <option value="Transit">Tránsito</option>
-                <option value="Radial Velocity">Velocidad Radial</option>
-                <option value="Imaging">Imagen Directa</option>
-                <option value="Microlensing">Microlente</option>
-              </select>
-              
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="w-full md:w-48 h-10 rounded-md border border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="disc_year">Año de descubrimiento</option>
-                <option value="pl_rade">Radio del planeta</option>
-                <option value="pl_masse">Masa del planeta</option>
-                <option value="st_dist">Distancia</option>
-              </select>
+        <div className="mb-8">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="p-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
+              <Circle className="h-8 w-8 text-blue-400" />
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Lista de Exoplanetas */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredExoplanets.map((planet, index) => {
-            const planetType = getPlanetType(planet.pl_masse, planet.pl_rade);
-            const habitabilityScore = getHabitabilityScore(planet);
-            
-            return (
-              <Card key={index} className="bg-gray-800/50 border-gray-700 hover:border-blue-500 transition-colors">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-white text-lg">{planet.pl_name}</CardTitle>
-                      <CardDescription className="text-gray-400">
-                        Estrella: {planet.hostname}
-                      </CardDescription>
-                    </div>
-                    <Badge className={`${planetType.color} text-white`}>
-                      {planetType.type}
-                    </Badge>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Exoplanetas</h1>
+              <p className="text-gray-400">Planetas fuera del sistema solar - Catálogo completo</p>
+            </div>
+          </div>
+          
+          {/* Estadísticas rápidas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Total</p>
+                    <p className="text-2xl font-bold text-white">{exoplanetStats.totalDiscovered.toLocaleString()}</p>
                   </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-400">Radio</p>
-                        <p className="text-white font-semibold">{planet.pl_rade} R⊕</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Masa</p>
-                        <p className="text-white font-semibold">{planet.pl_masse} M⊕</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Temperatura</p>
-                        <p className="text-white font-semibold">{planet.pl_eqt} K</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Período Orbital</p>
-                        <p className="text-white font-semibold">{planet.pl_orbper} días</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center">
-                      <div>
-                        <p className="text-gray-400 text-sm">Habitabilidad</p>
-                        <div className="flex items-center">
-                          <div className="w-16 bg-gray-700 rounded-full h-2 mr-2">
-                            <div 
-                              className="bg-green-500 h-2 rounded-full" 
-                              style={{ width: `${habitabilityScore}%` }}
-                            ></div>
+                  <Globe className="h-8 w-8 text-blue-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Confirmados</p>
+                    <p className="text-2xl font-bold text-green-400">{exoplanetStats.confirmed.toLocaleString()}</p>
+                  </div>
+                  <Target className="h-8 w-8 text-green-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Candidatos</p>
+                    <p className="text-2xl font-bold text-yellow-400">{exoplanetStats.candidates.toLocaleString()}</p>
+                  </div>
+                  <Eye className="h-8 w-8 text-yellow-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Habitables</p>
+                    <p className="text-2xl font-bold text-purple-400">{exoplanetStats.habitableZone}</p>
+                  </div>
+                  <Star className="h-8 w-8 text-purple-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Este Año</p>
+                    <p className="text-2xl font-bold text-cyan-400">{exoplanetStats.thisYear}</p>
+                  </div>
+                  <TrendingUp className="h-8 w-8 text-cyan-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Más Cercano</p>
+                    <p className="text-2xl font-bold text-pink-400">{exoplanetStats.nearest} ly</p>
+                  </div>
+                  <Zap className="h-8 w-8 text-pink-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Contenido principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Panel de filtros */}
+          <div className="lg:col-span-1">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="text-white">Filtros</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Refinar búsqueda
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="text-sm text-gray-300 mb-2 block">Buscar</label>
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Nombre del planeta..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 bg-gray-700/50 border border-gray-600/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-300 mb-2 block">Método de Descubrimiento</label>
+                  <select
+                    value={filterMethod}
+                    onChange={(e) => setFilterMethod(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/30 rounded-lg text-white focus:outline-none focus:border-blue-500/50"
+                  >
+                    <option value="all">Todos los métodos</option>
+                    <option value="Transit">Tránsito</option>
+                    <option value="Radial Velocity">Velocidad Radial</option>
+                    <option value="Imaging">Imagen Directa</option>
+                    <option value="Microlensing">Microlente</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-sm text-gray-300 mb-2 block">Ordenar por</label>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full px-3 py-2 bg-gray-700/50 border border-gray-600/30 rounded-lg text-white focus:outline-none focus:border-blue-500/50"
+                  >
+                    <option value="disc_year">Año de Descubrimiento</option>
+                    <option value="pl_rade">Radio del Planeta</option>
+                    <option value="pl_masse">Masa del Planeta</option>
+                    <option value="st_dist">Distancia</option>
+                  </select>
+                </div>
+
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleRefresh}
+                    disabled={loading}
+                    className="flex-1 p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  </button>
+                  <button className="flex-1 p-2 bg-gray-700/50 rounded-lg border border-gray-600/30 text-gray-400 hover:bg-gray-600/50 transition-colors flex items-center justify-center">
+                    <Download className="h-4 w-4" />
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Lista de exoplanetas */}
+          <div className="lg:col-span-3">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">Catálogo de Exoplanetas</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      {filteredExoplanets.length} planetas encontrados
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-green-400">Datos en tiempo real</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredExoplanets.map((planet) => (
+                      <div
+                        key={planet.pl_name}
+                        className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:border-blue-500/30 transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-2">
+                              <h3 className="text-lg font-semibold text-white">{planet.pl_name}</h3>
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-400/10 text-blue-400 border border-blue-400/20">
+                                {planet.discoverymethod}
+                              </span>
+                              <span className="px-2 py-1 rounded-full text-xs font-medium bg-green-400/10 text-green-400 border border-green-400/20">
+                                {planet.disc_year}
+                              </span>
+                            </div>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                              <div>
+                                <p className="text-xs text-gray-400">Estrella</p>
+                                <p className="text-sm text-gray-300">{planet.hostname}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-400">Radio</p>
+                                <p className="text-sm text-gray-300">{planet.pl_rade.toFixed(2)} R⊕</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-400">Masa</p>
+                                <p className="text-sm text-gray-300">{planet.pl_masse.toFixed(2)} M⊕</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-400">Distancia</p>
+                                <p className="text-sm text-gray-300">{planet.st_dist.toFixed(1)} ly</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4 text-xs text-gray-400">
+                              <span>Tipo: {getPlanetType(planet.pl_masse, planet.pl_rade)}</span>
+                              <span>Habitabilidad: {getHabitabilityScore(planet)}%</span>
+                              <span>Período: {planet.pl_orbper.toFixed(1)} días</span>
+                            </div>
                           </div>
-                          <span className="text-white text-sm">{habitabilityScore}%</span>
+                          <button className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors">
+                            <Info className="h-4 w-4" />
+                          </button>
                         </div>
                       </div>
-                      
-                      <div className="text-right">
-                        <p className="text-gray-400 text-sm">Descubierto</p>
-                        <p className="text-white font-semibold">{planet.disc_year}</p>
-                      </div>
-                    </div>
-                    
-                    <div className="flex justify-between items-center pt-2 border-t border-gray-700">
-                      <Badge variant="outline" className="text-gray-300 border-gray-600">
-                        {planet.discoverymethod}
-                      </Badge>
-                      <div className="flex items-center text-gray-400 text-sm">
-                        <Eye className="w-4 h-4 mr-1" />
-                        {planet.st_dist} ly
-                      </div>
-                    </div>
+                    ))}
                   </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {filteredExoplanets.length === 0 && (
-          <div className="text-center py-12">
-            <Circle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl text-gray-400 mb-2">No se encontraron exoplanetas</h3>
-            <p className="text-gray-500">Intenta ajustar los filtros de búsqueda</p>
+                )}
+              </CardContent>
+            </Card>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

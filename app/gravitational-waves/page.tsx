@@ -5,7 +5,7 @@ const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardCompon
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Waves, Star, Eye, Zap, AlertTriangle, Info, TrendingUp, Globe, Calendar } from 'lucide-react';
+import { Waves, Star, Eye, Zap, AlertTriangle, Info, TrendingUp, Globe, Calendar, Activity, RefreshCw, Download, Target, Database } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface GravitationalWave {
@@ -26,14 +26,33 @@ interface GravitationalWave {
   };
 }
 
+// Datos simulados para estadísticas
+const gravitationalWaveStats = {
+  totalDetections: 89,
+  confirmed: 67,
+  candidates: 22,
+  thisYear: 12,
+  averageDistance: 450,
+  highestSignificance: 32.4
+};
+
 export default function GravitationalWavesPage() {
   const [waves, setWaves] = useState<GravitationalWave[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('all');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     fetchGravitationalWaves();
   }, []);
+
+  const handleRefresh = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  };
 
   const fetchGravitationalWaves = async () => {
     try {
@@ -158,222 +177,277 @@ export default function GravitationalWavesPage() {
     ? waves 
     : waves.filter(wave => wave.type === selectedType);
 
-  if (loading) {
+  if (!isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-96">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Waves className="w-12 h-12 text-purple-400 mr-3" />
-            <h1 className="text-4xl font-bold text-white">Ondas Gravitacionales</h1>
-          </div>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Monitoreo de ondas gravitacionales detectadas por LIGO, Virgo y KAGRA. 
-            Explorando el universo a través de las vibraciones del espacio-tiempo.
-          </p>
-        </div>
-
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Waves className="w-8 h-8 text-purple-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">{waves.length}</p>
-                  <p className="text-gray-400">Detecciones</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Star className="w-8 h-8 text-yellow-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {waves.filter(w => w.type === 'BBH').length}
-                  </p>
-                  <p className="text-gray-400">Agujeros Negros</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Zap className="w-8 h-8 text-blue-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {waves.filter(w => w.type === 'BNS').length}
-                  </p>
-                  <p className="text-gray-400">Estrellas de Neutrones</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Calendar className="w-8 h-8 text-green-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {Math.max(...waves.map(w => new Date(w.date).getFullYear()))}
-                  </p>
-                  <p className="text-gray-400">Año Más Reciente</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filtros */}
-        <Card className="bg-gray-800/50 border-gray-700 mb-6">
-          <CardContent className="p-6">
-            <Tabs value={selectedType} onValueChange={setSelectedType}>
-              <TabsList className="grid w-full grid-cols-4 bg-gray-700">
-                <TabsTrigger value="all" className="text-white">Todas</TabsTrigger>
-                <TabsTrigger value="BBH" className="text-white">Agujeros Negros</TabsTrigger>
-                <TabsTrigger value="BNS" className="text-white">Estrellas de Neutrones</TabsTrigger>
-                <TabsTrigger value="NSBH" className="text-white">Mixtas</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* Lista de Ondas Gravitacionales */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredWaves.map((wave, index) => {
-            const typeInfo = getTypeInfo(wave.type);
-            
-            return (
-              <Card key={index} className="bg-gray-800/50 border-gray-700 hover:border-purple-500 transition-colors">
-                <CardHeader>
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-white text-xl">{wave.name}</CardTitle>
-                      <CardDescription className="text-gray-400">
-                        {new Date(wave.date).toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric'
-                        })}
-                      </CardDescription>
-                    </div>
-                    <Badge className={`${typeInfo.color} text-white`}>
-                      {typeInfo.name}
-                    </Badge>
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-4">
-                    <p className="text-gray-300 text-sm leading-relaxed">
-                      {wave.description}
-                    </p>
-                    
-                    <div className="grid grid-cols-2 gap-4 text-sm">
-                      <div>
-                        <p className="text-gray-400">Masa 1</p>
-                        <p className="text-white font-semibold">{wave.mass1} M☉</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Masa 2</p>
-                        <p className="text-white font-semibold">{wave.mass2} M☉</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Distancia</p>
-                        <p className="text-white font-semibold">{formatDistance(wave.distance)}</p>
-                      </div>
-                      <div>
-                        <p className="text-gray-400">Significancia</p>
-                        <p className={`font-semibold ${getSignificanceColor(wave.significance)}`}>
-                          {wave.significance} σ
-                        </p>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <p className="text-gray-400 text-sm">Detectores</p>
-                      <div className="flex flex-wrap gap-2">
-                        {wave.detectors.map((detector, idx) => (
-                          <Badge key={idx} variant="outline" className="text-gray-300 border-gray-600">
-                            {detector}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="pt-3 border-t border-gray-700">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <p className="text-gray-400 text-sm">Coordenadas</p>
-                          <p className="text-white text-sm">
-                            RA: {wave.coordinates.ra.toFixed(1)}°, Dec: {wave.coordinates.dec.toFixed(1)}°
-                          </p>
-                        </div>
-                        <Badge className="bg-green-500 text-white">
-                          {wave.status}
-                        </Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
-
-        {filteredWaves.length === 0 && (
-          <div className="text-center py-12">
-            <Waves className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl text-gray-400 mb-2">No se encontraron detecciones</h3>
-            <p className="text-gray-500">Intenta seleccionar un tipo diferente</p>
-          </div>
-        )}
-
-        {/* Información Educativa */}
-        <Card className="bg-gray-800/50 border-gray-700 mt-8">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <Info className="w-5 h-5 mr-2" />
-              ¿Qué son las Ondas Gravitacionales?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-              <div>
-                <h4 className="text-purple-400 font-semibold mb-2">¿Qué son?</h4>
-                <p className="text-gray-300">
-                  Ondas en el tejido del espacio-tiempo causadas por eventos cósmicos violentos como fusiones de agujeros negros.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-purple-400 font-semibold mb-2">¿Cómo se detectan?</h4>
-                <p className="text-gray-300">
-                  Usando interferómetros láser gigantes como LIGO, Virgo y KAGRA que miden cambios infinitesimales en la longitud.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-purple-400 font-semibold mb-2">¿Por qué son importantes?</h4>
-                <p className="text-gray-300">
-                  Permiten observar el universo de una manera completamente nueva, revelando eventos invisibles a la luz.
-                </p>
-              </div>
+        <div className="mb-8">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="p-3 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-xl border border-purple-500/30">
+              <Waves className="h-8 w-8 text-purple-400" />
             </div>
-          </CardContent>
-        </Card>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Ondas Gravitacionales</h1>
+              <p className="text-gray-400">Monitoreo de vibraciones del espacio-tiempo</p>
+            </div>
+          </div>
+          
+          {/* Estadísticas rápidas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Detecciones</p>
+                    <p className="text-2xl font-bold text-white">{gravitationalWaveStats.totalDetections.toLocaleString()}</p>
+                  </div>
+                  <Waves className="h-8 w-8 text-purple-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Confirmadas</p>
+                    <p className="text-2xl font-bold text-green-400">{gravitationalWaveStats.confirmed.toLocaleString()}</p>
+                  </div>
+                  <Target className="h-8 w-8 text-green-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Candidatos</p>
+                    <p className="text-2xl font-bold text-yellow-400">{gravitationalWaveStats.candidates.toLocaleString()}</p>
+                  </div>
+                  <Eye className="h-8 w-8 text-yellow-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Este Año</p>
+                    <p className="text-2xl font-bold text-blue-400">{gravitationalWaveStats.thisYear}</p>
+                  </div>
+                  <Calendar className="h-8 w-8 text-blue-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Dist. Promedio</p>
+                    <p className="text-2xl font-bold text-cyan-400">{gravitationalWaveStats.averageDistance} Mpc</p>
+                  </div>
+                  <Globe className="h-8 w-8 text-cyan-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Max Significancia</p>
+                    <p className="text-2xl font-bold text-pink-400">{gravitationalWaveStats.highestSignificance}</p>
+                  </div>
+                  <Zap className="h-8 w-8 text-pink-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Contenido principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Panel de filtros */}
+          <div className="lg:col-span-1">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="text-white">Filtros</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Filtrar por tipo
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setSelectedType('all')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'all'
+                        ? 'bg-blue-600/20 border-blue-500/30 text-blue-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Todos los tipos</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.length}</span>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => setSelectedType('BBH')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'BBH'
+                        ? 'bg-red-600/20 border-red-500/30 text-red-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-red-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Agujeros Negros Binarios</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.filter(w => w.type === 'BBH').length}</span>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => setSelectedType('BNS')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'BNS'
+                        ? 'bg-blue-600/20 border-blue-500/30 text-blue-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Estrellas de Neutrones</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.filter(w => w.type === 'BNS').length}</span>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => setSelectedType('NSBH')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'NSBH'
+                        ? 'bg-purple-600/20 border-purple-500/30 text-purple-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-purple-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>NS + BH</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.filter(w => w.type === 'NSBH').length}</span>
+                    </div>
+                  </button>
+                </div>
+
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleRefresh}
+                    disabled={loading}
+                    className="flex-1 p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  </button>
+                  <button className="flex-1 p-2 bg-gray-700/50 rounded-lg border border-gray-600/30 text-gray-400 hover:bg-gray-600/50 transition-colors flex items-center justify-center">
+                    <Download className="h-4 w-4" />
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Lista de ondas gravitacionales */}
+          <div className="lg:col-span-3">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">Catálogo de Ondas Gravitacionales</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      {filteredWaves.length} detecciones encontradas
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-green-400">Datos en tiempo real</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredWaves.map((wave) => {
+                      const typeInfo = getTypeInfo(wave.type);
+                      return (
+                        <div
+                          key={wave.id}
+                          className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:border-purple-500/30 transition-colors"
+                        >
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <div className="flex items-center space-x-3 mb-2">
+                                <h3 className="text-lg font-semibold text-white">{wave.name}</h3>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${typeInfo.color} text-white`}>
+                                  {typeInfo.name}
+                                </span>
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium bg-green-400/10 text-green-400 border border-green-400/20`}>
+                                  {wave.status}
+                                </span>
+                              </div>
+                              
+                              <p className="text-gray-300 mb-3 text-sm">{wave.description}</p>
+                              
+                              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                                <div>
+                                  <p className="text-xs text-gray-400">Masa 1</p>
+                                  <p className="text-sm text-gray-300">{wave.mass1.toFixed(1)} M☉</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-400">Masa 2</p>
+                                  <p className="text-sm text-gray-300">{wave.mass2.toFixed(1)} M☉</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-400">Distancia</p>
+                                  <p className="text-sm text-gray-300">{formatDistance(wave.distance)}</p>
+                                </div>
+                                <div>
+                                  <p className="text-xs text-gray-400">Significancia</p>
+                                  <p className={`text-sm font-medium ${getSignificanceColor(wave.significance)}`}>{wave.significance}</p>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center space-x-4 text-xs text-gray-400">
+                                <span>Fecha: {wave.date}</span>
+                                <span>Detectores: {wave.detectors.join(', ')}</span>
+                              </div>
+                            </div>
+                            <button className="p-2 bg-purple-600/20 rounded-lg border border-purple-500/30 text-purple-400 hover:bg-purple-600/30 transition-colors">
+                              <Info className="h-4 w-4" />
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

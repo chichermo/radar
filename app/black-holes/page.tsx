@@ -5,7 +5,7 @@ const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardCompon
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Circle, Star, Eye, Zap, AlertTriangle, Info, TrendingUp, Globe } from 'lucide-react';
+import { Circle, Star, Eye, Zap, AlertTriangle, Info, TrendingUp, Globe, Activity, RefreshCw, Download, Target, Database } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
 
 interface BlackHole {
@@ -24,14 +24,33 @@ interface BlackHole {
   };
 }
 
+// Datos simulados para estadísticas
+const blackHoleStats = {
+  totalObserved: 1247,
+  supermassive: 892,
+  stellar: 234,
+  binary: 121,
+  eventsThisYear: 45,
+  nearest: 26
+};
+
 export default function BlackHolesPage() {
   const [blackHoles, setBlackHoles] = useState<BlackHole[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('all');
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     fetchBlackHoles();
   }, []);
+
+  const handleRefresh = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+  };
 
   const fetchBlackHoles = async () => {
     try {
@@ -167,208 +186,274 @@ export default function BlackHolesPage() {
     ? blackHoles 
     : blackHoles.filter(bh => bh.type === selectedType);
 
-  if (loading) {
+  if (!isClient) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-center h-96">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+          </div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Circle className="w-12 h-12 text-red-400 mr-3" />
-            <h1 className="text-4xl font-bold text-white">Agujeros Negros</h1>
+        <div className="mb-8">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="p-3 bg-gradient-to-r from-red-600/20 to-purple-600/20 rounded-xl border border-red-500/30">
+              <Circle className="h-8 w-8 text-red-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Agujeros Negros</h1>
+              <p className="text-gray-400">Monitoreo de los fenómenos más extremos del universo</p>
+            </div>
           </div>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Explora los agujeros negros más fascinantes del universo. Desde los supermasivos en el centro de galaxias
-            hasta los estelares que se forman de estrellas colapsadas.
-          </p>
-        </div>
-
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Circle className="w-8 h-8 text-red-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">{blackHoles.length}</p>
-                  <p className="text-gray-400">Agujeros Negros</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
           
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Star className="w-8 h-8 text-yellow-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {blackHoles.filter(bh => bh.type === 'Supermasivo').length}
-                  </p>
-                  <p className="text-gray-400">Supermasivos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Zap className="w-8 h-8 text-blue-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {blackHoles.filter(bh => bh.type === 'Estelar').length}
-                  </p>
-                  <p className="text-gray-400">Estelares</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <AlertTriangle className="w-8 h-8 text-purple-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {blackHoles.filter(bh => bh.status === 'Activo').length}
-                  </p>
-                  <p className="text-gray-400">Activos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Filtros */}
-        <Card className="bg-gray-800/50 border-gray-700 mb-6">
-          <CardContent className="p-6">
-            <Tabs value={selectedType} onValueChange={setSelectedType}>
-              <TabsList className="grid w-full grid-cols-4 bg-gray-700">
-                <TabsTrigger value="all" className="text-white">Todos</TabsTrigger>
-                <TabsTrigger value="Supermasivo" className="text-white">Supermasivos</TabsTrigger>
-                <TabsTrigger value="Estelar" className="text-white">Estelares</TabsTrigger>
-                <TabsTrigger value="Binario" className="text-white">Binarios</TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardContent>
-        </Card>
-
-        {/* Lista de Agujeros Negros */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredBlackHoles.map((blackHole, index) => (
-            <Card key={index} className="bg-gray-800/50 border-gray-700 hover:border-red-500 transition-colors">
-              <CardHeader>
-                <div className="flex justify-between items-start">
+          {/* Estadísticas rápidas */}
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-white text-xl">{blackHole.name}</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      Descubierto en {blackHole.discovered}
-                    </CardDescription>
+                    <p className="text-gray-400 text-sm">Observados</p>
+                    <p className="text-2xl font-bold text-white">{blackHoleStats.totalObserved.toLocaleString()}</p>
                   </div>
-                  <div className="flex flex-col gap-2">
-                    <Badge className={`${getTypeColor(blackHole.type)} text-white`}>
-                      {blackHole.type}
-                    </Badge>
-                    <Badge className={`${getStatusColor(blackHole.status)} text-white`}>
-                      {blackHole.status}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="space-y-4">
-                  <p className="text-gray-300 text-sm leading-relaxed">
-                    {blackHole.description}
-                  </p>
-                  
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-400">Masa</p>
-                      <p className="text-white font-semibold">{formatMass(blackHole.mass)}</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Distancia</p>
-                      <p className="text-white font-semibold">{formatDistance(blackHole.distance)}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div>
-                      <p className="text-gray-400 text-sm">Coordenadas</p>
-                      <p className="text-white text-sm font-mono">
-                        RA: {blackHole.coordinates.ra}
-                      </p>
-                      <p className="text-white text-sm font-mono">
-                        Dec: {blackHole.coordinates.dec}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {blackHole.lastEvent && (
-                    <div className="pt-3 border-t border-gray-700">
-                      <div className="flex items-start">
-                        <Info className="w-4 h-4 text-blue-400 mr-2 mt-0.5 flex-shrink-0" />
-                        <div>
-                          <p className="text-gray-400 text-sm">Último Evento</p>
-                          <p className="text-white text-sm">{blackHole.lastEvent}</p>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <Eye className="h-8 w-8 text-blue-400" />
                 </div>
               </CardContent>
             </Card>
-          ))}
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Supermasivos</p>
+                    <p className="text-2xl font-bold text-red-400">{blackHoleStats.supermassive.toLocaleString()}</p>
+                  </div>
+                  <Circle className="h-8 w-8 text-red-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Estelares</p>
+                    <p className="text-2xl font-bold text-blue-400">{blackHoleStats.stellar.toLocaleString()}</p>
+                  </div>
+                  <Star className="h-8 w-8 text-blue-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Binarios</p>
+                    <p className="text-2xl font-bold text-purple-400">{blackHoleStats.binary.toLocaleString()}</p>
+                  </div>
+                  <Target className="h-8 w-8 text-purple-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Eventos 2024</p>
+                    <p className="text-2xl font-bold text-yellow-400">{blackHoleStats.eventsThisYear}</p>
+                  </div>
+                  <Activity className="h-8 w-8 text-yellow-400" />
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-gray-400 text-sm">Más Cercano</p>
+                    <p className="text-2xl font-bold text-cyan-400">{blackHoleStats.nearest} ly</p>
+                  </div>
+                  <Globe className="h-8 w-8 text-cyan-400" />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
-        {filteredBlackHoles.length === 0 && (
-          <div className="text-center py-12">
-            <Circle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl text-gray-400 mb-2">No se encontraron agujeros negros</h3>
-            <p className="text-gray-500">Intenta seleccionar un tipo diferente</p>
-          </div>
-        )}
+        {/* Contenido principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Panel de filtros */}
+          <div className="lg:col-span-1">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="text-white">Filtros</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Filtrar por tipo
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <button
+                    onClick={() => setSelectedType('all')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'all'
+                        ? 'bg-blue-600/20 border-blue-500/30 text-blue-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Todos los tipos</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.length}</span>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => setSelectedType('Supermasivo')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'Supermasivo'
+                        ? 'bg-red-600/20 border-red-500/30 text-red-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-red-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Supermasivos</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.filter(bh => bh.type === 'Supermasivo').length}</span>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => setSelectedType('Estelar')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'Estelar'
+                        ? 'bg-blue-600/20 border-blue-500/30 text-blue-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-blue-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Estelares</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.filter(bh => bh.type === 'Estelar').length}</span>
+                    </div>
+                  </button>
+                  
+                  <button
+                    onClick={() => setSelectedType('Binario')}
+                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
+                      selectedType === 'Binario'
+                        ? 'bg-purple-600/20 border-purple-500/30 text-purple-400'
+                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-purple-500/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>Binarios</span>
+                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.filter(bh => bh.type === 'Binario').length}</span>
+                    </div>
+                  </button>
+                </div>
 
-        {/* Información Educativa */}
-        <Card className="bg-gray-800/50 border-gray-700 mt-8">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <Info className="w-5 h-5 mr-2" />
-              ¿Qué son los Agujeros Negros?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-              <div>
-                <h4 className="text-blue-400 font-semibold mb-2">Agujeros Negros Supermasivos</h4>
-                <p className="text-gray-300">
-                  Se encuentran en el centro de la mayoría de galaxias, con masas de millones a miles de millones de veces la del Sol.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-blue-400 font-semibold mb-2">Agujeros Negros Estelares</h4>
-                <p className="text-gray-300">
-                  Se forman cuando estrellas masivas colapsan al final de su vida, con masas típicas de 3-20 veces la del Sol.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-blue-400 font-semibold mb-2">Agujeros Negros Binarios</h4>
-                <p className="text-gray-300">
-                  Sistemas de dos agujeros negros que orbitan entre sí, eventualmente fusionándose y emitiendo ondas gravitacionales.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={handleRefresh}
+                    disabled={loading}
+                    className="flex-1 p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors disabled:opacity-50 flex items-center justify-center"
+                  >
+                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                  </button>
+                  <button className="flex-1 p-2 bg-gray-700/50 rounded-lg border border-gray-600/30 text-gray-400 hover:bg-gray-600/50 transition-colors flex items-center justify-center">
+                    <Download className="h-4 w-4" />
+                  </button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Lista de agujeros negros */}
+          <div className="lg:col-span-3">
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="text-white">Catálogo de Agujeros Negros</CardTitle>
+                    <CardDescription className="text-gray-400">
+                      {filteredBlackHoles.length} agujeros negros encontrados
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-sm text-green-400">Datos en tiempo real</span>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {loading ? (
+                  <div className="flex items-center justify-center h-64">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {filteredBlackHoles.map((blackHole) => (
+                      <div
+                        key={blackHole.name}
+                        className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:border-red-500/30 transition-colors"
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="flex items-center space-x-3 mb-2">
+                              <h3 className="text-lg font-semibold text-white">{blackHole.name}</h3>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(blackHole.type)} text-white`}>
+                                {blackHole.type}
+                              </span>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(blackHole.status)} text-white`}>
+                                {blackHole.status}
+                              </span>
+                            </div>
+                            
+                            <p className="text-gray-300 mb-3 text-sm">{blackHole.description}</p>
+                            
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                              <div>
+                                <p className="text-xs text-gray-400">Masa</p>
+                                <p className="text-sm text-gray-300">{formatMass(blackHole.mass)}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-400">Distancia</p>
+                                <p className="text-sm text-gray-300">{formatDistance(blackHole.distance)}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-400">Descubierto</p>
+                                <p className="text-sm text-gray-300">{blackHole.discovered}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-400">Último Evento</p>
+                                <p className="text-sm text-gray-300">{blackHole.lastEvent?.split(':')[0]}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="flex items-center space-x-4 text-xs text-gray-400">
+                              <span>RA: {blackHole.coordinates.ra}</span>
+                              <span>Dec: {blackHole.coordinates.dec}</span>
+                            </div>
+                          </div>
+                          <button className="p-2 bg-red-600/20 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-600/30 transition-colors">
+                            <Info className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

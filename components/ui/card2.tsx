@@ -7,7 +7,7 @@ interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-function Card({ children, className, ...props }: CardProps) {
+export function Card({ children, className, ...props }: CardProps) {
   return (
     <div
       className={cn(
@@ -25,7 +25,7 @@ interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-function CardHeader({ children, className, ...props }: CardHeaderProps) {
+export function CardHeader({ children, className, ...props }: CardHeaderProps) {
   return (
     <div
       className={cn("flex flex-col space-y-1.5 p-6", className)}
@@ -40,7 +40,7 @@ interface CardTitleProps extends React.HTMLAttributes<HTMLHeadingElement> {
   children: React.ReactNode;
 }
 
-function CardTitle({ children, className, ...props }: CardTitleProps) {
+export function CardTitle({ children, className, ...props }: CardTitleProps) {
   return (
     <h3
       className={cn(
@@ -58,7 +58,7 @@ interface CardDescriptionProps extends React.HTMLAttributes<HTMLParagraphElement
   children: React.ReactNode;
 }
 
-function CardDescription({ children, className, ...props }: CardDescriptionProps) {
+export function CardDescription({ children, className, ...props }: CardDescriptionProps) {
   return (
     <p
       className={cn("text-sm text-muted-foreground", className)}
@@ -73,7 +73,7 @@ interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-function CardContent({ children, className, ...props }: CardContentProps) {
+export function CardContent({ children, className, ...props }: CardContentProps) {
   return (
     <div className={cn("p-6 pt-0", className)} {...props}>
       {children}
@@ -81,5 +81,6 @@ function CardContent({ children, className, ...props }: CardContentProps) {
   );
 }
 
+// Exportación por defecto para compatibilidad
 const CardComponents = { Card, CardContent, CardDescription, CardHeader, CardTitle };
 export default CardComponents; 
