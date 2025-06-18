@@ -9,7 +9,9 @@ import Globe from './Globe'
 import SkyMap from './SkyMap'
 import useSignalAlerts from '../hooks/useSignalAlerts'
 import { formatDate } from '@/utils/formatters'
-import { menuCategories } from './Sidebar'
+import { useMenuCategories } from '@/lib/menu-categories'
+import type { MenuCategory } from '@/types/menu'
+import Sidebar from './Sidebar'
 
 interface HeavensData {
   data?: {
@@ -108,6 +110,9 @@ export default function Dashboard() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Obtener las categorías del menú usando el hook correcto
+  const menuCategories = useMenuCategories();
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -160,7 +165,7 @@ export default function Dashboard() {
 
       {/* Renderizar todas las páginas del menú como tarjetas agrupadas por categoría */}
       <div className="space-y-10">
-        {menuCategories.map((category) => (
+        {menuCategories.map((category: MenuCategory) => (
           <section key={category.title}>
             <h2 className="text-2xl font-semibold mb-4 text-primary-light">{category.title}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">

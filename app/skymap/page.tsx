@@ -1,171 +1,125 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import SpaceObjectsTable from '@/components/SpaceObjectsTable';
-import SpaceObjectsGlobe from '@/components/SpaceObjectsGlobe';
-import ErrorDisplay from '@/components/ErrorDisplay';
-import LoadingSpinner from '@/components/LoadingSpinner';
-import { fetchAllSpaceObjects } from '@/services/spaceData';
-import type { SpaceObject } from '@/types/space';
-import { Globe, Table, Eye, EyeOff } from 'lucide-react';
+import React from 'react';
+import SkyMap from '@/components/SkyMap';
+import { Star, Eye, Info } from 'lucide-react';
 
 export default function SkyMapPage() {
-  const [objects, setObjects] = useState<SpaceObject[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | Error | null>(null);
-  const [viewMode, setViewMode] = useState<'table' | 'globe' | 'split'>('split');
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        setError(null);
-        const data = await fetchAllSpaceObjects();
-        setObjects(data);
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err : new Error('Error desconocido al cargar datos espaciales');
-        setError(errorMessage);
-        console.error('Error en SkyMapPage:', errorMessage);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadData();
-    const interval = setInterval(loadData, 5 * 60 * 1000); // Actualizar cada 5 minutos
-    return () => clearInterval(interval);
-  }, []);
-
-  if (loading) {
-    return (
-      <div className="space-y-6">
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Objetos Espaciales
-          </h1>
-          <p className="text-gray-300">
-            Visualización interactiva de objetos espaciales en tiempo real. 
-            Monitorea asteroides, satélites y otros objetos cercanos a la Tierra.
-          </p>
-        </header>
-        <LoadingSpinner message="Cargando datos espaciales..." size="lg" />
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       <header className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white mb-2">
-              Objetos Espaciales
+            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
+              <Star className="w-8 h-8 text-yellow-400" />
+              Mapa Estelar Interactivo
             </h1>
-            <p className="text-gray-300">
-              Visualización interactiva de objetos espaciales en tiempo real. 
-              Monitorea asteroides, satélites y otros objetos cercanos a la Tierra.
+            <p className="text-gray-300 max-w-3xl">
+              Explora el firmamento en tiempo real con nuestro mapa estelar 3D. 
+              Visualiza estrellas, constelaciones y objetos celestes con datos astronómicos precisos. 
+              Navega libremente por el cosmos y descubre las maravillas del universo.
             </p>
-          </div>
-          
-          {/* Controles de vista */}
-          <div className="flex items-center space-x-2 bg-gray-800 rounded-lg p-1 border border-gray-700">
-            <button
-              onClick={() => setViewMode('table')}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'table'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700'
-              }`}
-            >
-              <Table className="w-4 h-4" />
-              <span>Tabla</span>
-            </button>
-            
-            <button
-              onClick={() => setViewMode('globe')}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'globe'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700'
-              }`}
-            >
-              <Globe className="w-4 h-4" />
-              <span>3D</span>
-            </button>
-            
-            <button
-              onClick={() => setViewMode('split')}
-              className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-                viewMode === 'split'
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-300 hover:text-white hover:bg-gray-700'
-              }`}
-            >
-              <Eye className="w-4 h-4" />
-              <span>Dividido</span>
-            </button>
           </div>
         </div>
       </header>
 
-      {error && (
-        <ErrorDisplay 
-          error={error} 
-          title="Error al cargar datos espaciales"
-          onDismiss={() => setError(null)}
-        />
-      )}
-
-      {/* Contenido según el modo de vista */}
-      {viewMode === 'table' && (
-        <div className="w-full">
-          <SpaceObjectsTable 
-            objects={objects}
-            error={error ? error.toString() : undefined}
-          />
+      {/* Panel de información */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="bg-gradient-to-br from-blue-900/50 to-purple-900/50 backdrop-blur-sm rounded-lg border border-blue-500/20 p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <Eye className="w-6 h-6 text-blue-400" />
+            <h3 className="text-lg font-semibold text-white">Navegación 3D</h3>
+          </div>
+          <p className="text-gray-300 text-sm">
+            Arrastra para rotar la vista, usa la rueda del mouse para hacer zoom y 
+            haz clic en las estrellas para obtener información detallada.
+          </p>
         </div>
-      )}
 
-      {viewMode === 'globe' && (
-        <div className="w-full h-[600px]">
-          <SpaceObjectsGlobe 
-            objects={objects}
-            className="w-full h-full"
-          />
+        <div className="bg-gradient-to-br from-green-900/50 to-blue-900/50 backdrop-blur-sm rounded-lg border border-green-500/20 p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <Star className="w-6 h-6 text-green-400" />
+            <h3 className="text-lg font-semibold text-white">Datos Reales</h3>
+          </div>
+          <p className="text-gray-300 text-sm">
+            Todas las estrellas mostradas tienen posiciones, magnitudes y 
+            tipos espectrales basados en datos astronómicos reales.
+          </p>
         </div>
-      )}
 
-      {viewMode === 'split' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Mapa 3D */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-            <h2 className="text-lg font-semibold text-gray-100 mb-4 flex items-center">
-              <Globe className="w-5 h-5 mr-2" />
-              Vista 3D
-            </h2>
-            <div className="h-[500px]">
-              <SpaceObjectsGlobe 
-                objects={objects}
-                className="w-full h-full"
-              />
+        <div className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-sm rounded-lg border border-purple-500/20 p-6">
+          <div className="flex items-center gap-3 mb-3">
+            <Info className="w-6 h-6 text-purple-400" />
+            <h3 className="text-lg font-semibold text-white">Constelaciones</h3>
+          </div>
+          <p className="text-gray-300 text-sm">
+            Activa las líneas de constelaciones para ver cómo los antiguos 
+            conectaron las estrellas para formar figuras en el cielo.
+          </p>
+        </div>
+      </div>
+
+      {/* Mapa estelar principal */}
+      <div className="bg-gradient-to-br from-gray-900/50 to-black/50 backdrop-blur-sm rounded-lg border border-gray-700/50 overflow-hidden">
+        <div className="h-[700px] relative">
+          <SkyMap />
+        </div>
+      </div>
+
+      {/* Información adicional */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-white mb-3">Características del Mapa</h3>
+          <ul className="space-y-2 text-gray-300 text-sm">
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              <span>Más de 200 estrellas con datos reales</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              <span>Filtros por magnitud estelar</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-400 rounded-full"></div>
+              <span>Líneas de constelaciones interactivas</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
+              <span>Información detallada de cada estrella</span>
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-red-400 rounded-full"></div>
+              <span>Renderizado 3D con efectos de partículas</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className="bg-gray-800/50 backdrop-blur-sm rounded-lg border border-gray-700 p-6">
+          <h3 className="text-lg font-semibold text-white mb-3">Estrellas Destacadas</h3>
+          <div className="space-y-3 text-sm">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">Sirius</span>
+              <span className="text-blue-400">-1.46 mag</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">Canopus</span>
+              <span className="text-blue-400">-0.74 mag</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">Arcturus</span>
+              <span className="text-blue-400">-0.05 mag</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">Vega</span>
+              <span className="text-blue-400">0.03 mag</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-300">Capella</span>
+              <span className="text-blue-400">0.08 mag</span>
             </div>
           </div>
-
-          {/* Tabla */}
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
-            <h2 className="text-lg font-semibold text-gray-100 mb-4 flex items-center">
-              <Table className="w-5 h-5 mr-2" />
-              Datos Detallados
-            </h2>
-            <div className="h-[500px] overflow-y-auto">
-              <SpaceObjectsTable 
-                objects={objects}
-                error={error ? error.toString() : undefined}
-              />
-            </div>
-          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 } 

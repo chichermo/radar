@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { Atom, Activity, TrendingUp, AlertCircle } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 interface DarkMatterData {
   experiment: string;
@@ -11,6 +12,7 @@ interface DarkMatterData {
 }
 
 export default function DarkMatterPage() {
+  const { t } = useI18n();
   const [darkMatterData, setDarkMatterData] = useState<DarkMatterData[]>([
     {
       experiment: "LUX-ZEPLIN (LZ)",
@@ -81,9 +83,9 @@ export default function DarkMatterPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                Materia Oscura
+                {t('darkmatter.title')}
               </h1>
-              <p className="text-gray-400">Investigaciones y experimentos de detección</p>
+              <p className="text-gray-400">{t('darkmatter.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -95,7 +97,7 @@ export default function DarkMatterPage() {
               <Activity className="h-6 w-6 text-green-400" />
               <div>
                 <p className="text-2xl font-bold text-white">4</p>
-                <p className="text-gray-400 text-sm">Experimentos Activos</p>
+                <p className="text-gray-400 text-sm">{t('darkmatter.active_experiments')}</p>
               </div>
             </div>
           </div>
@@ -105,7 +107,7 @@ export default function DarkMatterPage() {
               <TrendingUp className="h-6 w-6 text-blue-400" />
               <div>
                 <p className="text-2xl font-bold text-white">10^-48</p>
-                <p className="text-gray-400 text-sm">Sensibilidad (cm²)</p>
+                <p className="text-gray-400 text-sm">{t('darkmatter.sensitivity')} (cm²)</p>
               </div>
             </div>
           </div>
@@ -115,7 +117,7 @@ export default function DarkMatterPage() {
               <AlertCircle className="h-6 w-6 text-yellow-400" />
               <div>
                 <p className="text-2xl font-bold text-white">0</p>
-                <p className="text-gray-400 text-sm">Detecciones</p>
+                <p className="text-gray-400 text-sm">{t('darkmatter.detections')}</p>
               </div>
             </div>
           </div>
@@ -125,7 +127,7 @@ export default function DarkMatterPage() {
               <Atom className="h-6 w-6 text-purple-400" />
               <div>
                 <p className="text-2xl font-bold text-white">85%</p>
-                <p className="text-gray-400 text-sm">Materia del Universo</p>
+                <p className="text-gray-400 text-sm">{t('darkmatter.universe_matter')}</p>
               </div>
             </div>
           </div>
@@ -148,17 +150,17 @@ export default function DarkMatterPage() {
               
               <div className="space-y-3">
                 <div>
-                  <p className="text-gray-400 text-sm">Sensibilidad</p>
+                  <p className="text-gray-400 text-sm">{t('darkmatter.sensitivity')}</p>
                   <p className="text-white font-mono text-sm">{experiment.sensitivity}</p>
                 </div>
                 
                 <div>
-                  <p className="text-gray-400 text-sm">Última actualización</p>
+                  <p className="text-gray-400 text-sm">{t('darkmatter.last_update')}</p>
                   <p className="text-white text-sm">{experiment.lastUpdate}</p>
                 </div>
                 
                 <div>
-                  <p className="text-gray-400 text-sm">Descripción</p>
+                  <p className="text-gray-400 text-sm">{t('darkmatter.description')}</p>
                   <p className="text-gray-300 text-sm">{experiment.description}</p>
                 </div>
               </div>
@@ -168,22 +170,18 @@ export default function DarkMatterPage() {
 
         {/* Información adicional */}
         <div className="mt-12 bg-gray-800/30 rounded-xl p-8 border border-gray-700/50">
-          <h2 className="text-2xl font-bold text-white mb-4">¿Qué es la Materia Oscura?</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('darkmatter.what_is_dark_matter')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold text-purple-400 mb-3">El Problema</h3>
+              <h3 className="text-lg font-semibold text-purple-400 mb-3">{t('darkmatter.the_problem')}</h3>
               <p className="text-gray-300 leading-relaxed">
-                La materia oscura constituye aproximadamente el 85% de la materia en el universo, 
-                pero no emite, absorbe ni refleja luz, haciéndola invisible a los telescopios tradicionales. 
-                Su existencia se infiere por sus efectos gravitacionales en la materia visible.
+                {t('darkmatter.problem_description')}
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-blue-400 mb-3">Los Experimentos</h3>
+              <h3 className="text-lg font-semibold text-blue-400 mb-3">{t('darkmatter.the_experiments')}</h3>
               <p className="text-gray-300 leading-relaxed">
-                Los experimentos de detección directa buscan partículas de materia oscura que interactúen 
-                débilmente con la materia ordinaria. Utilizan detectores ultra-sensibles enterrados 
-                profundamente bajo tierra para evitar interferencias cósmicas.
+                {t('darkmatter.experiments_description')}
               </p>
             </div>
           </div>

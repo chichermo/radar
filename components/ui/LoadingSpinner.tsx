@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { useI18n } from '@/lib/i18n';
 
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
@@ -13,6 +14,8 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md' }) => {
     lg: 'w-12 h-12'
   };
 
+  const { t } = useI18n();
+
   return (
     <div className="flex items-center justify-center min-h-[200px]">
       <div
@@ -20,7 +23,7 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md' }) => {
         role="status"
         aria-label="Cargando"
       >
-        <span className="sr-only">Cargando...</span>
+        <span className="sr-only">{t('common.loading')}</span>
       </div>
     </div>
   );

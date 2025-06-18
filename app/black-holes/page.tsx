@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Circle, Star, Eye, Zap, AlertTriangle, Info, TrendingUp, Globe, Activity, RefreshCw, Download, Target, Database } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useI18n } from '@/lib/i18n';
 
 interface BlackHole {
   name: string;
@@ -35,6 +36,7 @@ const blackHoleStats = {
 };
 
 export default function BlackHolesPage() {
+  const { t } = useI18n();
   const [blackHoles, setBlackHoles] = useState<BlackHole[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('all');
@@ -204,12 +206,12 @@ export default function BlackHolesPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 bg-gradient-to-r from-red-600/20 to-purple-600/20 rounded-xl border border-red-500/30">
-              <Circle className="h-8 w-8 text-red-400" />
+            <div className="p-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
+              <Circle className="h-8 w-8 text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Agujeros Negros</h1>
-              <p className="text-gray-400">Monitoreo de los fenómenos más extremos del universo</p>
+              <h1 className="text-3xl font-bold text-white">{t('blackholes.title')}</h1>
+              <p className="text-gray-400">{t('blackholes.subtitle')}</p>
             </div>
           </div>
           
@@ -219,7 +221,7 @@ export default function BlackHolesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Observados</p>
+                    <p className="text-gray-400 text-sm">{t('blackholes.total_observed')}</p>
                     <p className="text-2xl font-bold text-white">{blackHoleStats.totalObserved.toLocaleString()}</p>
                   </div>
                   <Eye className="h-8 w-8 text-blue-400" />
@@ -231,7 +233,7 @@ export default function BlackHolesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Supermasivos</p>
+                    <p className="text-gray-400 text-sm">{t('blackholes.supermassive')}</p>
                     <p className="text-2xl font-bold text-red-400">{blackHoleStats.supermassive.toLocaleString()}</p>
                   </div>
                   <Circle className="h-8 w-8 text-red-400" />
@@ -243,7 +245,7 @@ export default function BlackHolesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Estelares</p>
+                    <p className="text-gray-400 text-sm">{t('blackholes.stellar')}</p>
                     <p className="text-2xl font-bold text-blue-400">{blackHoleStats.stellar.toLocaleString()}</p>
                   </div>
                   <Star className="h-8 w-8 text-blue-400" />
@@ -255,7 +257,7 @@ export default function BlackHolesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Binarios</p>
+                    <p className="text-gray-400 text-sm">{t('blackholes.binary')}</p>
                     <p className="text-2xl font-bold text-purple-400">{blackHoleStats.binary.toLocaleString()}</p>
                   </div>
                   <Target className="h-8 w-8 text-purple-400" />
@@ -267,10 +269,10 @@ export default function BlackHolesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Eventos 2024</p>
-                    <p className="text-2xl font-bold text-yellow-400">{blackHoleStats.eventsThisYear}</p>
+                    <p className="text-gray-400 text-sm">{t('blackholes.events_this_year')}</p>
+                    <p className="text-2xl font-bold text-green-400">{blackHoleStats.eventsThisYear}</p>
                   </div>
-                  <Activity className="h-8 w-8 text-yellow-400" />
+                  <Activity className="h-8 w-8 text-green-400" />
                 </div>
               </CardContent>
             </Card>
@@ -279,10 +281,10 @@ export default function BlackHolesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Más Cercano</p>
-                    <p className="text-2xl font-bold text-cyan-400">{blackHoleStats.nearest} ly</p>
+                    <p className="text-gray-400 text-sm">{t('blackholes.nearest')}</p>
+                    <p className="text-2xl font-bold text-yellow-400">{blackHoleStats.nearest} ly</p>
                   </div>
-                  <Globe className="h-8 w-8 text-cyan-400" />
+                  <Globe className="h-8 w-8 text-yellow-400" />
                 </div>
               </CardContent>
             </Card>
@@ -290,166 +292,145 @@ export default function BlackHolesPage() {
         </div>
 
         {/* Contenido principal */}
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Panel de filtros */}
-          <div className="lg:col-span-1">
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardHeader>
-                <CardTitle className="text-white">Filtros</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Filtrar por tipo
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <button
-                    onClick={() => setSelectedType('all')}
-                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
-                      selectedType === 'all'
-                        ? 'bg-blue-600/20 border-blue-500/30 text-blue-400'
-                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-blue-500/30'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span>Todos los tipos</span>
-                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.length}</span>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => setSelectedType('Supermasivo')}
-                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
-                      selectedType === 'Supermasivo'
-                        ? 'bg-red-600/20 border-red-500/30 text-red-400'
-                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-red-500/30'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span>Supermasivos</span>
-                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.filter(bh => bh.type === 'Supermasivo').length}</span>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => setSelectedType('Estelar')}
-                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
-                      selectedType === 'Estelar'
-                        ? 'bg-blue-600/20 border-blue-500/30 text-blue-400'
-                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-blue-500/30'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span>Estelares</span>
-                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.filter(bh => bh.type === 'Estelar').length}</span>
-                    </div>
-                  </button>
-                  
-                  <button
-                    onClick={() => setSelectedType('Binario')}
-                    className={`w-full p-3 rounded-lg border transition-colors text-left ${
-                      selectedType === 'Binario'
-                        ? 'bg-purple-600/20 border-purple-500/30 text-purple-400'
-                        : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:border-purple-500/30'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span>Binarios</span>
-                      <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{blackHoles.filter(bh => bh.type === 'Binario').length}</span>
-                    </div>
-                  </button>
-                </div>
-
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleRefresh}
-                    disabled={loading}
-                    className="flex-1 p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors disabled:opacity-50 flex items-center justify-center"
-                  >
-                    <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-                  </button>
-                  <button className="flex-1 p-2 bg-gray-700/50 rounded-lg border border-gray-600/30 text-gray-400 hover:bg-gray-600/50 transition-colors flex items-center justify-center">
-                    <Download className="h-4 w-4" />
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Lista de agujeros negros */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-2">
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-white">Catálogo de Agujeros Negros</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      {filteredBlackHoles.length} agujeros negros encontrados
-                    </CardDescription>
+                    <CardTitle className="text-white">{t('blackholes.black_holes_list')}</CardTitle>
+                    <CardDescription className="text-gray-400">{t('blackholes.list_description')}</CardDescription>
                   </div>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-green-400">Datos en tiempo real</span>
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={handleRefresh}
+                      disabled={loading}
+                      className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors disabled:opacity-50"
+                    >
+                      <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
+                    </button>
+                    <button className="p-2 bg-gray-700/50 rounded-lg border border-gray-600/30 text-gray-400 hover:bg-gray-600/50 transition-colors">
+                      <Download className="h-4 w-4" />
+                    </button>
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
                 {loading ? (
-                  <div className="flex items-center justify-center h-64">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
-                  </div>
+                  <LoadingSpinner />
                 ) : (
                   <div className="space-y-4">
-                    {filteredBlackHoles.map((blackHole) => (
+                    {filteredBlackHoles.map((blackHole, index) => (
                       <div
-                        key={blackHole.name}
-                        className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:border-red-500/30 transition-colors"
+                        key={index}
+                        className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:border-blue-500/30 transition-colors"
                       >
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
                             <div className="flex items-center space-x-3 mb-2">
                               <h3 className="text-lg font-semibold text-white">{blackHole.name}</h3>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(blackHole.type)} text-white`}>
-                                {blackHole.type}
-                              </span>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(blackHole.status)} text-white`}>
-                                {blackHole.status}
-                              </span>
+                              <Badge className={`${getTypeColor(blackHole.type)} text-white`}>
+                                {t('blackholes.' + blackHole.type.toLowerCase())}
+                              </Badge>
+                              <Badge className={`${getStatusColor(blackHole.status)} text-white`}>
+                                {t('blackholes.' + blackHole.status.toLowerCase())}
+                              </Badge>
                             </div>
-                            
-                            <p className="text-gray-300 mb-3 text-sm">{blackHole.description}</p>
-                            
-                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
+                            <p className="text-gray-300 mb-3">{blackHole.description}</p>
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               <div>
-                                <p className="text-xs text-gray-400">Masa</p>
-                                <p className="text-sm text-gray-300">{formatMass(blackHole.mass)}</p>
+                                <p className="text-gray-400">{t('blackholes.mass')}</p>
+                                <p className="text-white">{formatMass(blackHole.mass)}</p>
                               </div>
                               <div>
-                                <p className="text-xs text-gray-400">Distancia</p>
-                                <p className="text-sm text-gray-300">{formatDistance(blackHole.distance)}</p>
+                                <p className="text-gray-400">{t('blackholes.distance')}</p>
+                                <p className="text-white">{formatDistance(blackHole.distance)}</p>
                               </div>
                               <div>
-                                <p className="text-xs text-gray-400">Descubierto</p>
-                                <p className="text-sm text-gray-300">{blackHole.discovered}</p>
+                                <p className="text-gray-400">{t('blackholes.discovered')}</p>
+                                <p className="text-white">{blackHole.discovered}</p>
                               </div>
                               <div>
-                                <p className="text-xs text-gray-400">Último Evento</p>
-                                <p className="text-sm text-gray-300">{blackHole.lastEvent?.split(':')[0]}</p>
+                                <p className="text-gray-400">{t('blackholes.coordinates')}</p>
+                                <p className="text-white text-xs">{blackHole.coordinates.ra}, {blackHole.coordinates.dec}</p>
                               </div>
                             </div>
-                            
-                            <div className="flex items-center space-x-4 text-xs text-gray-400">
-                              <span>RA: {blackHole.coordinates.ra}</span>
-                              <span>Dec: {blackHole.coordinates.dec}</span>
-                            </div>
+                            {blackHole.lastEvent && (
+                              <div className="mt-3 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                                <p className="text-sm text-blue-400">
+                                  <Info className="h-4 w-4 inline mr-1" />
+                                  {t('blackholes.last_event')}: {blackHole.lastEvent}
+                                </p>
+                              </div>
+                            )}
                           </div>
-                          <button className="p-2 bg-red-600/20 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-600/30 transition-colors">
-                            <Info className="h-4 w-4" />
+                          <button className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors">
+                            <Eye className="h-4 w-4" />
                           </button>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Panel lateral */}
+          <div className="space-y-6">
+            {/* Filtros */}
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="text-white">{t('blackholes.filters')}</CardTitle>
+                <CardDescription className="text-gray-400">{t('blackholes.filter_description')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">{t('blackholes.type_filter')}</label>
+                    <select
+                      value={selectedType}
+                      onChange={(e) => setSelectedType(e.target.value)}
+                      className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
+                    >
+                      <option value="all">{t('blackholes.all_types')}</option>
+                      <option value="Supermasivo">{t('blackholes.supermassive')}</option>
+                      <option value="Estelar">{t('blackholes.stellar')}</option>
+                      <option value="Binario">{t('blackholes.binary')}</option>
+                    </select>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Información adicional */}
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="text-white">{t('blackholes.additional_info')}</CardTitle>
+                <CardDescription className="text-gray-400">{t('blackholes.info_description')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3">
+                  <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                    <p className="text-sm text-blue-400">
+                      <AlertTriangle className="h-4 w-4 inline mr-1" />
+                      {t('blackholes.info_1')}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                    <p className="text-sm text-green-400">
+                      <TrendingUp className="h-4 w-4 inline mr-1" />
+                      {t('blackholes.info_2')}
+                    </p>
+                  </div>
+                  <div className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                    <p className="text-sm text-purple-400">
+                      <Database className="h-4 w-4 inline mr-1" />
+                      {t('blackholes.info_3')}
+                    </p>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </div>

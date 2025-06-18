@@ -18,6 +18,7 @@ import {
   ExternalLink,
   ChevronUp
 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 // Componente wrapper para evitar errores de hidratación
 const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
@@ -29,6 +30,7 @@ const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
 export default function Footer() {
   const [currentYear] = useState(new Date().getFullYear());
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const { t } = useI18n();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,15 +79,15 @@ export default function Footer() {
             <div className="flex items-center space-x-6 text-sm">
               <div className="flex items-center space-x-2 text-green-400">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span>Sistema Operativo</span>
+                <span>{t('footer.system_os')}</span>
               </div>
               <div className="flex items-center space-x-2 text-blue-400">
                 <Shield className="h-4 w-4" />
-                <span>99.9% Uptime</span>
+                <span>{t('footer.uptime')}</span>
               </div>
               <div className="flex items-center space-x-2 text-purple-400">
                 <Crown className="h-4 w-4" />
-                <span>Enterprise</span>
+                <span>{t('footer.enterprise')}</span>
               </div>
             </div>
           </div>
@@ -94,30 +96,30 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4 flex items-center">
               <Star className="h-4 w-4 mr-2 text-blue-400" />
-              Soluciones
+              {t('footer.solutions')}
             </h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/pricing" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group">
-                  <span>Planes Enterprise</span>
+                  <span>{t('footer.enterprise_plans')}</span>
                   <ExternalLink className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
               <li>
                 <Link href="/ai-predictions" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group">
-                  <span>IA Predictiva</span>
+                  <span>{t('footer.ai_predictive')}</span>
                   <ExternalLink className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
               <li>
                 <Link href="/global-integration" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group">
-                  <span>Integración Global</span>
+                  <span>{t('footer.global_integration')}</span>
                   <ExternalLink className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
               <li>
                 <Link href="/pattern-analysis" className="text-gray-400 hover:text-blue-400 transition-colors flex items-center group">
-                  <span>Análisis Avanzado</span>
+                  <span>{t('footer.advanced_analysis')}</span>
                   <ExternalLink className="h-3 w-3 ml-1 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
@@ -128,28 +130,28 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-4 flex items-center">
               <Activity className="h-4 w-4 mr-2 text-green-400" />
-              Soporte
+              {t('footer.support')}
             </h4>
             <ul className="space-y-2">
               <li>
                 <Link href="/legal/privacy" className="text-gray-400 hover:text-green-400 transition-colors">
-                  Privacidad
+                  {t('footer.privacy')}
                 </Link>
               </li>
               <li>
                 <Link href="/legal/terms" className="text-gray-400 hover:text-green-400 transition-colors">
-                  Términos de Servicio
+                  {t('footer.terms_of_service')}
                 </Link>
               </li>
               <li>
                 <Link href="/legal/attributions" className="text-gray-400 hover:text-green-400 transition-colors">
-                  Atribuciones
+                  {t('footer.attributions')}
                 </Link>
               </li>
               <li>
                 <a href="mailto:enterprise@cosmic-eye.com" className="text-gray-400 hover:text-green-400 transition-colors flex items-center group">
                   <Mail className="h-3 w-3 mr-1" />
-                  <span>Contacto Enterprise</span>
+                  <span>{t('footer.enterprise_contact')}</span>
                 </a>
               </li>
             </ul>
@@ -165,7 +167,7 @@ export default function Footer() {
               <div className="flex items-center space-x-2">
                 <span>© {currentYear} COSMIC EYE Enterprise.</span>
                 <span>•</span>
-                <span>Todos los derechos reservados.</span>
+                <span>{t('footer.all_rights_reserved')}</span>
               </div>
             </div>
 
@@ -173,15 +175,15 @@ export default function Footer() {
             <div className="flex items-center space-x-6 text-sm">
               <div className="flex items-center space-x-2 text-gray-400">
                 <Globe className="h-4 w-4" />
-                <span>v2.1.0 Enterprise</span>
+                <span>{t('footer.v2_1_0_enterprise')}</span>
               </div>
               <div className="flex items-center space-x-2 text-green-400">
                 <Zap className="h-4 w-4" />
-                <span>Alta Disponibilidad</span>
+                <span>{t('footer.high_availability')}</span>
               </div>
               <div className="flex items-center space-x-2 text-blue-400">
                 <Award className="h-4 w-4" />
-                <span>Certificado ISO 27001</span>
+                <span>{t('footer.iso_27001_certified')}</span>
               </div>
             </div>
           </div>
@@ -191,7 +193,7 @@ export default function Footer() {
             <div className="text-center">
               <p className="text-gray-400 text-sm flex items-center justify-center">
                 <Heart className="h-4 w-4 mr-2 text-red-400" />
-                Desarrollado para la exploración del cosmos y el avance de la humanidad
+                {t('footer.developed_for_cosmos_and_humanity')}
               </p>
             </div>
           </div>

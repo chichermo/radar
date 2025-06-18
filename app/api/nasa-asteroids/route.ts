@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
 // Cache simple en memoria (en producción usar Redis o similar)
 const cache = new Map();
@@ -6,11 +6,10 @@ const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minuto
 const MAX_REQUESTS = 5; // Máximo 5 requests por minuto (más restrictivo para asteroides)
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const NASA_API_KEY = process.env.NEXT_PUBLIC_NASA_API_KEY || 'DEMO_KEY';
-  const { searchParams } = new URL(request.url);
-  const startDate = searchParams.get('start_date');
-  const endDate = searchParams.get('end_date');
+  const startDate = request.nextUrl.searchParams.get('start_date');
+  const endDate = request.nextUrl.searchParams.get('end_date');
   
   // Rate limiting
   const clientIP = request.headers.get('x-forwarded-for') || 'unknown';

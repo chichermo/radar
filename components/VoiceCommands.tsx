@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Mic, MicOff, Volume2, Settings } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 // Declaraciones de tipos para SpeechRecognition
 declare global {
@@ -19,6 +20,7 @@ interface VoiceCommand {
 }
 
 export function VoiceCommands() {
+  const { t } = useI18n();
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [isSupported, setIsSupported] = useState(false);
@@ -142,10 +144,10 @@ export function VoiceCommands() {
       matchedCommand.action();
       
       // Feedback visual/auditivo
-      speakResponse(`Ejecutando ${matchedCommand.description}`);
+      speakResponse(t('voice.executing') + ' ' + matchedCommand.description);
     } else {
       console.log('Comando no reconocido:', command);
-      speakResponse('Comando no reconocido. Di "ayuda" para ver comandos disponibles.');
+      speakResponse(t('voice.unrecognized_command') + ' ' + t('voice.try_help'));
     }
   };
 
@@ -176,7 +178,7 @@ export function VoiceCommands() {
       `${cmd.command}: ${cmd.description}`
     ).join('. ');
     
-    speakResponse(`Comandos disponibles: ${helpText}`);
+    speakResponse(t('voice.available_commands') + ': ' + helpText);
   };
 
   if (!isSupported) {
@@ -185,8 +187,8 @@ export function VoiceCommands() {
         <div className="flex items-center">
           <MicOff className="w-6 h-6 text-red-400 mr-3" />
           <div>
-            <h3 className="text-lg font-semibold text-white">Comandos de Voz</h3>
-            <p className="text-gray-400">Tu navegador no soporta reconocimiento de voz</p>
+            <h3 className="text-lg font-semibold text-white">{t('voice.voice_commands')}</h3>
+            <p className="text-gray-400">{t('voice.browser_not_supported')}</p>
           </div>
         </div>
       </div>
@@ -199,15 +201,15 @@ export function VoiceCommands() {
         <div className="flex items-center">
           <Mic className="w-6 h-6 text-blue-400 mr-3" />
           <div>
-            <h3 className="text-lg font-semibold text-white">Comandos de Voz</h3>
-            <p className="text-gray-400">Controla la aplicación con tu voz</p>
+            <h3 className="text-lg font-semibold text-white">{t('voice.voice_commands')}</h3>
+            <p className="text-gray-400">{t('voice.control_app')}</p>
           </div>
         </div>
         <div className="flex items-center space-x-2">
           <button
             onClick={showHelp}
             className="p-2 text-gray-400 hover:text-white transition-colors"
-            title="Mostrar ayuda"
+            title={t('voice.show_help')}
           >
             <Settings className="w-5 h-5" />
           </button>
@@ -218,7 +220,7 @@ export function VoiceCommands() {
                 ? 'bg-red-600 text-white animate-pulse'
                 : 'bg-blue-600 text-white hover:bg-blue-700'
             }`}
-            title={isListening ? 'Detener escucha' : 'Iniciar escucha'}
+            title={isListening ? t('voice.stop_listening') : t('voice.start_listening')}
           >
             {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
           </button>
@@ -228,11 +230,11 @@ export function VoiceCommands() {
       {/* Estado de escucha */}
       <div className="mb-4">
         <div className="flex items-center justify-between">
-          <span className="text-sm text-gray-400">Estado:</span>
+          <span className="text-sm text-gray-400">{t('voice.status')}:</span>
           <span className={`text-sm font-medium ${
             isListening ? 'text-green-400' : 'text-gray-400'
           }`}>
-            {isListening ? 'Escuchando...' : 'Inactivo'}
+            {isListening ? t('voice.listening') : t('voice.inactive')}
           </span>
         </div>
         
@@ -247,7 +249,7 @@ export function VoiceCommands() {
                 />
               ))}
             </div>
-            <span className="text-xs text-blue-400">Escuchando comandos...</span>
+            <span className="text-xs text-blue-400">{t('voice.listening_commands')}</span>
           </div>
         )}
       </div>
@@ -255,7 +257,7 @@ export function VoiceCommands() {
       {/* Transcripción */}
       {transcript && (
         <div className="mb-4">
-          <div className="text-sm text-gray-400 mb-2">Comando detectado:</div>
+          <div className="text-sm text-gray-400 mb-2">{t('voice.detected_command')}:</div>
           <div className="bg-gray-700/50 border border-gray-600 rounded-lg p-3">
             <p className="text-white">{transcript}</p>
           </div>
@@ -264,6 +266,7 @@ export function VoiceCommands() {
 
       {/* Comandos disponibles */}
       <div>
+        <h4 className="text-sm font-medium text-gray-300 mb-3">{t('voice.available_commands')}:</h4>
         <h4 className="text-sm font-medium text-gray-300 mb-3">Comandos disponibles:</h4>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
           {commands.map((cmd, index) => (

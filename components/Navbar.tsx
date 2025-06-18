@@ -3,10 +3,12 @@ import { Bell, Menu, Moon, Settings, Sun, Search, User } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { useI18n } from '@/lib/i18n';
 
 export default function Navbar() {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const { t } = useI18n();
 
   const toggleSidebar = () => {
     // Comentado temporalmente para evitar conflictos con el Sidebar
@@ -35,7 +37,7 @@ export default function Navbar() {
               <Search className="h-4 w-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Buscar objetos espaciales..."
+                placeholder={t('navbar.searchPlaceholder')}
                 className="bg-transparent text-white placeholder-gray-400 text-sm focus:outline-none w-64"
               />
             </div>
@@ -46,11 +48,11 @@ export default function Navbar() {
             <div className="flex items-center space-x-3">
               <img 
                 src="/logorad.png" 
-                alt="Cosmic Eye Logo" 
+                alt={t('navbar.logoAlt')} 
                 className="w-8 h-8 rounded-lg"
               />
               <h1 className="text-lg font-semibold text-white hidden sm:block">
-                COSMIC EYE
+                {t('navbar.title')}
               </h1>
             </div>
           </div>
@@ -60,7 +62,7 @@ export default function Navbar() {
             {/* Indicador de estado del sistema */}
             <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 bg-green-900/20 border border-green-500/30 rounded-lg">
               <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-400 text-xs font-medium">Online</span>
+              <span className="text-green-400 text-xs font-medium">{t('navbar.onlineStatus')}</span>
             </div>
 
             {/* Notificaciones */}

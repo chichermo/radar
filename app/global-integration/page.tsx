@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Globe, Satellite, Database, Wifi, AlertCircle, CheckCircle, Clock, RefreshCw, Activity, BarChart3 } from 'lucide-react';
 import { formatDate, formatTimeOnly } from '@/utils/formatters';
+import { useI18n } from '@/lib/i18n';
 
 interface AgencyData {
   id: string;
@@ -32,6 +33,7 @@ interface GlobalMission {
 }
 
 export default function GlobalIntegrationPage() {
+  const { t } = useI18n();
   const [agencies, setAgencies] = useState<AgencyData[]>([]);
   const [missions, setMissions] = useState<GlobalMission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -251,11 +253,10 @@ export default function GlobalIntegrationPage() {
     <div className="space-y-6 ml-64">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">
-          Integración Global
+          {t('global.title')}
         </h1>
         <p className="text-gray-300">
-          Monitoreo unificado de datos de múltiples agencias espaciales internacionales.
-          Integración en tiempo real con NASA, ESA, JAXA, Roscosmos y más.
+          {t('global.subtitle')}
         </p>
       </header>
 
@@ -265,7 +266,7 @@ export default function GlobalIntegrationPage() {
           <div className="flex items-center space-x-3">
             <Database className="h-8 w-8 text-blue-400" />
             <div>
-              <p className="text-sm text-gray-400">Total Datos</p>
+              <p className="text-sm text-gray-400">{t('global.total_data')}</p>
               <p className="text-2xl font-bold text-white">{totalDataPoints.toLocaleString()}</p>
             </div>
           </div>
@@ -274,7 +275,7 @@ export default function GlobalIntegrationPage() {
           <div className="flex items-center space-x-3">
             <Satellite className="h-8 w-8 text-green-400" />
             <div>
-              <p className="text-sm text-gray-400">Satélites</p>
+              <p className="text-sm text-gray-400">{t('global.satellites')}</p>
               <p className="text-2xl font-bold text-white">{totalSatellites}</p>
             </div>
           </div>
@@ -283,7 +284,7 @@ export default function GlobalIntegrationPage() {
           <div className="flex items-center space-x-3">
             <Globe className="h-8 w-8 text-purple-400" />
             <div>
-              <p className="text-sm text-gray-400">Misiones Activas</p>
+              <p className="text-sm text-gray-400">{t('global.active_missions')}</p>
               <p className="text-2xl font-bold text-white">{totalMissions}</p>
             </div>
           </div>
@@ -292,7 +293,7 @@ export default function GlobalIntegrationPage() {
           <div className="flex items-center space-x-3">
             <Activity className="h-8 w-8 text-yellow-400" />
             <div>
-              <p className="text-sm text-gray-400">Uptime Promedio</p>
+              <p className="text-sm text-gray-400">{t('global.average_uptime')}</p>
               <p className="text-2xl font-bold text-white">{averageUptime.toFixed(1)}%</p>
             </div>
           </div>
@@ -303,7 +304,7 @@ export default function GlobalIntegrationPage() {
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">
-            Estado de APIs de Agencias Espaciales
+            {t('global.api_status_title')}
           </h2>
           <div className="flex items-center space-x-3">
             <select
@@ -325,7 +326,7 @@ export default function GlobalIntegrationPage() {
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
-            <p className="text-gray-400 mt-2">Conectando con agencias espaciales...</p>
+            <p className="text-gray-400 mt-2">{t('global.connecting_agencies')}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -349,29 +350,29 @@ export default function GlobalIntegrationPage() {
 
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Satélites:</span>
+                    <span className="text-gray-400">{t('global.satellites')}:</span>
                     <span className="text-white">{agency.satellites}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Misiones:</span>
+                    <span className="text-gray-400">{t('global.missions')}:</span>
                     <span className="text-white">{agency.missions}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Datos:</span>
+                    <span className="text-gray-400">{t('global.data')}:</span>
                     <span className="text-white">{agency.dataPoints.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Respuesta:</span>
+                    <span className="text-gray-400">{t('global.response')}:</span>
                     <span className={`${getResponseTimeColor(agency.responseTime)}`}>
                       {agency.responseTime}ms
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Uptime:</span>
+                    <span className="text-gray-400">{t('global.uptime')}:</span>
                     <span className="text-white">{agency.uptime}%</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Última actualización:</span>
+                    <span className="text-gray-400">{t('global.last_update')}:</span>
                     <span className="text-white">{formatTimeOnly(agency.lastUpdate)}</span>
                   </div>
                 </div>
@@ -391,14 +392,14 @@ export default function GlobalIntegrationPage() {
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold text-white">
-            Misiones Globales Activas
+            {t('global.active_global_missions')}
           </h2>
           <select
             value={selectedAgency}
             onChange={(e) => setSelectedAgency(e.target.value)}
             className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
           >
-            <option value="all">Todas las agencias</option>
+            <option value="all">{t('global.all_agencies')}</option>
             {agencies.map(agency => (
               <option key={agency.id} value={agency.name}>{agency.name}</option>
             ))}
@@ -419,9 +420,9 @@ export default function GlobalIntegrationPage() {
                   </div>
                   <p className="text-gray-300 text-sm mb-2">{mission.description}</p>
                   <div className="flex items-center space-x-4 text-sm text-gray-400">
-                    <span>Lanzamiento: {formatDate(mission.launchDate)}</span>
-                    <span>Ubicación: {mission.location}</span>
-                    <span>Datos: {mission.dataRate} Mbps</span>
+                    <span>{t('global.launch')}: {formatDate(mission.launchDate)}</span>
+                    <span>{t('global.location')}: {mission.location}</span>
+                    <span>{t('global.data')}: {mission.dataRate} Mbps</span>
                   </div>
                 </div>
                 <div className="text-right">
@@ -439,69 +440,69 @@ export default function GlobalIntegrationPage() {
       {/* Red de Sensores */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
-          Red de Sensores Distribuidos
+          {t('global.distributed_sensor_network')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="bg-gray-700/50 rounded-lg p-4">
-            <h3 className="text-lg font-medium text-white mb-3">Estaciones Terrestres</h3>
+            <h3 className="text-lg font-medium text-white mb-3">{t('global.ground_stations')}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-400">Total:</span>
-                <span className="text-white">47 estaciones</span>
+                <span className="text-gray-400">{t('global.total')}:</span>
+                <span className="text-white">47 {t('global.stations')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Activas:</span>
-                <span className="text-green-400">42 estaciones</span>
+                <span className="text-gray-400">{t('global.active')}:</span>
+                <span className="text-green-400">42 {t('global.stations')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Mantenimiento:</span>
-                <span className="text-yellow-400">3 estaciones</span>
+                <span className="text-gray-400">{t('global.maintenance')}:</span>
+                <span className="text-yellow-400">3 {t('global.stations')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Offline:</span>
-                <span className="text-red-400">2 estaciones</span>
+                <span className="text-gray-400">{t('global.offline')}:</span>
+                <span className="text-red-400">2 {t('global.stations')}</span>
               </div>
             </div>
           </div>
           <div className="bg-gray-700/50 rounded-lg p-4">
-            <h3 className="text-lg font-medium text-white mb-3">Sensores Espaciales</h3>
+            <h3 className="text-lg font-medium text-white mb-3">{t('global.space_sensors')}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-400">Radar:</span>
-                <span className="text-white">23 sistemas</span>
+                <span className="text-gray-400">{t('global.radar')}:</span>
+                <span className="text-white">23 {t('global.systems')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Ópticos:</span>
-                <span className="text-white">18 telescopios</span>
+                <span className="text-gray-400">{t('global.optical')}:</span>
+                <span className="text-white">18 {t('global.telescopes')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Láser:</span>
-                <span className="text-white">12 estaciones</span>
+                <span className="text-gray-400">{t('global.laser')}:</span>
+                <span className="text-white">12 {t('global.stations')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Radio:</span>
-                <span className="text-white">8 antenas</span>
+                <span className="text-gray-400">{t('global.radio')}:</span>
+                <span className="text-white">8 {t('global.antennas')}</span>
               </div>
             </div>
           </div>
           <div className="bg-gray-700/50 rounded-lg p-4">
-            <h3 className="text-lg font-medium text-white mb-3">Cobertura Global</h3>
+            <h3 className="text-lg font-medium text-white mb-3">{t('global.global_coverage')}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-400">América:</span>
-                <span className="text-white">15 estaciones</span>
+                <span className="text-gray-400">{t('global.america')}:</span>
+                <span className="text-white">15 {t('global.stations')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Europa:</span>
-                <span className="text-white">12 estaciones</span>
+                <span className="text-gray-400">{t('global.europe')}:</span>
+                <span className="text-white">12 {t('global.stations')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Asia:</span>
-                <span className="text-white">10 estaciones</span>
+                <span className="text-gray-400">{t('global.asia')}:</span>
+                <span className="text-white">10 {t('global.stations')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Otros:</span>
-                <span className="text-white">10 estaciones</span>
+                <span className="text-gray-400">{t('global.others')}:</span>
+                <span className="text-white">10 {t('global.stations')}</span>
               </div>
             </div>
           </div>
@@ -511,27 +512,27 @@ export default function GlobalIntegrationPage() {
       {/* Información de Integración */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
-          Información de Integración
+          {t('global.integration_information')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-medium text-white mb-2">Protocolos Soportados</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('global.supported_protocols')}</h3>
             <ul className="space-y-1 text-sm text-gray-300">
               <li>• REST API (JSON/XML)</li>
               <li>• GraphQL</li>
-              <li>• WebSocket (tiempo real)</li>
+              <li>• WebSocket ({t('global.real_time')})</li>
               <li>• FTP/SFTP</li>
-              <li>• Protocolos propietarios</li>
+              <li>• {t('global.proprietary_protocols')}</li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-white mb-2">Estándares de Datos</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('global.data_standards')}</h3>
             <ul className="space-y-1 text-sm text-gray-300">
-              <li>• CCSDS (Consultative Committee for Space Data Systems)</li>
-              <li>• ISO 19115 (metadatos geográficos)</li>
-              <li>• SPASE (Space Physics Archive Search and Extract)</li>
-              <li>• OGC (Open Geospatial Consortium)</li>
-              <li>• Estándares específicos por agencia</li>
+              <li>• CCSDS ({t('global.consultative_committee')})</li>
+              <li>• ISO 19115 ({t('global.geographic_metadata')})</li>
+              <li>• SPASE ({t('global.space_physics_archive')})</li>
+              <li>• OGC ({t('global.open_geospatial_consortium')})</li>
+              <li>• {t('global.agency_specific_standards')}</li>
             </ul>
           </div>
         </div>

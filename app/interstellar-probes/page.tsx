@@ -1,8 +1,10 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { Rocket, Activity, TrendingUp, AlertCircle } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 export default function InterstellarProbesPage() {
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -41,9 +43,9 @@ export default function InterstellarProbesPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                Sondas Interestelares
+                {t('interstellar.title')}
               </h1>
-              <p className="text-gray-400">Voyager, New Horizons y más exploradores</p>
+              <p className="text-gray-400">{t('interstellar.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -55,7 +57,7 @@ export default function InterstellarProbesPage() {
               <Activity className="h-6 w-6 text-green-400" />
               <div>
                 <p className="text-2xl font-bold text-white">2</p>
-                <p className="text-gray-400 text-sm">Sondas Interestelares</p>
+                <p className="text-gray-400 text-sm">{t('interstellar.interstellar_probes')}</p>
               </div>
             </div>
           </div>
@@ -65,7 +67,7 @@ export default function InterstellarProbesPage() {
               <TrendingUp className="h-6 w-6 text-blue-400" />
               <div>
                 <p className="text-2xl font-bold text-white">1977</p>
-                <p className="text-gray-400 text-sm">Primer lanzamiento</p>
+                <p className="text-gray-400 text-sm">{t('interstellar.first_launch')}</p>
               </div>
             </div>
           </div>
@@ -75,7 +77,7 @@ export default function InterstellarProbesPage() {
               <AlertCircle className="h-6 w-6 text-yellow-400" />
               <div>
                 <p className="text-2xl font-bold text-white">23B km</p>
-                <p className="text-gray-400 text-sm">Distancia Voyager 1</p>
+                <p className="text-gray-400 text-sm">{t('interstellar.voyager_1_distance')}</p>
               </div>
             </div>
           </div>
@@ -84,8 +86,8 @@ export default function InterstellarProbesPage() {
             <div className="flex items-center space-x-3">
               <Rocket className="h-6 w-6 text-purple-400" />
               <div>
-                <p className="text-2xl font-bold text-white">46 años</p>
-                <p className="text-gray-400 text-sm">Misión más larga</p>
+                <p className="text-2xl font-bold text-white">46 {t('interstellar.years')}</p>
+                <p className="text-gray-400 text-sm">{t('interstellar.longest_mission')}</p>
               </div>
             </div>
           </div>
@@ -96,52 +98,48 @@ export default function InterstellarProbesPage() {
           <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
             <h3 className="text-lg font-semibold text-white mb-3">Voyager 1</h3>
             <div className="space-y-2">
-              <p className="text-gray-400 text-sm">Lanzamiento: 1977</p>
-              <p className="text-gray-400 text-sm">Estado: Activo</p>
-              <p className="text-gray-400 text-sm">Distancia: 23.8B km</p>
-              <p className="text-gray-300 text-sm">Primera sonda en el espacio interestelar</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.launch')}: 1977</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.status')}: {t('interstellar.active')}</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.distance')}: 23.8B km</p>
+              <p className="text-gray-300 text-sm">{t('interstellar.voyager_1_description')}</p>
             </div>
           </div>
 
           <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
             <h3 className="text-lg font-semibold text-white mb-3">Voyager 2</h3>
             <div className="space-y-2">
-              <p className="text-gray-400 text-sm">Lanzamiento: 1977</p>
-              <p className="text-gray-400 text-sm">Estado: Activo</p>
-              <p className="text-gray-400 text-sm">Distancia: 19.9B km</p>
-              <p className="text-gray-300 text-sm">Única sonda en visitar Urano y Neptuno</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.launch')}: 1977</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.status')}: {t('interstellar.active')}</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.distance')}: 19.9B km</p>
+              <p className="text-gray-300 text-sm">{t('interstellar.voyager_2_description')}</p>
             </div>
           </div>
 
           <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
             <h3 className="text-lg font-semibold text-white mb-3">New Horizons</h3>
             <div className="space-y-2">
-              <p className="text-gray-400 text-sm">Lanzamiento: 2006</p>
-              <p className="text-gray-400 text-sm">Estado: Activo</p>
-              <p className="text-gray-400 text-sm">Distancia: 8.5B km</p>
-              <p className="text-gray-300 text-sm">Primera sonda en visitar Plutón</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.launch')}: 2006</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.status')}: {t('interstellar.active')}</p>
+              <p className="text-gray-400 text-sm">{t('interstellar.distance')}: 8.5B km</p>
+              <p className="text-gray-300 text-sm">{t('interstellar.new_horizons_description')}</p>
             </div>
           </div>
         </div>
 
         {/* Información adicional */}
         <div className="bg-gray-800/30 rounded-xl p-8 border border-gray-700/50">
-          <h2 className="text-2xl font-bold text-white mb-4">Exploración Interestelar</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('interstellar.interstellar_exploration')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold text-purple-400 mb-3">Legado Científico</h3>
+              <h3 className="text-lg font-semibold text-purple-400 mb-3">{t('interstellar.scientific_legacy')}</h3>
               <p className="text-gray-300 leading-relaxed">
-                Las sondas Voyager han revolucionado nuestro entendimiento del sistema solar exterior 
-                y han proporcionado datos únicos sobre el medio interestelar. Sus misiones continúan 
-                enviando datos científicos valiosos.
+                {t('interstellar.scientific_legacy_description')}
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-blue-400 mb-3">Futuro</h3>
+              <h3 className="text-lg font-semibold text-blue-400 mb-3">{t('interstellar.future')}</h3>
               <p className="text-gray-300 leading-relaxed">
-                Las sondas continuarán viajando por el espacio interestelar durante miles de años, 
-                llevando mensajes de la humanidad a posibles civilizaciones extraterrestres en forma 
-                de discos dorados con información sobre la Tierra.
+                {t('interstellar.future_description')}
               </p>
             </div>
           </div>

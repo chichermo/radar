@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Waves, Star, Eye, Zap, AlertTriangle, Info, TrendingUp, Globe, Calendar, Activity, RefreshCw, Download, Target, Database } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useI18n } from '@/lib/i18n';
 
 interface GravitationalWave {
   id: string;
@@ -37,6 +38,7 @@ const gravitationalWaveStats = {
 };
 
 export default function GravitationalWavesPage() {
+  const { t } = useI18n();
   const [waves, setWaves] = useState<GravitationalWave[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('all');
@@ -155,10 +157,10 @@ export default function GravitationalWavesPage() {
 
   const getTypeInfo = (type: string) => {
     switch (type) {
-      case 'BBH': return { name: 'Agujeros Negros Binarios', color: 'bg-red-500' };
-      case 'BNS': return { name: 'Estrellas de Neutrones Binarias', color: 'bg-blue-500' };
-      case 'NSBH': return { name: 'Agujero Negro + Estrella de Neutrones', color: 'bg-purple-500' };
-      default: return { name: 'Desconocido', color: 'bg-gray-500' };
+      case 'BBH': return { name: t('gravitational.binary_black_holes'), color: 'bg-red-500' };
+      case 'BNS': return { name: t('gravitational.binary_neutron_stars'), color: 'bg-blue-500' };
+      case 'NSBH': return { name: t('gravitational.black_hole_neutron_star'), color: 'bg-purple-500' };
+      default: return { name: t('gravitational.unknown'), color: 'bg-gray-500' };
     }
   };
 
@@ -199,8 +201,8 @@ export default function GravitationalWavesPage() {
               <Waves className="h-8 w-8 text-purple-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Ondas Gravitacionales</h1>
-              <p className="text-gray-400">Monitoreo de vibraciones del espacio-tiempo</p>
+              <h1 className="text-3xl font-bold text-white">{t('gravitational.title')}</h1>
+              <p className="text-gray-400">{t('gravitational.subtitle')}</p>
             </div>
           </div>
           
@@ -210,7 +212,7 @@ export default function GravitationalWavesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Detecciones</p>
+                    <p className="text-gray-400 text-sm">{t('gravitational.detections')}</p>
                     <p className="text-2xl font-bold text-white">{gravitationalWaveStats.totalDetections.toLocaleString()}</p>
                   </div>
                   <Waves className="h-8 w-8 text-purple-400" />
@@ -222,7 +224,7 @@ export default function GravitationalWavesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Confirmadas</p>
+                    <p className="text-gray-400 text-sm">{t('gravitational.confirmed')}</p>
                     <p className="text-2xl font-bold text-green-400">{gravitationalWaveStats.confirmed.toLocaleString()}</p>
                   </div>
                   <Target className="h-8 w-8 text-green-400" />
@@ -234,7 +236,7 @@ export default function GravitationalWavesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Candidatos</p>
+                    <p className="text-gray-400 text-sm">{t('gravitational.candidates')}</p>
                     <p className="text-2xl font-bold text-yellow-400">{gravitationalWaveStats.candidates.toLocaleString()}</p>
                   </div>
                   <Eye className="h-8 w-8 text-yellow-400" />
@@ -246,7 +248,7 @@ export default function GravitationalWavesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Este Año</p>
+                    <p className="text-gray-400 text-sm">{t('gravitational.this_year')}</p>
                     <p className="text-2xl font-bold text-blue-400">{gravitationalWaveStats.thisYear}</p>
                   </div>
                   <Calendar className="h-8 w-8 text-blue-400" />
@@ -258,7 +260,7 @@ export default function GravitationalWavesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Dist. Promedio</p>
+                    <p className="text-gray-400 text-sm">{t('gravitational.avg_distance')}</p>
                     <p className="text-2xl font-bold text-cyan-400">{gravitationalWaveStats.averageDistance} Mpc</p>
                   </div>
                   <Globe className="h-8 w-8 text-cyan-400" />
@@ -270,7 +272,7 @@ export default function GravitationalWavesPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Max Significancia</p>
+                    <p className="text-gray-400 text-sm">{t('gravitational.max_significance')}</p>
                     <p className="text-2xl font-bold text-pink-400">{gravitationalWaveStats.highestSignificance}</p>
                   </div>
                   <Zap className="h-8 w-8 text-pink-400" />
@@ -286,9 +288,9 @@ export default function GravitationalWavesPage() {
           <div className="lg:col-span-1">
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Filtros</CardTitle>
+                <CardTitle className="text-white">{t('gravitational.filters')}</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Filtrar por tipo
+                  {t('gravitational.filter_by_type')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -302,7 +304,7 @@ export default function GravitationalWavesPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span>Todos los tipos</span>
+                      <span>{t('gravitational.all_types')}</span>
                       <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.length}</span>
                     </div>
                   </button>
@@ -316,7 +318,7 @@ export default function GravitationalWavesPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span>Agujeros Negros Binarios</span>
+                      <span>{t('gravitational.binary_black_holes')}</span>
                       <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.filter(w => w.type === 'BBH').length}</span>
                     </div>
                   </button>
@@ -330,7 +332,7 @@ export default function GravitationalWavesPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span>Estrellas de Neutrones</span>
+                      <span>{t('gravitational.neutron_stars')}</span>
                       <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.filter(w => w.type === 'BNS').length}</span>
                     </div>
                   </button>
@@ -344,7 +346,7 @@ export default function GravitationalWavesPage() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span>NS + BH</span>
+                      <span>{t('gravitational.ns_bh')}</span>
                       <span className="text-xs bg-gray-600/50 px-2 py-1 rounded">{waves.filter(w => w.type === 'NSBH').length}</span>
                     </div>
                   </button>
@@ -372,14 +374,14 @@ export default function GravitationalWavesPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-white">Catálogo de Ondas Gravitacionales</CardTitle>
+                    <CardTitle className="text-white">{t('gravitational.catalog_title')}</CardTitle>
                     <CardDescription className="text-gray-400">
-                      {filteredWaves.length} detecciones encontradas
+                      {filteredWaves.length} {t('gravitational.detections_found')}
                     </CardDescription>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                    <span className="text-sm text-green-400">Datos en tiempo real</span>
+                    <span className="text-sm text-green-400">{t('gravitational.real_time_data')}</span>
                   </div>
                 </div>
               </CardHeader>
@@ -413,26 +415,26 @@ export default function GravitationalWavesPage() {
                               
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
                                 <div>
-                                  <p className="text-xs text-gray-400">Masa 1</p>
+                                  <p className="text-xs text-gray-400">{t('gravitational.mass_1')}</p>
                                   <p className="text-sm text-gray-300">{wave.mass1.toFixed(1)} M☉</p>
                                 </div>
                                 <div>
-                                  <p className="text-xs text-gray-400">Masa 2</p>
+                                  <p className="text-xs text-gray-400">{t('gravitational.mass_2')}</p>
                                   <p className="text-sm text-gray-300">{wave.mass2.toFixed(1)} M☉</p>
                                 </div>
                                 <div>
-                                  <p className="text-xs text-gray-400">Distancia</p>
+                                  <p className="text-xs text-gray-400">{t('gravitational.distance')}</p>
                                   <p className="text-sm text-gray-300">{formatDistance(wave.distance)}</p>
                                 </div>
                                 <div>
-                                  <p className="text-xs text-gray-400">Significancia</p>
+                                  <p className="text-xs text-gray-400">{t('gravitational.significance')}</p>
                                   <p className={`text-sm font-medium ${getSignificanceColor(wave.significance)}`}>{wave.significance}</p>
                                 </div>
                               </div>
                               
                               <div className="flex items-center space-x-4 text-xs text-gray-400">
-                                <span>Fecha: {wave.date}</span>
-                                <span>Detectores: {wave.detectors.join(', ')}</span>
+                                <span>{t('gravitational.date')}: {wave.date}</span>
+                                <span>{t('gravitational.detectors')}: {wave.detectors.join(', ')}</span>
                               </div>
                             </div>
                             <button className="p-2 bg-purple-600/20 rounded-lg border border-purple-500/30 text-purple-400 hover:bg-purple-600/30 transition-colors">

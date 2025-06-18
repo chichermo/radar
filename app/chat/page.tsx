@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Send, User, Bot, MessageCircle, ThumbsUp, ThumbsDown, Share2, Flag, Star } from 'lucide-react';
 import { formatDate, formatTimeOnly } from '@/utils/formatters';
+import { useI18n } from '@/lib/i18n';
 
 interface Message {
   id: string;
@@ -26,6 +27,7 @@ interface UserProfile {
 }
 
 export default function ChatPage() {
+  const { t } = useI18n();
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [selectedType, setSelectedType] = useState<'message' | 'comment' | 'suggestion' | 'question'>('message');
@@ -44,7 +46,7 @@ export default function ChatPage() {
   const initialMessages: Message[] = [
     {
       id: '1',
-      content: '¡Hola! Bienvenidos al chat de Cosmic Eye. Aquí pueden compartir sus observaciones, preguntas y sugerencias sobre el monitoreo espacial.',
+      content: t('chat.welcome_message'),
       sender: 'bot',
       timestamp: new Date(Date.now() - 3600000),
       type: 'message',
@@ -54,7 +56,7 @@ export default function ChatPage() {
     },
     {
       id: '2',
-      content: '¿Alguien más notó el aumento en la actividad de asteroides este mes? Parece inusual.',
+      content: t('chat.asteroid_activity_question'),
       sender: 'user',
       timestamp: new Date(Date.now() - 1800000),
       type: 'question',
@@ -63,7 +65,7 @@ export default function ChatPage() {
       replies: [
         {
           id: '2-1',
-          content: 'Sí, he estado monitoreando los datos y efectivamente hay un incremento del 15% en detecciones.',
+          content: t('chat.asteroid_activity_response'),
           sender: 'bot',
           timestamp: new Date(Date.now() - 1700000),
           type: 'message',
@@ -75,7 +77,7 @@ export default function ChatPage() {
     },
     {
       id: '3',
-      content: 'Sugerencia: Sería genial tener alertas personalizadas por región geográfica.',
+      content: t('chat.geographic_alerts_suggestion'),
       sender: 'user',
       timestamp: new Date(Date.now() - 900000),
       type: 'suggestion',
@@ -85,7 +87,7 @@ export default function ChatPage() {
     },
     {
       id: '4',
-      content: 'Excelente trabajo con el dashboard. La visualización 3D es impresionante.',
+      content: t('chat.dashboard_praise'),
       sender: 'user',
       timestamp: new Date(Date.now() - 300000),
       type: 'comment',
@@ -145,24 +147,24 @@ export default function ChatPage() {
   const generateBotResponse = (message: string, type: string): string => {
     const responses = {
       question: [
-        'Excelente pregunta. Te ayudo a encontrar esa información.',
-        'Basándome en los datos actuales, puedo responder tu consulta.',
-        'Esa es una observación muy interesante. Déjame investigar.'
+        t('chat.bot_response_question_1'),
+        t('chat.bot_response_question_2'),
+        t('chat.bot_response_question_3')
       ],
       suggestion: [
-        '¡Excelente sugerencia! La tomaremos en cuenta para futuras actualizaciones.',
-        'Gracias por tu propuesta. Es muy valiosa para mejorar el sistema.',
-        'Interesante idea. La evaluaremos con el equipo de desarrollo.'
+        t('chat.bot_response_suggestion_1'),
+        t('chat.bot_response_suggestion_2'),
+        t('chat.bot_response_suggestion_3')
       ],
       comment: [
-        '¡Gracias por tu comentario! Nos alegra saber que te gusta el sistema.',
-        'Apreciamos mucho tu feedback positivo.',
-        'Es genial saber que el dashboard está siendo útil.'
+        t('chat.bot_response_comment_1'),
+        t('chat.bot_response_comment_2'),
+        t('chat.bot_response_comment_3')
       ],
       message: [
-        'Entiendo tu mensaje. ¿En qué más puedo ayudarte?',
-        'Gracias por compartir eso con nosotros.',
-        'Estoy aquí para ayudarte con cualquier consulta.'
+        t('chat.bot_response_message_1'),
+        t('chat.bot_response_message_2'),
+        t('chat.bot_response_message_3')
       ]
     };
 
@@ -204,10 +206,10 @@ export default function ChatPage() {
     <div className="space-y-6 ml-64">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">
-          Chat Interactivo
+          {t('chat.title')}
         </h1>
         <p className="text-gray-300">
-          Comparte tus observaciones, preguntas y sugerencias con la comunidad de Cosmic Eye.
+          {t('chat.subtitle')}
         </p>
       </header>
 
@@ -221,13 +223,13 @@ export default function ChatPage() {
             <div>
               <h3 className="text-white font-medium">{currentUser.name}</h3>
               <p className="text-sm text-gray-400">
-                {currentUser.role} • {currentUser.messageCount} mensajes
+                {currentUser.role} • {currentUser.messageCount} {t('chat.messages')}
               </p>
             </div>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-400">
-              Última actividad: {formatTimeOnly(new Date())}
+              {t('chat.last_activity')}: {formatTimeOnly(new Date())}
             </p>
           </div>
         </div>
@@ -239,11 +241,11 @@ export default function ChatPage() {
         <div className="p-4 border-b border-gray-700">
           <div className="flex items-center space-x-3">
             <MessageCircle className="w-5 h-5 text-blue-400" />
-            <h2 className="text-white font-medium">Chat en Tiempo Real</h2>
+            <h2 className="text-white font-medium">{t('chat.realtime_chat')}</h2>
             <div className="flex-1"></div>
             <div className="flex items-center space-x-2 text-sm text-gray-400">
               <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>En línea</span>
+              <span>{t('chat.online')}</span>
             </div>
           </div>
         </div>
@@ -270,7 +272,7 @@ export default function ChatPage() {
                       <div className="flex items-center space-x-2 mb-1">
                         <span className="text-sm">{getTypeIcon(message.type)}</span>
                         <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getTypeColor(message.type)}`}>
-                          {message.type}
+                          {t('chat.' + message.type)}
                         </span>
                       </div>
                       <p className="text-sm">{message.content}</p>
@@ -297,11 +299,11 @@ export default function ChatPage() {
                       </button>
                       <button className="flex items-center space-x-1 text-xs text-gray-400 hover:text-blue-400 transition-colors">
                         <Share2 className="w-3 h-3" />
-                        <span>Compartir</span>
+                        <span>{t('chat.share')}</span>
                       </button>
                       <button className="flex items-center space-x-1 text-xs text-gray-400 hover:text-yellow-400 transition-colors">
                         <Flag className="w-3 h-3" />
-                        <span>Reportar</span>
+                        <span>{t('chat.report')}</span>
                       </button>
                     </div>
 
@@ -355,17 +357,17 @@ export default function ChatPage() {
               onChange={(e) => setSelectedType(e.target.value as any)}
               className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
             >
-              <option value="message">Mensaje</option>
-              <option value="question">Pregunta</option>
-              <option value="suggestion">Sugerencia</option>
-              <option value="comment">Comentario</option>
+              <option value="message">{t('chat.message')}</option>
+              <option value="question">{t('chat.question')}</option>
+              <option value="suggestion">{t('chat.suggestion')}</option>
+              <option value="comment">{t('chat.comment')}</option>
             </select>
             <input
               type="text"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder="Escribe tu mensaje..."
+              placeholder={t('chat.write_message_placeholder')}
               className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
             />
             <button
@@ -385,7 +387,7 @@ export default function ChatPage() {
           <div className="flex items-center space-x-3">
             <MessageCircle className="h-8 w-8 text-blue-400" />
             <div>
-              <p className="text-sm text-gray-400">Total Mensajes</p>
+              <p className="text-sm text-gray-400">{t('chat.total_messages')}</p>
               <p className="text-2xl font-bold text-white">{messages.length}</p>
             </div>
           </div>
@@ -394,7 +396,7 @@ export default function ChatPage() {
           <div className="flex items-center space-x-3">
             <User className="h-8 w-8 text-green-400" />
             <div>
-              <p className="text-sm text-gray-400">Usuarios Activos</p>
+              <p className="text-sm text-gray-400">{t('chat.active_users')}</p>
               <p className="text-2xl font-bold text-white">24</p>
             </div>
           </div>
@@ -403,7 +405,7 @@ export default function ChatPage() {
           <div className="flex items-center space-x-3">
             <Star className="h-8 w-8 text-yellow-400" />
             <div>
-              <p className="text-sm text-gray-400">Mejor Sugerencia</p>
+              <p className="text-sm text-gray-400">{t('chat.best_suggestion')}</p>
               <p className="text-2xl font-bold text-white">15</p>
             </div>
           </div>
@@ -412,7 +414,7 @@ export default function ChatPage() {
           <div className="flex items-center space-x-3">
             <Bot className="h-8 w-8 text-purple-400" />
             <div>
-              <p className="text-sm text-gray-400">Respuestas IA</p>
+              <p className="text-sm text-gray-400">{t('chat.ai_responses')}</p>
               <p className="text-2xl font-bold text-white">{messages.filter(m => m.sender === 'bot').length}</p>
             </div>
           </div>
@@ -422,25 +424,25 @@ export default function ChatPage() {
       {/* Reglas del chat */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
-          Reglas de la Comunidad
+          {t('chat.community_rules')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-medium text-white mb-2">✅ Permitido</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('chat.allowed')}</h3>
             <ul className="space-y-1 text-sm text-gray-300">
-              <li>• Preguntas sobre astronomía y espacio</li>
-              <li>• Sugerencias para mejorar el sistema</li>
-              <li>• Compartir observaciones interesantes</li>
-              <li>• Discusiones científicas respetuosas</li>
+              <li>• {t('chat.allowed_1')}</li>
+              <li>• {t('chat.allowed_2')}</li>
+              <li>• {t('chat.allowed_3')}</li>
+              <li>• {t('chat.allowed_4')}</li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-white mb-2">❌ No Permitido</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('chat.not_allowed')}</h3>
             <ul className="space-y-1 text-sm text-gray-300">
-              <li>• Spam o contenido irrelevante</li>
-              <li>• Lenguaje ofensivo o discriminatorio</li>
-              <li>• Información falsa o conspirativa</li>
-              <li>• Promoción comercial no autorizada</li>
+              <li>• {t('chat.not_allowed_1')}</li>
+              <li>• {t('chat.not_allowed_2')}</li>
+              <li>• {t('chat.not_allowed_3')}</li>
+              <li>• {t('chat.not_allowed_4')}</li>
             </ul>
           </div>
         </div>

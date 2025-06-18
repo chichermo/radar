@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useI18n } from '@/lib/i18n';
 import { 
   Globe, 
   Map, 
@@ -67,288 +68,267 @@ const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
   return isClient ? <>{children}</> : null;
 };
 
-// Menú reorganizado por categorías lógicas
-const menuCategories = [
-  {
-    title: "Dashboard Principal",
-    items: [
-      {
-        title: 'Panel de Control',
-        href: '/',
-        icon: Home,
-        description: 'Vista general del sistema',
-        badge: 'Principal'
-      },
-      {
-        title: 'Métricas Avanzadas',
-        href: '/metrics',
-        icon: BarChart3,
-        description: 'Análisis detallado de datos',
-        badge: 'Pro'
-      }
-    ]
-  },
-  {
-    title: "Inteligencia Artificial",
-    items: [
-      {
-        title: 'Predicciones IA',
-        href: '/ai-predictions',
-        icon: Brain,
-        description: 'Modelos predictivos avanzados',
-        badge: 'Premium'
-      },
-      {
-        title: 'Análisis de Patrones',
-        href: '/pattern-analysis',
-        icon: Target,
-        description: 'Detección de anomalías',
-        badge: 'Pro'
-      },
-      {
-        title: 'Predicciones Climáticas',
-        href: '/climate-predictions',
-        icon: TrendingUp,
-        description: 'Modelos avanzados',
-        badge: 'Enterprise'
-      },
-      {
-        title: 'Clasificación Automática',
-        href: '/auto-classification',
-        icon: Tags,
-        description: 'Objetos celestes',
-        badge: 'AI'
-      },
-      {
-        title: 'Detección de Señales',
-        href: '/signal-detection',
-        icon: Search,
-        description: 'SETI mejorado',
-        badge: 'Premium'
-      }
-    ]
-  },
-  {
-    title: "Visualización Espacial",
-    items: [
-      {
-        title: 'Visualización Orbital',
-        href: '/orbital',
-        icon: Globe,
-        description: 'Posición de satélites en tiempo real',
-        badge: 'Pro'
-      },
-      {
-        title: 'Mapa del Cielo',
-        href: '/skymap',
-        icon: Map,
-        description: 'Visualización de objetos espaciales',
-        badge: 'Pro'
-      },
-      {
-        title: 'James Webb',
-        href: '/jwst',
-        icon: Camera,
-        description: 'Telescopio Espacial James Webb',
-        badge: 'NASA'
-      },
-      {
-        title: 'Vera C. Rubin',
-        href: '/vera-rubin',
-        icon: Camera,
-        description: 'Legacy Survey of Space and Time (LSST)',
-        badge: 'Nuevo'
-      }
-    ]
-  },
-  {
-    title: "Exploración y Descubrimientos",
-    items: [
-      {
-        title: 'Exoplanetas',
-        href: '/exoplanets',
-        icon: Circle,
-        description: 'Planetas fuera del sistema solar',
-        badge: 'Pro'
-      },
-      {
-        title: 'Agujeros Negros',
-        href: '/black-holes',
-        icon: Circle,
-        description: 'Monitoreo de eventos y descubrimientos',
-        badge: 'Premium'
-      },
-      {
-        title: 'Ondas Gravitacionales',
-        href: '/gravitational-waves',
-        icon: Waves,
-        description: 'Detecciones de LIGO/Virgo',
-        badge: 'Premium'
-      },
-      {
-        title: 'Materia Oscura',
-        href: '/dark-matter',
-        icon: Atom,
-        description: 'Investigaciones y experimentos',
-        badge: 'Enterprise'
-      },
-      {
-        title: 'Neutrinos Cósmicos',
-        href: '/neutrinos',
-        icon: Snowflake,
-        description: 'Detecciones de IceCube',
-        badge: 'Enterprise'
-      }
-    ]
-  },
-  {
-    title: "Tecnología Espacial",
-    items: [
-      {
-        title: 'Starlink Tracker',
-        href: '/starlink',
-        icon: Satellite,
-        description: 'Seguimiento de constelaciones',
-        badge: 'Pro'
-      },
-      {
-        title: 'Estación Espacial China',
-        href: '/tiangong',
-        icon: Building,
-        description: 'Tiangong - Estación espacial china',
-        badge: 'Pro'
-      },
-      {
-        title: 'Misiones a Marte',
-        href: '/mars-missions',
-        icon: Circle,
-        description: 'Perseverance, Curiosity, etc.',
-        badge: 'NASA'
-      },
-      {
-        title: 'Sondas Interestelares',
-        href: '/interstellar-probes',
-        icon: Rocket,
-        description: 'Voyager, New Horizons',
-        badge: 'Premium'
-      },
-      {
-        title: 'Cohetes Reutilizables',
-        href: '/reusable-rockets',
-        icon: Rocket,
-        description: 'SpaceX, Blue Origin',
-        badge: 'Pro'
-      }
-    ]
-  },
-  {
-    title: "Fenómenos Espaciales",
-    items: [
-      {
-        title: 'Clima Espacial',
-        href: '/space-weather',
-        icon: Sun,
-        description: 'Tormentas solares y actividad',
-        badge: 'Pro'
-      },
-      {
-        title: 'Asteroides',
-        href: '/asteroids',
-        icon: Circle,
-        description: 'Objetos cercanos a la Tierra',
-        badge: 'Pro'
-      },
-      {
-        title: 'Basura Espacial',
-        href: '/space-debris',
-        icon: Circle,
-        description: 'Seguimiento de desechos',
-        badge: 'Pro'
-      },
-      {
-        title: 'Supernovas',
-        href: '/supernovae',
-        icon: Star,
-        description: 'Explosiones estelares',
-        badge: 'Premium'
-      }
-    ]
-  },
-  {
-    title: "Monitoreo Terrestre",
-    items: [
-      {
-        title: 'Monitoreo de Sismos',
-        href: '/earthquakes',
-        icon: Activity,
-        description: 'Terremotos y actividad sísmica',
-        badge: 'Pro'
-      }
-    ]
-  },
-  {
-    title: "Integración Global",
-    items: [
-      {
-        title: 'APIs Múltiples',
-        href: '/global-integration',
-        icon: Database,
-        description: 'NASA, ESA, JAXA, Roscosmos',
-        badge: 'Enterprise'
-      }
-    ]
-  },
-  {
-    title: "Comunidad e Interacción",
-    items: [
-      {
-        title: 'Chat Interactivo',
-        href: '/chat',
-        icon: MessageCircle,
-        description: 'Comunidad y sugerencias',
-        badge: 'Beta'
-      }
-    ]
-  },
-  {
-    title: "Investigación y Descubrimientos",
-    items: [
-      {
-        title: 'NASA APOD',
-        href: '/nasa-apod',
-        icon: ImageIcon,
-        description: 'Imagen astronómica del día',
-        badge: 'NASA'
-      },
-      {
-        title: 'SETI',
-        href: '/seti',
-        icon: Search,
-        description: 'Búsqueda de inteligencia extraterrestre',
-        badge: 'SETI'
-      },
-      {
-        title: 'Hallazgos Arqueológicos',
-        href: '/archaeology',
-        icon: History,
-        description: 'Descubrimientos recientes',
-        badge: 'Nuevo'
-      }
-    ]
-  },
-  {
-    title: "Configuración",
-    items: [
-      {
-        title: 'Configuración',
-        href: '/settings',
-        icon: Settings,
-        description: 'Ajustes del sistema',
-        badge: 'Admin'
-      }
-    ]
-  }
-];
+// Menú reorganizado por categorías lógicas con traducciones
+const useMenuCategories = () => {
+  const { t, locale } = useI18n();
+  
+  const BADGE_TRANSLATIONS = {
+    Principal: t('badges.main'),
+    Pro: t('badges.pro'),
+    Premium: t('badges.premium'),
+    Enterprise: t('badges.enterprise'),
+    AI: t('badges.ai'),
+    Nuevo: t('badges.new'),
+    NASA: t('badges.nasa'),
+    Admin: t('badges.admin'),
+  };
+  
+  return [
+    {
+      title: t('navigation.dashboard'),
+      items: [
+        {
+          title: t('navigation.dashboard'),
+          href: '/',
+          icon: Home,
+          description: t('dashboard.description'),
+          badge: 'Principal'
+        },
+        {
+          title: t('navigation.metrics'),
+          href: '/metrics',
+          icon: BarChart3,
+          description: t('metrics.description'),
+          badge: 'Pro'
+        }
+      ]
+    },
+    {
+      title: t('categories.ai'),
+      items: [
+        {
+          title: t('navigation.ai_predictions'),
+          href: '/ai-predictions',
+          icon: Brain,
+          description: 'Modelos predictivos avanzados',
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.pattern_analysis'),
+          href: '/pattern-analysis',
+          icon: Target,
+          description: 'Detección de anomalías',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.climate_predictions'),
+          href: '/climate-predictions',
+          icon: TrendingUp,
+          description: 'Modelos avanzados',
+          badge: 'Enterprise'
+        },
+        {
+          title: t('navigation.auto_classification'),
+          href: '/auto-classification',
+          icon: Tags,
+          description: 'Objetos celestes',
+          badge: 'AI'
+        },
+        {
+          title: t('navigation.signal_detection'),
+          href: '/signal-detection',
+          icon: Search,
+          description: 'SETI mejorado',
+          badge: 'Premium'
+        }
+      ]
+    },
+    {
+      title: t('categories.visualization'),
+      items: [
+        {
+          title: t('navigation.orbital'),
+          href: '/orbital',
+          icon: Globe,
+          description: 'Posición de satélites en tiempo real',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.skymap'),
+          href: '/skymap',
+          icon: Map,
+          description: 'Visualización de objetos espaciales',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.jwst'),
+          href: '/jwst',
+          icon: Camera,
+          description: 'Telescopio Espacial James Webb',
+          badge: 'NASA'
+        },
+        {
+          title: t('navigation.vera_rubin'),
+          href: '/vera-rubin',
+          icon: Camera,
+          description: 'Legacy Survey of Space and Time (LSST)',
+          badge: 'Nuevo'
+        }
+      ]
+    },
+    {
+      title: t('categories.exploration'),
+      items: [
+        {
+          title: t('navigation.exoplanets'),
+          href: '/exoplanets',
+          icon: Circle,
+          description: 'Planetas fuera del sistema solar',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.black_holes'),
+          href: '/black-holes',
+          icon: Circle,
+          description: 'Monitoreo de eventos y descubrimientos',
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.gravitational_waves'),
+          href: '/gravitational-waves',
+          icon: Waves,
+          description: 'Detecciones de LIGO/Virgo',
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.dark_matter'),
+          href: '/dark-matter',
+          icon: Atom,
+          description: 'Investigaciones y experimentos',
+          badge: 'Enterprise'
+        },
+        {
+          title: t('navigation.neutrinos'),
+          href: '/neutrinos',
+          icon: Snowflake,
+          description: 'Detecciones de IceCube',
+          badge: 'Enterprise'
+        }
+      ]
+    },
+    {
+      title: t('categories.technology'),
+      items: [
+        {
+          title: t('navigation.starlink'),
+          href: '/starlink',
+          icon: Satellite,
+          description: 'Seguimiento de constelaciones',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.tiangong'),
+          href: '/tiangong',
+          icon: Building,
+          description: 'Tiangong - Estación espacial china',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.mars_missions'),
+          href: '/mars-missions',
+          icon: Circle,
+          description: 'Perseverance, Curiosity, etc.',
+          badge: 'NASA'
+        },
+        {
+          title: t('navigation.interstellar_probes'),
+          href: '/interstellar-probes',
+          icon: Rocket,
+          description: 'Voyager, New Horizons',
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.reusable_rockets'),
+          href: '/reusable-rockets',
+          icon: Rocket,
+          description: 'SpaceX, Blue Origin',
+          badge: 'Pro'
+        }
+      ]
+    },
+    {
+      title: t('categories.phenomena'),
+      items: [
+        {
+          title: t('navigation.space_weather'),
+          href: '/space-weather',
+          icon: Sun,
+          description: 'Tormentas solares y actividad',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.asteroids'),
+          href: '/asteroids',
+          icon: Circle,
+          description: 'Objetos cercanos a la Tierra',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.space_debris'),
+          href: '/space-debris',
+          icon: Circle,
+          description: 'Seguimiento de desechos',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.supernovae'),
+          href: '/supernovae',
+          icon: Star,
+          description: 'Explosiones estelares',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.earthquakes'),
+          href: '/earthquakes',
+          icon: Activity,
+          description: 'Actividad sísmica global',
+          badge: 'Pro'
+        }
+      ]
+    },
+    {
+      title: t('categories.integration'),
+      items: [
+        {
+          title: t('navigation.global_integration'),
+          href: '/global-integration',
+          icon: Globe2,
+          description: 'Conectividad global',
+          badge: 'Enterprise'
+        },
+        {
+          title: t('navigation.nasa_apod'),
+          href: '/nasa-apod',
+          icon: ImageIcon,
+          description: 'Foto del día de la NASA',
+          badge: 'NASA'
+        }
+      ]
+    },
+    {
+      title: t('categories.settings'),
+      items: [
+        {
+          title: t('navigation.legal'),
+          href: '/settings',
+          icon: Settings,
+          description: 'Ajustes del sistema',
+          badge: 'Admin'
+        }
+      ]
+    }
+  ];
+};
 
 export default function Sidebar() {
   const pathname = usePathname();
@@ -356,6 +336,19 @@ export default function Sidebar() {
   const [objectCount, setObjectCount] = useState<number | null>(null);
   const [systemStatus, setSystemStatus] = useState('Operativo');
   const [uptime, setUptime] = useState('99.9%');
+  const menuCategories = useMenuCategories();
+  const { t } = useI18n();
+
+  const BADGE_TRANSLATIONS = {
+    Principal: t('badges.main'),
+    Pro: t('badges.pro'),
+    Premium: t('badges.premium'),
+    Enterprise: t('badges.enterprise'),
+    AI: t('badges.ai'),
+    Nuevo: t('badges.new'),
+    NASA: t('badges.nasa'),
+    Admin: t('badges.admin'),
+  };
 
   useEffect(() => {
     // Solo generar el número aleatorio en el cliente para evitar errores de hidratación
@@ -465,7 +458,16 @@ export default function Sidebar() {
                           <div className="flex items-center justify-between">
                             <span>{item.title}</span>
                             <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${getBadgeColor(item.badge)}`}>
-                              {item.badge}
+                              {{
+                                Principal: t('badges.main'),
+                                Pro: t('badges.pro'),
+                                Premium: t('badges.premium'),
+                                Enterprise: t('badges.enterprise'),
+                                AI: t('badges.ai'),
+                                Nuevo: t('badges.new'),
+                                NASA: t('badges.nasa'),
+                                Admin: t('badges.admin'),
+                              }[item.badge] || item.badge}
                             </span>
                           </div>
                           <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
@@ -537,7 +539,7 @@ export default function Sidebar() {
       {/* Overlay mejorado para móvil */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 lg:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}

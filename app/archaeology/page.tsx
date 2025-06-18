@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { MapPin, Calendar, Search, Eye, BookOpen, Globe, Clock, AlertTriangle } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 interface ArchaeologicalFind {
   id: string;
@@ -92,6 +93,7 @@ const mockFinds: ArchaeologicalFind[] = [
 ];
 
 export default function ArchaeologyPage() {
+  const { t } = useI18n();
   const [finds] = useState<ArchaeologicalFind[]>(mockFinds);
   const [selectedFind, setSelectedFind] = useState<ArchaeologicalFind | null>(null);
   const [activeCategory, setActiveCategory] = useState('all');
@@ -103,13 +105,10 @@ export default function ArchaeologyPage() {
     <div className="space-y-6 ml-64">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">
-          Hallazgos Arqueológicos Misteriosos
+          {t('archaeology.title')}
         </h1>
         <p className="text-gray-300 text-lg leading-relaxed">
-          Descubre artefactos y sitios arqueológicos que desafían nuestra comprensión de la historia. 
-          Desde computadoras mecánicas de 2,000 años hasta templos más antiguos que las pirámides, 
-          estos hallazgos revelan que las civilizaciones antiguas poseían conocimientos y tecnologías 
-          que solo ahora estamos comenzando a comprender.
+          {t('archaeology.subtitle')}
         </p>
       </header>
 
@@ -118,57 +117,57 @@ export default function ArchaeologyPage() {
         <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <Search className="h-5 w-5 text-orange-400" />
-            <span className="text-orange-200 font-semibold">Hallazgos</span>
+            <span className="text-orange-200 font-semibold">{t('archaeology.findings')}</span>
           </div>
           <p className="text-2xl font-bold text-white mt-2">{finds.length}</p>
-          <p className="text-orange-300 text-sm">Documentados</p>
+          <p className="text-orange-300 text-sm">{t('archaeology.documented')}</p>
         </div>
         <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <Globe className="h-5 w-5 text-blue-400" />
-            <span className="text-blue-200 font-semibold">Regiones</span>
+            <span className="text-blue-200 font-semibold">{t('archaeology.regions')}</span>
           </div>
           <p className="text-2xl font-bold text-white mt-2">6</p>
-          <p className="text-blue-300 text-sm">Continentes</p>
+          <p className="text-blue-300 text-sm">{t('archaeology.continents')}</p>
         </div>
         <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <Clock className="h-5 w-5 text-green-400" />
-            <span className="text-green-200 font-semibold">Período</span>
+            <span className="text-green-200 font-semibold">{t('archaeology.period')}</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">12K años</p>
-          <p className="text-green-300 text-sm">Antigüedad máxima</p>
+          <p className="text-2xl font-bold text-white mt-2">12K {t('archaeology.years')}</p>
+          <p className="text-green-300 text-sm">{t('archaeology.max_age')}</p>
         </div>
         <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
           <div className="flex items-center space-x-2">
             <AlertTriangle className="h-5 w-5 text-purple-400" />
-            <span className="text-purple-200 font-semibold">Misterios</span>
+            <span className="text-purple-200 font-semibold">{t('archaeology.mysteries')}</span>
           </div>
-          <p className="text-2xl font-bold text-white mt-2">Sin resolver</p>
-          <p className="text-purple-300 text-sm">Muchos casos</p>
+          <p className="text-2xl font-bold text-white mt-2">{t('archaeology.unsolved')}</p>
+          <p className="text-purple-300 text-sm">{t('archaeology.many_cases')}</p>
         </div>
       </div>
 
       {/* Explicación educativa */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-8">
-        <h2 className="text-xl font-semibold text-white mb-4">¿Por qué son importantes estos hallazgos?</h2>
+        <h2 className="text-xl font-semibold text-white mb-4">{t('archaeology.why_important')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-medium text-blue-400 mb-2">Para la Ciencia</h3>
+            <h3 className="text-lg font-medium text-blue-400 mb-2">{t('archaeology.for_science')}</h3>
             <ul className="text-gray-300 space-y-2 text-sm">
-              <li>• <strong>Reescriben la historia:</strong> Cambian nuestra comprensión del desarrollo humano</li>
-              <li>• <strong>Conocimientos perdidos:</strong> Revelan tecnologías antiguas avanzadas</li>
-              <li>• <strong>Conectan épocas:</strong> Muestran continuidad en el conocimiento científico</li>
-              <li>• <strong>Inspiran innovación:</strong> Las soluciones antiguas pueden inspirar nuevas tecnologías</li>
+              <li>• <strong>{t('archaeology.rewrite_history')}:</strong> {t('archaeology.rewrite_history_desc')}</li>
+              <li>• <strong>{t('archaeology.lost_knowledge')}:</strong> {t('archaeology.lost_knowledge_desc')}</li>
+              <li>• <strong>{t('archaeology.connect_eras')}:</strong> {t('archaeology.connect_eras_desc')}</li>
+              <li>• <strong>{t('archaeology.inspire_innovation')}:</strong> {t('archaeology.inspire_innovation_desc')}</li>
             </ul>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-green-400 mb-2">Para la Humanidad</h3>
+            <h3 className="text-lg font-medium text-green-400 mb-2">{t('archaeology.for_humanity')}</h3>
             <ul className="text-gray-300 space-y-2 text-sm">
-              <li>• <strong>Herencia cultural:</strong> Conectan con nuestros ancestros</li>
-              <li>• <strong>Humildad científica:</strong> Nos recuerdan que no sabemos todo</li>
-              <li>• <strong>Misterio y asombro:</strong> Mantienen viva la curiosidad humana</li>
-              <li>• <strong>Perspectiva temporal:</strong> Nos dan contexto sobre nuestro lugar en la historia</li>
+              <li>• <strong>{t('archaeology.cultural_heritage')}:</strong> {t('archaeology.cultural_heritage_desc')}</li>
+              <li>• <strong>{t('archaeology.scientific_humility')}:</strong> {t('archaeology.scientific_humility_desc')}</li>
+              <li>• <strong>{t('archaeology.mystery_wonder')}:</strong> {t('archaeology.mystery_wonder_desc')}</li>
+              <li>• <strong>{t('archaeology.temporal_perspective')}:</strong> {t('archaeology.temporal_perspective_desc')}</li>
             </ul>
           </div>
         </div>
@@ -186,7 +185,7 @@ export default function ArchaeologyPage() {
                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
             }`}
           >
-            {category === 'all' ? 'Todos' : category}
+            {category === 'all' ? t('archaeology.all') : category}
           </button>
         ))}
       </div>
@@ -249,30 +248,30 @@ export default function ArchaeologyPage() {
               
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
                 <div>
-                  <span className="text-gray-400">Ubicación:</span>
+                  <span className="text-gray-400">{t('archaeology.location')}:</span>
                   <p className="text-white">{selectedFind.location}</p>
                 </div>
                 <div>
-                  <span className="text-gray-400">Descubierto:</span>
+                  <span className="text-gray-400">{t('archaeology.discovered')}:</span>
                   <p className="text-white">{selectedFind.date}</p>
                 </div>
                 <div>
-                  <span className="text-gray-400">Período:</span>
+                  <span className="text-gray-400">{t('archaeology.period')}:</span>
                   <p className="text-white">{selectedFind.period}</p>
                 </div>
                 <div>
-                  <span className="text-gray-400">Categoría:</span>
+                  <span className="text-gray-400">{t('archaeology.category')}:</span>
                   <p className="text-white">{selectedFind.category}</p>
                 </div>
               </div>
 
               <div className="mb-6">
-                <h3 className="text-lg font-semibold text-blue-400 mb-2">Significado Histórico</h3>
+                <h3 className="text-lg font-semibold text-blue-400 mb-2">{t('archaeology.historical_significance')}</h3>
                 <p className="text-gray-300">{selectedFind.significance}</p>
               </div>
 
               <div>
-                <h3 className="text-lg font-semibold text-green-400 mb-2">Detalles del Hallazgo</h3>
+                <h3 className="text-lg font-semibold text-green-400 mb-2">{t('archaeology.find_details')}</h3>
                 <p className="text-gray-300 leading-relaxed">{selectedFind.details}</p>
               </div>
             </div>
@@ -282,17 +281,13 @@ export default function ArchaeologyPage() {
 
       {/* Sección de reflexión */}
       <div className="mt-12 p-6 bg-gray-800/50 border border-gray-700 rounded-lg">
-        <h2 className="text-xl font-semibold text-white mb-4">¿Qué nos enseñan estos hallazgos?</h2>
+        <h2 className="text-xl font-semibold text-white mb-4">{t('archaeology.what_teach_us')}</h2>
         <div className="text-gray-300 space-y-3">
           <p>
-            Estos artefactos y sitios arqueológicos nos recuerdan que la historia humana es mucho más compleja 
-            de lo que pensábamos. Cada descubrimiento nos obliga a reconsiderar nuestras suposiciones sobre 
-            las capacidades tecnológicas y científicas de las civilizaciones antiguas.
+            {t('archaeology.reflection_1')}
           </p>
           <p>
-            <strong>La lección más importante:</strong> Nunca subestimes la inteligencia y creatividad de 
-            nuestros ancestros. Lo que hoy nos parece misterioso o imposible, mañana podría ser comprendido 
-            con nuevos descubrimientos o perspectivas.
+            <strong>{t('archaeology.most_important_lesson')}:</strong> {t('archaeology.lesson_description')}
           </p>
         </div>
       </div>

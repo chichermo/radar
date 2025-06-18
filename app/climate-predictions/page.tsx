@@ -20,6 +20,7 @@ import {
   RefreshCw,
   Download
 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 // Datos simulados para predicciones climáticas
 const mockClimateData = {
@@ -91,6 +92,7 @@ const useFormattedDate = () => {
 };
 
 export default function ClimatePredictionsPage() {
+  const { t } = useI18n();
   const [activeTab, setActiveTab] = useState('predictions');
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
@@ -144,8 +146,8 @@ export default function ClimatePredictionsPage() {
               <TrendingUp className="h-8 w-8 text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Predicciones Climáticas</h1>
-              <p className="text-gray-400">Modelos avanzados de clima espacial y predicciones</p>
+              <h1 className="text-3xl font-bold text-white">{t('climate.title')}</h1>
+              <p className="text-gray-400">{t('climate.subtitle')}</p>
             </div>
           </div>
 
@@ -153,7 +155,7 @@ export default function ClimatePredictionsPage() {
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center space-x-2 text-sm text-gray-400">
               <Clock className="h-4 w-4" />
-              <span>Última actualización: {formattedDate}</span>
+              <span>{t('climate.last_update')}: {formattedDate}</span>
             </div>
             <div className="flex space-x-2">
               <button
@@ -175,7 +177,7 @@ export default function ClimatePredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Viento Solar</p>
+                    <p className="text-gray-400 text-sm">{t('climate.solar_wind')}</p>
                     <p className="text-lg font-semibold text-white">{mockClimateData.currentConditions.solarWind}</p>
                   </div>
                   <Wind className="h-6 w-6 text-blue-400" />
@@ -187,7 +189,7 @@ export default function ClimatePredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Actividad Geomagnética</p>
+                    <p className="text-gray-400 text-sm">{t('climate.geomagnetic_activity')}</p>
                     <p className="text-lg font-semibold text-green-400">{mockClimateData.currentConditions.geomagneticActivity}</p>
                   </div>
                   <Globe className="h-6 w-6 text-green-400" />
@@ -199,7 +201,7 @@ export default function ClimatePredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Niveles de Radiación</p>
+                    <p className="text-gray-400 text-sm">{t('climate.radiation_levels')}</p>
                     <p className="text-lg font-semibold text-yellow-400">{mockClimateData.currentConditions.radiationLevels}</p>
                   </div>
                   <Zap className="h-6 w-6 text-yellow-400" />
@@ -211,7 +213,7 @@ export default function ClimatePredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Temperatura</p>
+                    <p className="text-gray-400 text-sm">{t('climate.temperature')}</p>
                     <p className="text-lg font-semibold text-purple-400">{mockClimateData.currentConditions.temperature}</p>
                   </div>
                   <Thermometer className="h-6 w-6 text-purple-400" />
@@ -223,7 +225,7 @@ export default function ClimatePredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Rayos Cósmicos</p>
+                    <p className="text-gray-400 text-sm">{t('climate.cosmic_rays')}</p>
                     <p className="text-lg font-semibold text-red-400">{mockClimateData.currentConditions.cosmicRays}</p>
                   </div>
                   <Activity className="h-6 w-6 text-red-400" />
@@ -239,9 +241,9 @@ export default function ClimatePredictionsPage() {
           <div className="lg:col-span-2">
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Predicciones Climáticas</CardTitle>
+                <CardTitle className="text-white">{t('climate.predictions_title')}</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Análisis de eventos climáticos espaciales próximos
+                  {t('climate.predictions_desc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -267,11 +269,11 @@ export default function ClimatePredictionsPage() {
                             </span>
                             <span className={`flex items-center ${getProbabilityColor(prediction.probability)}`}>
                               <Target className="h-4 w-4 mr-1" />
-                              {prediction.probability}% probabilidad
+                              {prediction.probability}% {t('climate.probability')}
                             </span>
                           </div>
                           <div className="space-y-1">
-                            <p className="text-xs text-gray-500 font-medium">Impactos esperados:</p>
+                            <p className="text-xs text-gray-500 font-medium">{t('climate.expected_impacts')}:</p>
                             <ul className="text-sm text-gray-400">
                               {prediction.impact.map((impact, index) => (
                                 <li key={index} className="flex items-center">
@@ -298,9 +300,9 @@ export default function ClimatePredictionsPage() {
             {/* Ciclo Solar */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Ciclo Solar</CardTitle>
+                <CardTitle className="text-white">{t('climate.solar_cycle')}</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Actividad solar actual
+                  {t('climate.solar_cycle_desc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -329,9 +331,9 @@ export default function ClimatePredictionsPage() {
             {/* Alertas */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Alertas Activas</CardTitle>
+                <CardTitle className="text-white">{t('climate.active_alerts')}</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Eventos que requieren atención
+                  {t('climate.active_alerts_desc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -339,17 +341,17 @@ export default function ClimatePredictionsPage() {
                   <div className="p-3 bg-yellow-400/10 border border-yellow-400/20 rounded-lg">
                     <div className="flex items-center space-x-2 mb-1">
                       <AlertTriangle className="h-4 w-4 text-yellow-400" />
-                      <span className="text-sm font-medium text-yellow-400">Tormenta Solar</span>
+                      <span className="text-sm font-medium text-yellow-400">{t('climate.solar_storm')}</span>
                     </div>
-                    <p className="text-xs text-gray-400">Monitoreo activo - 24-48h</p>
+                    <p className="text-xs text-gray-400">{t('climate.active_monitoring')} - 24-48h</p>
                   </div>
                   
                   <div className="p-3 bg-red-400/10 border border-red-400/20 rounded-lg">
                     <div className="flex items-center space-x-2 mb-1">
                       <Zap className="h-4 w-4 text-red-400" />
-                      <span className="text-sm font-medium text-red-400">Radiación Elevada</span>
+                      <span className="text-sm font-medium text-red-400">{t('climate.elevated_radiation')}</span>
                     </div>
-                    <p className="text-xs text-gray-400">Protección necesaria - 1-2 semanas</p>
+                    <p className="text-xs text-gray-400">{t('climate.protection_needed')} - 1-2 {t('climate.weeks')}</p>
                   </div>
                 </div>
               </CardContent>

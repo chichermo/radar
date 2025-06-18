@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { Snowflake, Activity, TrendingUp, AlertCircle } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 interface NeutrinoData {
   detector: string;
@@ -12,6 +13,7 @@ interface NeutrinoData {
 }
 
 export default function NeutrinosPage() {
+  const { t } = useI18n();
   const [neutrinoData, setNeutrinoData] = useState<NeutrinoData[]>([
     {
       detector: "IceCube",
@@ -86,9 +88,9 @@ export default function NeutrinosPage() {
             </div>
             <div>
               <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                Neutrinos Cósmicos
+                {t('neutrinos.title')}
               </h1>
-              <p className="text-gray-400">Detecciones de IceCube y otros observatorios</p>
+              <p className="text-gray-400">{t('neutrinos.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -100,7 +102,7 @@ export default function NeutrinosPage() {
               <Activity className="h-6 w-6 text-green-400" />
               <div>
                 <p className="text-2xl font-bold text-white">268</p>
-                <p className="text-gray-400 text-sm">Eventos Totales</p>
+                <p className="text-gray-400 text-sm">{t('neutrinos.total_events')}</p>
               </div>
             </div>
           </div>
@@ -110,7 +112,7 @@ export default function NeutrinosPage() {
               <TrendingUp className="h-6 w-6 text-blue-400" />
               <div>
                 <p className="text-2xl font-bold text-white">4</p>
-                <p className="text-gray-400 text-sm">Detectores Activos</p>
+                <p className="text-gray-400 text-sm">{t('neutrinos.active_detectors')}</p>
               </div>
             </div>
           </div>
@@ -120,7 +122,7 @@ export default function NeutrinosPage() {
               <AlertCircle className="h-6 w-6 text-yellow-400" />
               <div>
                 <p className="text-2xl font-bold text-white">156</p>
-                <p className="text-gray-400 text-sm">IceCube Events</p>
+                <p className="text-gray-400 text-sm">{t('neutrinos.icecube_events')}</p>
               </div>
             </div>
           </div>
@@ -130,7 +132,7 @@ export default function NeutrinosPage() {
               <Snowflake className="h-6 w-6 text-cyan-400" />
               <div>
                 <p className="text-2xl font-bold text-white">1 km³</p>
-                <p className="text-gray-400 text-sm">Volumen IceCube</p>
+                <p className="text-gray-400 text-sm">{t('neutrinos.icecube_volume')}</p>
               </div>
             </div>
           </div>
@@ -153,22 +155,22 @@ export default function NeutrinosPage() {
               
               <div className="space-y-3">
                 <div>
-                  <p className="text-gray-400 text-sm">Ubicación</p>
+                  <p className="text-gray-400 text-sm">{t('neutrinos.location')}</p>
                   <p className="text-white text-sm">{detector.location}</p>
                 </div>
                 
                 <div>
-                  <p className="text-gray-400 text-sm">Eventos detectados</p>
+                  <p className="text-gray-400 text-sm">{t('neutrinos.detected_events')}</p>
                   <p className="text-white font-bold text-lg">{detector.events}</p>
                 </div>
                 
                 <div>
-                  <p className="text-gray-400 text-sm">Última actualización</p>
+                  <p className="text-gray-400 text-sm">{t('neutrinos.last_update')}</p>
                   <p className="text-white text-sm">{detector.lastUpdate}</p>
                 </div>
                 
                 <div>
-                  <p className="text-gray-400 text-sm">Descripción</p>
+                  <p className="text-gray-400 text-sm">{t('neutrinos.description')}</p>
                   <p className="text-gray-300 text-sm">{detector.description}</p>
                 </div>
               </div>
@@ -178,22 +180,18 @@ export default function NeutrinosPage() {
 
         {/* Información adicional */}
         <div className="mt-12 bg-gray-800/30 rounded-xl p-8 border border-gray-700/50">
-          <h2 className="text-2xl font-bold text-white mb-4">¿Qué son los Neutrinos Cósmicos?</h2>
+          <h2 className="text-2xl font-bold text-white mb-4">{t('neutrinos.what_are_cosmic_neutrinos')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-semibold text-blue-400 mb-3">Los Mensajeros Cósmicos</h3>
+              <h3 className="text-lg font-semibold text-blue-400 mb-3">{t('neutrinos.cosmic_messengers')}</h3>
               <p className="text-gray-300 leading-relaxed">
-                Los neutrinos son partículas subatómicas que viajan casi a la velocidad de la luz 
-                y pueden atravesar la materia sin interactuar. Los neutrinos cósmicos de alta energía 
-                provienen de fuentes astrofísicas extremas como agujeros negros y supernovas.
+                {t('neutrinos.cosmic_messengers_description')}
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-cyan-400 mb-3">IceCube Observatory</h3>
+              <h3 className="text-lg font-semibold text-cyan-400 mb-3">{t('neutrinos.icecube_observatory')}</h3>
               <p className="text-gray-300 leading-relaxed">
-                IceCube es el detector de neutrinos más grande del mundo, enterrado en 1 km³ de hielo 
-                en la Antártida. Utiliza más de 5,000 sensores ópticos para detectar la luz azul 
-                producida cuando los neutrinos interactúan con el hielo.
+                {t('neutrinos.icecube_observatory_description')}
               </p>
             </div>
           </div>

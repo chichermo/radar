@@ -24,6 +24,7 @@ import {
   Download
 } from 'lucide-react';
 import { formatDate, formatTimeOnly } from '@/utils/formatters';
+import { useI18n } from '@/lib/i18n';
 
 interface Prediction {
   id: string;
@@ -139,6 +140,7 @@ const useFormattedDate = (timestamp: string) => {
 };
 
 export default function AIPredictionsPage() {
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
@@ -186,8 +188,8 @@ export default function AIPredictionsPage() {
               <Brain className="h-8 w-8 text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Predicciones IA</h1>
-              <p className="text-gray-400">Modelos de inteligencia artificial avanzados para análisis espacial</p>
+              <h1 className="text-3xl font-bold text-white">{t('ai.header')}</h1>
+              <p className="text-gray-400">{t('ai.subtitle')}</p>
             </div>
           </div>
           
@@ -197,7 +199,7 @@ export default function AIPredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Predicciones</p>
+                    <p className="text-gray-400 text-sm">{t('ai.predictions')}</p>
                     <p className="text-2xl font-bold text-white">{aiPredictionsData.statistics.totalPredictions.toLocaleString()}</p>
                   </div>
                   <Target className="h-8 w-8 text-blue-400" />
@@ -209,7 +211,7 @@ export default function AIPredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Precisión</p>
+                    <p className="text-gray-400 text-sm">{t('ai.accuracy')}</p>
                     <p className="text-2xl font-bold text-green-400">{aiPredictionsData.statistics.accuracy}</p>
                   </div>
                   <Award className="h-8 w-8 text-green-400" />
@@ -221,7 +223,7 @@ export default function AIPredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Modelos Activos</p>
+                    <p className="text-gray-400 text-sm">{t('ai.active_models')}</p>
                     <p className="text-2xl font-bold text-purple-400">{aiPredictionsData.statistics.activeModels}</p>
                   </div>
                   <Brain className="h-8 w-8 text-purple-400" />
@@ -233,7 +235,7 @@ export default function AIPredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Tiempo Procesamiento</p>
+                    <p className="text-gray-400 text-sm">{t('ai.processing_time')}</p>
                     <p className="text-2xl font-bold text-yellow-400">{aiPredictionsData.statistics.processingTime}</p>
                   </div>
                   <Zap className="h-8 w-8 text-yellow-400" />
@@ -245,7 +247,7 @@ export default function AIPredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Uptime</p>
+                    <p className="text-gray-400 text-sm">{t('ai.uptime')}</p>
                     <p className="text-2xl font-bold text-cyan-400">{aiPredictionsData.statistics.uptime}</p>
                   </div>
                   <Shield className="h-8 w-8 text-cyan-400" />
@@ -257,7 +259,7 @@ export default function AIPredictionsPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Datos</p>
+                    <p className="text-gray-400 text-sm">{t('ai.data')}</p>
                     <p className="text-2xl font-bold text-pink-400">{aiPredictionsData.statistics.dataPoints}</p>
                   </div>
                   <Database className="h-8 w-8 text-pink-400" />
@@ -275,10 +277,8 @@ export default function AIPredictionsPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-white">Modelos de IA</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      Sistemas de inteligencia artificial en tiempo real
-                    </CardDescription>
+                    <CardTitle className="text-white">{t('ai.models')}</CardTitle>
+                    <CardDescription className="text-gray-400">{t('ai.models_desc')}</CardDescription>
                   </div>
                   <div className="flex space-x-2">
                     <button
@@ -312,19 +312,19 @@ export default function AIPredictionsPage() {
                             <div className="flex items-center space-x-3 mb-2">
                               <h3 className="text-lg font-semibold text-white">{model.name}</h3>
                               <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(model.status)}`}>
-                                {model.status}
+                                {t('ai.' + model.status.toLowerCase())}
                               </span>
                               <Crown className="h-4 w-4 text-yellow-400" />
                             </div>
-                            <p className="text-gray-300 mb-2">{model.type}</p>
+                            <p className="text-gray-300 mb-2">{t('ai.' + model.type.replace(/ /g, '_').toLowerCase())}</p>
                             <div className="flex items-center space-x-4 text-sm text-gray-400">
                               <span className="flex items-center">
                                 <Target className="h-4 w-4 mr-1" />
-                                Precisión: {model.accuracy}
+                                {t('ai.accuracy_label')}: {model.accuracy}
                               </span>
                               <span className="flex items-center">
                                 <BarChart3 className="h-4 w-4 mr-1" />
-                                {model.predictions.toLocaleString()} predicciones
+                                {model.predictions.toLocaleString()} {t('ai.predictions_label')}
                               </span>
                               <span className="flex items-center">
                                 <Clock className="h-4 w-4 mr-1" />
@@ -349,10 +349,8 @@ export default function AIPredictionsPage() {
             {/* Predicciones recientes */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Predicciones Recientes</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Últimas predicciones del sistema
-                </CardDescription>
+                <CardTitle className="text-white">{t('ai.recent_predictions')}</CardTitle>
+                <CardDescription className="text-gray-400">{t('ai.recent_predictions_desc')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -370,12 +368,12 @@ export default function AIPredictionsPage() {
                         <div className="flex items-start justify-between mb-2">
                           <h4 className="text-sm font-semibold text-white">{prediction.object}</h4>
                           <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(prediction.status)}`}>
-                            {prediction.status}
+                            {t('ai.' + prediction.status.toLowerCase())}
                           </span>
                         </div>
                         <p className="text-xs text-gray-300 mb-2">{prediction.prediction}</p>
                         <div className="flex items-center justify-between text-xs text-gray-400">
-                          <span>Confianza: {prediction.confidence}</span>
+                          <span>{t('ai.confidence')}: {prediction.confidence}</span>
                           <FormattedDate />
                         </div>
                       </div>
@@ -388,17 +386,15 @@ export default function AIPredictionsPage() {
             {/* Acciones rápidas */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Acciones Rápidas</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Funciones principales
-                </CardDescription>
+                <CardTitle className="text-white">{t('ai.quick_actions')}</CardTitle>
+                <CardDescription className="text-gray-400">{t('ai.quick_actions_desc')}</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <button className="w-full p-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300 flex items-center justify-between">
                     <span className="flex items-center">
                       <Brain className="h-4 w-4 mr-2" />
-                      Entrenar Modelo
+                      {t('ai.train_model')}
                     </span>
                     <Star className="h-4 w-4" />
                   </button>
@@ -406,7 +402,7 @@ export default function AIPredictionsPage() {
                   <button className="w-full p-3 bg-gradient-to-r from-green-600/20 to-emerald-600/20 rounded-lg border border-green-500/30 text-green-400 hover:from-green-500/20 hover:to-emerald-500/20 transition-all duration-300 flex items-center justify-between">
                     <span className="flex items-center">
                       <TrendingUp className="h-4 w-4 mr-2" />
-                      Análisis Predictivo
+                      {t('ai.predictive_analysis')}
                     </span>
                     <Award className="h-4 w-4" />
                   </button>
@@ -414,7 +410,7 @@ export default function AIPredictionsPage() {
                   <button className="w-full p-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg border border-purple-500/30 text-purple-400 hover:from-purple-500/20 hover:to-pink-500/20 transition-all duration-300 flex items-center justify-between">
                     <span className="flex items-center">
                       <Search className="h-4 w-4 mr-2" />
-                      Detección Anomalías
+                      {t('ai.anomaly_detection')}
                     </span>
                     <Activity className="h-4 w-4" />
                   </button>

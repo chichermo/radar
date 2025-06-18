@@ -21,6 +21,7 @@ import {
   TrendingUp,
   Zap
 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 // Datos simulados para clasificación automática
 const mockClassificationData = {
@@ -108,6 +109,7 @@ const useFormattedDate = (timestamp: string) => {
 };
 
 export default function AutoClassificationPage() {
+  const { t } = useI18n();
   const [isLoading, setIsLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState('all');
@@ -174,8 +176,8 @@ export default function AutoClassificationPage() {
               <Tags className="h-8 w-8 text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold text-white">Clasificación Automática</h1>
-              <p className="text-gray-400">Algoritmos de IA para clasificación de objetos celestes</p>
+              <h1 className="text-3xl font-bold text-white">{t('autoclassification.title')}</h1>
+              <p className="text-gray-400">{t('autoclassification.subtitle')}</p>
             </div>
           </div>
           
@@ -185,7 +187,7 @@ export default function AutoClassificationPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Total Clasificados</p>
+                    <p className="text-gray-400 text-sm">{t('autoclassification.total_classified')}</p>
                     <p className="text-2xl font-bold text-white">{mockClassificationData.statistics.totalClassified}</p>
                   </div>
                   <BarChart3 className="h-8 w-8 text-blue-400" />
@@ -197,7 +199,7 @@ export default function AutoClassificationPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Precisión</p>
+                    <p className="text-gray-400 text-sm">{t('autoclassification.accuracy')}</p>
                     <p className="text-2xl font-bold text-green-400">{mockClassificationData.statistics.accuracy}%</p>
                   </div>
                   <Target className="h-8 w-8 text-green-400" />
@@ -209,7 +211,7 @@ export default function AutoClassificationPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Tiempo Procesamiento</p>
+                    <p className="text-gray-400 text-sm">{t('autoclassification.processing_time')}</p>
                     <p className="text-2xl font-bold text-purple-400">{mockClassificationData.statistics.processingTime}</p>
                   </div>
                   <Zap className="h-8 w-8 text-purple-400" />
@@ -221,7 +223,7 @@ export default function AutoClassificationPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-gray-400 text-sm">Algoritmos Activos</p>
+                    <p className="text-gray-400 text-sm">{t('autoclassification.active_algorithms')}</p>
                     <p className="text-2xl font-bold text-yellow-400">{mockClassificationData.statistics.algorithms.length}</p>
                   </div>
                   <Brain className="h-8 w-8 text-yellow-400" />
@@ -239,9 +241,9 @@ export default function AutoClassificationPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
-                    <CardTitle className="text-white">Clasificaciones Recientes</CardTitle>
+                    <CardTitle className="text-white">{t('autoclassification.recent_classifications')}</CardTitle>
                     <CardDescription className="text-gray-400">
-                      Objetos clasificados automáticamente por algoritmos de IA
+                      {t('autoclassification.recent_classifications_desc')}
                     </CardDescription>
                   </div>
                   <div className="flex space-x-2">
@@ -282,11 +284,11 @@ export default function AutoClassificationPage() {
                                 {classification.status}
                               </span>
                             </div>
-                            <p className="text-gray-300 mb-2">Tipo: {classification.type}</p>
+                            <p className="text-gray-300 mb-2">{t('autoclassification.type')}: {classification.type}</p>
                             <div className="flex items-center space-x-4 text-sm text-gray-400 mb-3">
                               <span className="flex items-center">
                                 <Target className="h-4 w-4 mr-1" />
-                                {classification.confidence}% confianza
+                                {classification.confidence}% {t('autoclassification.confidence')}
                               </span>
                               <span className="flex items-center">
                                 <Brain className="h-4 w-4 mr-1" />
@@ -298,7 +300,7 @@ export default function AutoClassificationPage() {
                               </span>
                             </div>
                             <div className="space-y-1">
-                              <p className="text-xs text-gray-500 font-medium">Características:</p>
+                              <p className="text-xs text-gray-500 font-medium">{t('autoclassification.characteristics')}:</p>
                               <div className="flex flex-wrap gap-1">
                                 {classification.characteristics.map((char, index) => (
                                   <span key={index} className="px-2 py-1 bg-gray-600/30 rounded-md text-xs text-gray-300">
@@ -325,9 +327,9 @@ export default function AutoClassificationPage() {
             {/* Distribución por tipo */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Distribución por Tipo</CardTitle>
+                <CardTitle className="text-white">{t('autoclassification.distribution_by_type')}</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Objetos clasificados por categoría
+                  {t('autoclassification.distribution_desc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -358,9 +360,9 @@ export default function AutoClassificationPage() {
             {/* Rendimiento de algoritmos */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">Rendimiento de Algoritmos</CardTitle>
+                <CardTitle className="text-white">{t('autoclassification.algorithm_performance')}</CardTitle>
                 <CardDescription className="text-gray-400">
-                  Precisión y uso de cada algoritmo
+                  {t('autoclassification.algorithm_performance_desc')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -377,7 +379,7 @@ export default function AutoClassificationPage() {
                           style={{ width: `${algorithm.usage}%` }}
                         ></div>
                       </div>
-                      <p className="text-xs text-gray-400 mt-1">Uso: {algorithm.usage}%</p>
+                      <p className="text-xs text-gray-400 mt-1">{t('autoclassification.usage')}: {algorithm.usage}%</p>
                     </div>
                   ))}
                 </div>

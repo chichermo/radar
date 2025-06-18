@@ -1,10 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import Sidebar from '@/components/Sidebar';
-import { I18nProvider } from '@/lib/i18n.tsx';
-
-const inter = Inter({ subsets: ['latin'] });
+import { I18nProvider } from '@/lib/i18n';
 
 export const metadata: Metadata = {
   title: 'COSMIC EYE - Monitoreo Avanzado de Anomalías Espaciales',
@@ -94,7 +91,7 @@ export default function RootLayout({
         <meta name="msapplication-TileColor" content="#1e40af" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className="antialiased font-sans">
         <I18nProvider>
           <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
             <Sidebar />

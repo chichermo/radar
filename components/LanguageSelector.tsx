@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { useI18n } from '@/lib/i18n.tsx';
+import { useI18n } from '@/lib/i18n';
 import { Globe, ChevronDown, Check } from 'lucide-react';
 
 export default function LanguageSelector() {
@@ -9,6 +9,11 @@ export default function LanguageSelector() {
   const [isOpen, setIsOpen] = useState(false);
 
   const currentLanguageInfo = availableLanguages.find(lang => lang.code === locale);
+
+  const handleLanguageChange = (newLocale: string) => {
+    changeLanguage(newLocale);
+    setIsOpen(false);
+  };
 
   return (
     <div className="relative">
@@ -29,10 +34,7 @@ export default function LanguageSelector() {
             {availableLanguages.map((language) => (
               <button
                 key={language.code}
-                onClick={() => {
-                  changeLanguage(language.code);
-                  setIsOpen(false);
-                }}
+                onClick={() => handleLanguageChange(language.code)}
                 className={`w-full flex items-center justify-between px-4 py-2 text-sm hover:bg-gray-700/50 transition-colors ${
                   locale === language.code
                     ? 'text-blue-400 bg-blue-400/10'

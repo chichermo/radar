@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, MapPin, Activity, Clock, Globe, TrendingUp } from 'lucide-react';
 import { formatDate, formatTimeOnly } from '@/utils/formatters';
+import { useI18n } from '@/lib/i18n';
 
 interface Earthquake {
   id: string;
@@ -21,6 +22,7 @@ interface Earthquake {
 }
 
 export default function EarthquakesPage() {
+  const { t } = useI18n();
   const [earthquakes, setEarthquakes] = useState<Earthquake[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedTimeRange, setSelectedTimeRange] = useState<'24h' | '7d' | '30d'>('7d');
@@ -116,11 +118,10 @@ export default function EarthquakesPage() {
     <div className="space-y-6 ml-64">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-white mb-2">
-          Monitoreo de Sismos
+          {t('earthquakes.title')}
         </h1>
         <p className="text-gray-300">
-          Seguimiento de terremotos mayores a 5.0 grados en la escala de Richter.
-          Datos en tiempo real de estaciones sismológicas globales.
+          {t('earthquakes.subtitle')}
         </p>
       </header>
 
@@ -130,7 +131,7 @@ export default function EarthquakesPage() {
           <div className="flex items-center space-x-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
-                Magnitud Mínima
+                {t('earthquakes.minimum_magnitude')}
               </label>
               <select
                 value={selectedMagnitude}
@@ -146,25 +147,25 @@ export default function EarthquakesPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-1">
-                Período
+                {t('earthquakes.period')}
               </label>
               <select
                 value={selectedTimeRange}
                 onChange={(e) => setSelectedTimeRange(e.target.value as any)}
                 className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white"
               >
-                <option value="24h">Últimas 24 horas</option>
-                <option value="7d">Últimos 7 días</option>
-                <option value="30d">Últimos 30 días</option>
+                <option value="24h">{t('earthquakes.last_24_hours')}</option>
+                <option value="7d">{t('earthquakes.last_7_days')}</option>
+                <option value="30d">{t('earthquakes.last_30_days')}</option>
               </select>
             </div>
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-400">
-              Última actualización: {formatTimeOnly(new Date())}
+              {t('earthquakes.last_update')}: {formatTimeOnly(new Date())}
             </p>
             <p className="text-xs text-gray-500">
-              Fuente: USGS Earthquake Hazards Program
+              {t('earthquakes.source')}
             </p>
           </div>
         </div>
@@ -176,7 +177,7 @@ export default function EarthquakesPage() {
           <div className="flex items-center space-x-3">
             <Activity className="h-8 w-8 text-blue-400" />
             <div>
-              <p className="text-sm text-gray-400">Total Sismos</p>
+              <p className="text-sm text-gray-400">{t('earthquakes.total_earthquakes')}</p>
               <p className="text-2xl font-bold text-white">{filteredEarthquakes.length}</p>
             </div>
           </div>
@@ -185,7 +186,7 @@ export default function EarthquakesPage() {
           <div className="flex items-center space-x-3">
             <AlertTriangle className="h-8 w-8 text-red-400" />
             <div>
-              <p className="text-sm text-gray-400">Mayor Magnitud</p>
+              <p className="text-sm text-gray-400">{t('earthquakes.highest_magnitude')}</p>
               <p className="text-2xl font-bold text-white">
                 {filteredEarthquakes.length > 0 ? Math.max(...filteredEarthquakes.map(eq => eq.magnitude)).toFixed(1) : '0.0'}
               </p>
@@ -196,7 +197,7 @@ export default function EarthquakesPage() {
           <div className="flex items-center space-x-3">
             <Globe className="h-8 w-8 text-green-400" />
             <div>
-              <p className="text-sm text-gray-400">Con Tsunami</p>
+              <p className="text-sm text-gray-400">{t('earthquakes.with_tsunami')}</p>
               <p className="text-2xl font-bold text-white">
                 {filteredEarthquakes.filter(eq => eq.tsunami === 1).length}
               </p>
@@ -207,7 +208,7 @@ export default function EarthquakesPage() {
           <div className="flex items-center space-x-3">
             <TrendingUp className="h-8 w-8 text-purple-400" />
             <div>
-              <p className="text-sm text-gray-400">Promedio</p>
+              <p className="text-sm text-gray-400">{t('earthquakes.average')}</p>
               <p className="text-2xl font-bold text-white">
                 {filteredEarthquakes.length > 0 
                   ? (filteredEarthquakes.reduce((sum, eq) => sum + eq.magnitude, 0) / filteredEarthquakes.length).toFixed(1)
@@ -222,13 +223,13 @@ export default function EarthquakesPage() {
       {/* Lista de terremotos */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
-          Terremotos Recientes (≥{selectedMagnitude}.0)
+          {t('earthquakes.recent_earthquakes')} (≥{selectedMagnitude}.0)
         </h2>
         
         {loading ? (
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400 mx-auto"></div>
-            <p className="text-gray-400 mt-2">Cargando datos sismológicos...</p>
+            <p className="text-gray-400 mt-2">{t('earthquakes.loading_data')}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -257,22 +258,22 @@ export default function EarthquakesPage() {
                               {earthquake.coordinates.longitude.toFixed(3)}°
                             </span>
                           </span>
-                          <span>Profundidad: {earthquake.coordinates.depth} km</span>
+                          <span>{t('earthquakes.depth')}: {earthquake.coordinates.depth} km</span>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end space-y-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getAlertColor(earthquake.alert)}`}>
-                      {earthquake.alert?.toUpperCase() || 'NORMAL'}
+                      {earthquake.alert?.toUpperCase() || t('earthquakes.normal')}
                     </span>
                     {earthquake.tsunami === 1 && (
                       <span className="px-3 py-1 rounded-full text-xs font-medium bg-red-500/20 text-red-400 border border-red-500/30">
-                        TSUNAMI
+                        {t('earthquakes.tsunami')}
                       </span>
                     )}
                     <span className="text-xs text-gray-400">
-                      Significancia: {earthquake.significance}
+                      {t('earthquakes.significance')}: {earthquake.significance}
                     </span>
                   </div>
                 </div>
@@ -285,48 +286,48 @@ export default function EarthquakesPage() {
       {/* Información adicional */}
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
         <h2 className="text-xl font-semibold text-white mb-4">
-          Información del Sistema
+          {t('earthquakes.system_information')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h3 className="text-lg font-medium text-white mb-2">Escala de Magnitud</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('earthquakes.magnitude_scale')}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-400">5.0 - 5.9:</span>
-                <span className="text-green-400">Moderado</span>
+                <span className="text-green-400">{t('earthquakes.moderate')}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">6.0 - 6.9:</span>
-                <span className="text-yellow-400">Fuerte</span>
+                <span className="text-yellow-400">{t('earthquakes.strong')}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">7.0 - 7.9:</span>
-                <span className="text-orange-400">Mayor</span>
+                <span className="text-orange-400">{t('earthquakes.major')}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">8.0+:</span>
-                <span className="text-red-400">Gran</span>
+                <span className="text-red-400">{t('earthquakes.great')}</span>
               </div>
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-white mb-2">Alertas de Tsunami</h3>
+            <h3 className="text-lg font-medium text-white mb-2">{t('earthquakes.tsunami_alerts')}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-400">Verde:</span>
-                <span className="text-green-400">Sin amenaza</span>
+                <span className="text-gray-400">{t('earthquakes.green')}:</span>
+                <span className="text-green-400">{t('earthquakes.no_threat')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Amarillo:</span>
-                <span className="text-yellow-400">Baja amenaza</span>
+                <span className="text-gray-400">{t('earthquakes.yellow')}:</span>
+                <span className="text-yellow-400">{t('earthquakes.low_threat')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Naranja:</span>
-                <span className="text-orange-400">Media amenaza</span>
+                <span className="text-gray-400">{t('earthquakes.orange')}:</span>
+                <span className="text-orange-400">{t('earthquakes.medium_threat')}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-400">Rojo:</span>
-                <span className="text-red-400">Alta amenaza</span>
+                <span className="text-gray-400">{t('earthquakes.red')}:</span>
+                <span className="text-red-400">{t('earthquakes.high_threat')}</span>
               </div>
             </div>
           </div>
