@@ -200,22 +200,104 @@ export const useMenuCategories = (): MenuCategory[] => {
           badge: 'Enterprise'
         },
         {
-          title: t('navigation.nasa_apod'),
-          href: '/nasa-apod',
-          icon: 'ImageIcon',
-          description: t('categories.nasa_apod_desc'),
-          badge: 'NASA'
+          title: t('navigation.machine_learning'),
+          href: '/machine-learning',
+          icon: 'Brain',
+          description: t('categories.machine_learning_desc'),
+          badge: 'AI'
+        },
+        {
+          title: t('navigation.seti'),
+          href: '/seti',
+          icon: 'Search',
+          description: t('categories.seti_desc'),
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.signals'),
+          href: '/signals',
+          icon: 'Radio',
+          description: t('categories.signals_desc'),
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.passes'),
+          href: '/passes',
+          icon: 'Clock',
+          description: t('categories.passes_desc'),
+          badge: 'Pro'
         }
       ]
     },
     {
-      title: t('categories.settings'),
+      title: "Investigación Avanzada",
       items: [
         {
-          title: t('navigation.legal'),
+          title: t('navigation.black_holes'),
+          href: '/black-holes',
+          icon: 'Circle',
+          description: t('categories.black_holes_desc'),
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.dark_matter'),
+          href: '/dark-matter',
+          icon: 'Circle',
+          description: t('categories.dark_matter_desc'),
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.gravitational_waves'),
+          href: '/gravitational-waves',
+          icon: 'Wave',
+          description: t('categories.gravitational_waves_desc'),
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.neutrinos'),
+          href: '/neutrinos',
+          icon: 'Zap',
+          description: t('categories.neutrinos_desc'),
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.exoplanets'),
+          href: '/exoplanets',
+          icon: 'Globe',
+          description: t('categories.exoplanets_desc'),
+          badge: 'Pro'
+        }
+      ]
+    },
+    {
+      title: "Comunidad y Soporte",
+      items: [
+        {
+          title: 'Preguntas Frecuentes',
+          href: '/faq',
+          icon: 'HelpCircle',
+          description: 'Encuentra respuestas a tus dudas',
+          badge: 'Principal'
+        },
+        {
+          title: t('navigation.chat'),
+          href: '/chat',
+          icon: 'MessageCircle',
+          description: t('categories.chat_desc'),
+          badge: 'Pro'
+        },
+        {
+          title: 'Precios',
+          href: '/pricing',
+          icon: 'CreditCard',
+          description: 'Planes y suscripciones',
+          badge: 'Principal'
+        },
+        {
+          title: t('navigation.settings'),
           href: '/settings',
           icon: 'Settings',
-          description: t('categories.legal_desc'),
+          description: t('categories.settings_desc'),
           badge: 'Admin'
         }
       ]

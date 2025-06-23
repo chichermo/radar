@@ -16,7 +16,8 @@ import {
   Crown,
   Heart,
   ExternalLink,
-  ChevronUp
+  ChevronUp,
+  HelpCircle
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 
@@ -134,6 +135,12 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2">
               <li>
+                <Link href="/faq" className="text-gray-400 hover:text-green-400 transition-colors flex items-center group">
+                  <HelpCircle className="h-3 w-3 mr-1" />
+                  <span>Preguntas Frecuentes</span>
+                </Link>
+              </li>
+              <li>
                 <Link href="/legal/privacy" className="text-gray-400 hover:text-green-400 transition-colors">
                   {t('footer.privacy')}
                 </Link>
@@ -198,17 +205,20 @@ export default function Footer() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Botón de scroll to top */}
-      {showScrollTop && (
-        <button
-          onClick={scrollToTop}
-          className="fixed bottom-6 right-6 p-3 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full text-white shadow-lg hover:from-blue-500 hover:to-purple-500 transition-all duration-300 z-50 hover:scale-110"
-        >
-          <ChevronUp className="h-5 w-5" />
-        </button>
-      )}
+        {/* Botón de scroll to top */}
+        <ClientWrapper>
+          {showScrollTop && (
+            <button
+              onClick={scrollToTop}
+              className="fixed bottom-6 right-6 p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all duration-300 z-50"
+              aria-label="Volver arriba"
+            >
+              <ChevronUp className="h-5 w-5" />
+            </button>
+          )}
+        </ClientWrapper>
+      </div>
     </footer>
   );
 } 
