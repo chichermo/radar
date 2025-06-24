@@ -1,5 +1,5 @@
 "use client";
-import { Camera, Image as ImageIcon, Sparkles, Telescope, Satellite } from "lucide-react";
+import { Camera, Image as ImageIcon, Sparkles, Eye, Satellite } from "lucide-react";
 
 const GALLERY = [
   {
@@ -36,7 +36,7 @@ const GALLERY = [
     title: "Galaxia Sombrero (Hubble)",
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/M104_ngc4594_sombrero_galaxy_hi-res.jpg/1200px-M104_ngc4594_sombrero_galaxy_hi-res.jpg",
     description: "La galaxia Sombrero (M104), una de las galaxias más fotogénicas del universo.",
-    icon: <Telescope className="h-6 w-6 text-cyan-400" />,
+    icon: <Eye className="h-6 w-6 text-cyan-400" />,
   },
   {
     title: "Nebulosa del Cangrejo (Hubble)",
@@ -48,7 +48,7 @@ const GALLERY = [
     title: "Galaxia Andrómeda (Hubble)",
     src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Andromeda_Galaxy_%28with_h-alpha%29.jpg/1200px-Andromeda_Galaxy_%28with_h-alpha%29.jpg",
     description: "Nuestra galaxia vecina más cercana, visible a simple vista desde la Tierra.",
-    icon: <Telescope className="h-6 w-6 text-indigo-400" />,
+    icon: <Eye className="h-6 w-6 text-indigo-400" />,
   },
   {
     title: "Estación Espacial Internacional",

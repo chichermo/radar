@@ -59,7 +59,9 @@ import {
   Sparkles,
   Database,
   Calculator,
-  BookOpen
+  BookOpen,
+  Users,
+  MapPin
 } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 
@@ -185,6 +187,20 @@ const useMenuCategories = () => {
           icon: Rocket,
           description: 'Voyager, New Horizons',
           badge: 'Premium'
+        },
+        {
+          title: 'Personas en el Espacio',
+          href: '/people-in-space',
+          icon: Users,
+          description: 'Astronautas actualmente en órbita',
+          badge: 'Nuevo'
+        },
+        {
+          title: 'Ubicación ISS',
+          href: '/iss-location',
+          icon: MapPin,
+          description: 'Posición en tiempo real de la ISS',
+          badge: 'Nuevo'
         }
       ]
     },
@@ -343,6 +359,20 @@ const useMenuCategories = () => {
           icon: Satellite,
           description: 'Seguimiento de constelaciones',
           badge: 'Pro'
+        },
+        {
+          title: 'Personas en el Espacio',
+          href: '/people-in-space',
+          icon: Users,
+          description: 'Astronautas actualmente en órbita',
+          badge: 'Nuevo'
+        },
+        {
+          title: 'Ubicación ISS',
+          href: '/iss-location',
+          icon: MapPin,
+          description: 'Posición en tiempo real de la ISS',
+          badge: 'Nuevo'
         }
       ]
     },
