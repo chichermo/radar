@@ -56,14 +56,14 @@ export default function DarkMatterPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-700 rounded w-1/4 mb-4"></div>
             <div className="h-4 bg-gray-700 rounded w-1/2 mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-gray-800 rounded-lg p-6 h-48"></div>
+                <div key={i} className="bg-gray-800/50 rounded-lg p-6 h-48 border border-gray-700/50"></div>
               ))}
             </div>
           </div>
@@ -73,16 +73,16 @@ export default function DarkMatterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-3 bg-purple-600/20 rounded-xl">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="p-3 bg-gradient-to-r from-purple-600/20 to-blue-600/20 rounded-xl border border-purple-500/30">
               <Atom className="h-8 w-8 text-purple-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-white">
                 {t('darkmatter.title')}
               </h1>
               <p className="text-gray-400">{t('darkmatter.subtitle')}</p>
@@ -92,7 +92,7 @@ export default function DarkMatterPage() {
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <Activity className="h-6 w-6 text-green-400" />
               <div>
@@ -102,7 +102,7 @@ export default function DarkMatterPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <TrendingUp className="h-6 w-6 text-blue-400" />
               <div>
@@ -112,7 +112,7 @@ export default function DarkMatterPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <AlertCircle className="h-6 w-6 text-yellow-400" />
               <div>
@@ -122,7 +122,7 @@ export default function DarkMatterPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <Atom className="h-6 w-6 text-purple-400" />
               <div>
@@ -136,13 +136,13 @@ export default function DarkMatterPage() {
         {/* Experimentos */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {darkMatterData.map((experiment, index) => (
-            <div key={index} className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300">
+            <div key={index} className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 hover:border-purple-500/30 transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">{experiment.experiment}</h3>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                   experiment.status === 'Activo' 
-                    ? 'bg-green-500/20 text-green-400' 
-                    : 'bg-red-500/20 text-red-400'
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                    : 'bg-red-500/20 text-red-400 border border-red-500/30'
                 }`}>
                   {experiment.status}
                 </span>
@@ -169,7 +169,7 @@ export default function DarkMatterPage() {
         </div>
 
         {/* Información adicional */}
-        <div className="mt-12 bg-gray-800/30 rounded-xl p-8 border border-gray-700/50">
+        <div className="mt-12 bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
           <h2 className="text-2xl font-bold text-white mb-4">{t('darkmatter.what_is_dark_matter')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>

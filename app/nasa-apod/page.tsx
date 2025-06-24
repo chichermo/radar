@@ -78,7 +78,7 @@ export default function NasaApodPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-700 rounded w-1/3 mb-4"></div>
@@ -93,7 +93,7 @@ export default function NasaApodPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
         <div className="max-w-6xl mx-auto">
           <div className="bg-red-900/20 border border-red-500 rounded-lg p-6">
             <h1 className="text-2xl font-bold mb-4">Error al cargar la imagen</h1>
@@ -111,10 +111,10 @@ export default function NasaApodPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 flex items-center">
+          <h1 className="text-4xl font-bold mb-2 flex items-center text-white">
             <Camera className="mr-3 h-8 w-8" />
             Imagen del Día de la NASA
           </h1>
@@ -132,7 +132,7 @@ export default function NasaApodPage() {
         {data && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden">
                 {data.media_type === 'video' ? (
                   <iframe
                     src={data.url}
@@ -152,7 +152,7 @@ export default function NasaApodPage() {
                   />
                 )}
                 <div className="p-6">
-                  <h2 className="text-2xl font-bold mb-4">{data.title}</h2>
+                  <h2 className="text-2xl font-bold mb-4 text-white">{data.title}</h2>
                   <p className="text-gray-300 leading-relaxed">{data.explanation}</p>
                   {data.copyright && (
                     <p className="mt-4 text-sm text-gray-400">
@@ -164,19 +164,19 @@ export default function NasaApodPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h3 className="text-xl font-semibold mb-4 flex items-center">
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-6">
+                <h3 className="text-xl font-semibold mb-4 flex items-center text-white">
                   <Info className="mr-2 h-5 w-5" />
                   Información
                 </h3>
                 <div className="space-y-3">
                   <div>
                     <span className="text-gray-400">Tipo:</span>
-                    <span className="ml-2 capitalize">{data.media_type}</span>
+                    <span className="ml-2 capitalize text-white">{data.media_type}</span>
                   </div>
                   <div>
                     <span className="text-gray-400">Fecha:</span>
-                    <span className="ml-2">{data.date}</span>
+                    <span className="ml-2 text-white">{data.date}</span>
                   </div>
                   {data.hdurl && (
                     <a
@@ -191,8 +191,8 @@ export default function NasaApodPage() {
                 </div>
               </div>
 
-              <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-                <h3 className="text-xl font-semibold mb-4">Imágenes Anteriores</h3>
+              <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-6">
+                <h3 className="text-xl font-semibold mb-4 text-white">Imágenes Anteriores</h3>
                 {loadingPrevious ? (
                   <div className="space-y-3">
                     {[1, 2, 3, 4].map(i => (
@@ -204,7 +204,7 @@ export default function NasaApodPage() {
                 ) : (
                   <div className="space-y-3">
                     {previousImages.map((image, index) => (
-                      <div key={index} className="border border-gray-600 rounded p-3">
+                      <div key={index} className="border border-white/10 rounded p-3 bg-white/5">
                         {image.error ? (
                           <div className="text-red-400 text-sm">
                             <p className="font-semibold">{image.title}</p>
@@ -221,7 +221,7 @@ export default function NasaApodPage() {
                               }}
                             />
                             <div>
-                              <p className="text-sm font-medium line-clamp-2">{image.title}</p>
+                              <p className="text-sm font-medium line-clamp-2 text-white">{image.title}</p>
                               <p className="text-xs text-gray-400">{image.date}</p>
                             </div>
                           </div>

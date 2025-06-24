@@ -61,14 +61,14 @@ export default function NeutrinosPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
         <div className="max-w-7xl mx-auto">
           <div className="animate-pulse">
             <div className="h-8 bg-gray-700 rounded w-1/4 mb-4"></div>
             <div className="h-4 bg-gray-700 rounded w-1/2 mb-8"></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-gray-800 rounded-lg p-6 h-48"></div>
+                <div key={i} className="bg-gray-800/50 rounded-lg p-6 h-48 border border-gray-700/50"></div>
               ))}
             </div>
           </div>
@@ -78,16 +78,16 @@ export default function NeutrinosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white p-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="p-3 bg-blue-600/20 rounded-xl">
+          <div className="flex items-center space-x-4 mb-4">
+            <div className="p-3 bg-gradient-to-r from-blue-600/20 to-cyan-600/20 rounded-xl border border-blue-500/30">
               <Snowflake className="h-8 w-8 text-blue-400" />
             </div>
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold text-white">
                 {t('neutrinos.title')}
               </h1>
               <p className="text-gray-400">{t('neutrinos.subtitle')}</p>
@@ -97,7 +97,7 @@ export default function NeutrinosPage() {
 
         {/* Estadísticas */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <Activity className="h-6 w-6 text-green-400" />
               <div>
@@ -107,7 +107,7 @@ export default function NeutrinosPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <TrendingUp className="h-6 w-6 text-blue-400" />
               <div>
@@ -117,7 +117,7 @@ export default function NeutrinosPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <AlertCircle className="h-6 w-6 text-yellow-400" />
               <div>
@@ -127,7 +127,7 @@ export default function NeutrinosPage() {
             </div>
           </div>
           
-          <div className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50">
+          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center space-x-3">
               <Snowflake className="h-6 w-6 text-cyan-400" />
               <div>
@@ -141,13 +141,13 @@ export default function NeutrinosPage() {
         {/* Detectores */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {neutrinoData.map((detector, index) => (
-            <div key={index} className="bg-gray-800/50 rounded-xl p-6 border border-gray-700/50 hover:border-blue-500/50 transition-all duration-300">
+            <div key={index} className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 hover:border-blue-500/30 transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-white">{detector.detector}</h3>
                 <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                   detector.status === 'Activo' 
-                    ? 'bg-green-500/20 text-green-400' 
-                    : 'bg-yellow-500/20 text-yellow-400'
+                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
+                    : 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30'
                 }`}>
                   {detector.status}
                 </span>
@@ -179,7 +179,7 @@ export default function NeutrinosPage() {
         </div>
 
         {/* Información adicional */}
-        <div className="mt-12 bg-gray-800/30 rounded-xl p-8 border border-gray-700/50">
+        <div className="mt-12 bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
           <h2 className="text-2xl font-bold text-white mb-4">{t('neutrinos.what_are_cosmic_neutrinos')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
