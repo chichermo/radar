@@ -92,7 +92,23 @@ import {
   Zap as ZapIcon,
   ArrowRight,
   CheckCircle,
-  ExternalLink
+  ExternalLink,
+  MapPin,
+  Cpu,
+  Network,
+  Lightbulb,
+  Magnet,
+  Radiation,
+  Snowflake,
+  Calculator,
+  BookOpen,
+  Sparkles,
+  MessageCircle,
+  Filter,
+  Share2,
+  Triangle,
+  Hexagon,
+  Star as StarIcon
 } from 'lucide-react';
 
 /* Definir un array de objetos TLE (mock) para el Globe */
@@ -218,240 +234,488 @@ const liveStats = [
   { label: "Usuarios Activos", value: "10k+", icon: Users }
 ];
 
-export default function HomePage() {
-  const { t } = useI18n();
-  const { sendNotification, sendSpaceAlert } = useNotifications();
-  const [isClient, setIsClient] = useState(false);
-  const formattedDate = useFormattedDate();
-
-  // Notificaciones mock para mostrar en el dashboard
-  const [notifications] = useState([
-    {
-      message: t('dashboard.notification1'),
-      timestamp: '2 min'
-    },
-    {
-      message: t('dashboard.notification2'),
-      timestamp: '5 min'
-    },
-    {
-      message: t('dashboard.notification3'),
-      timestamp: '10 min'
-    }
-  ]);
-
+// Componente de métrica con animación
+const MetricCard = ({ 
+  title, 
+  value, 
+  change, 
+  icon: Icon, 
+  color = "blue",
+  trend = "up",
+  delay = 0 
+}: {
+  title: string;
+  value: string;
+  change: string;
+  icon: any;
+  color?: string;
+  trend?: "up" | "down";
+  delay?: number;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  
   useEffect(() => {
-    setIsClient(true);
-  }, []);
+    const timer = setTimeout(() => setIsVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
 
-  if (!isClient) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
+  const colorClasses = {
+    blue: "from-blue-500 to-blue-600",
+    green: "from-green-500 to-green-600",
+    purple: "from-purple-500 to-purple-600",
+    orange: "from-orange-500 to-orange-600",
+    pink: "from-pink-500 to-pink-600",
+    cyan: "from-cyan-500 to-cyan-600"
+  };
+
+  return (
+    <div 
+      className={`card-premium p-6 transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="flex items-center justify-between mb-4">
+        <div className={`p-3 rounded-xl bg-gradient-to-r ${colorClasses[color as keyof typeof colorClasses]} animate-pulse-glow`}>
+          <Icon className="h-6 w-6 text-white" />
+        </div>
+        <div className={`flex items-center space-x-1 text-sm ${
+          trend === "up" ? "text-green-400" : "text-red-400"
+        }`}>
+          <TrendingUp className={`h-4 w-4 ${trend === "down" ? "rotate-180" : ""}`} />
+          <span>{change}</span>
+        </div>
+      </div>
+      
+      <div className="space-y-2">
+        <h3 className="text-gray-400 text-sm font-medium">{title}</h3>
+        <p className="text-2xl font-bold text-white">{value}</p>
+      </div>
+      
+      <div className="mt-4 h-1 bg-gray-700 rounded-full overflow-hidden">
+        <div 
+          className={`h-full bg-gradient-to-r ${colorClasses[color as keyof typeof colorClasses]} rounded-full transition-all duration-1000`}
+          style={{ width: isVisible ? "75%" : "0%" }}
+        />
+      </div>
+    </div>
+  );
+};
+
+// Componente de alerta con animación
+const AlertCard = ({ 
+  type, 
+  title, 
+  message, 
+  time, 
+  priority = "medium",
+  delay = 0 
+}: {
+  type: "warning" | "error" | "info" | "success";
+  title: string;
+  message: string;
+  time: string;
+  priority?: "low" | "medium" | "high";
+  delay?: number;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(true), delay);
+    return () => clearTimeout(timer);
+  }, [delay]);
+
+  const typeConfig = {
+    warning: { icon: AlertTriangle, color: "from-yellow-500 to-orange-500", bg: "bg-yellow-500/10" },
+    error: { icon: AlertTriangle, color: "from-red-500 to-pink-500", bg: "bg-red-500/10" },
+    info: { icon: Eye, color: "from-blue-500 to-cyan-500", bg: "bg-blue-500/10" },
+    success: { icon: Shield, color: "from-green-500 to-emerald-500", bg: "bg-green-500/10" }
+  };
+
+  const priorityConfig = {
+    low: "border-l-4 border-gray-400",
+    medium: "border-l-4 border-yellow-400",
+    high: "border-l-4 border-red-400"
+  };
+
+  const config = typeConfig[type];
+  const Icon = config.icon;
+
+  return (
+    <div 
+      className={`glass-card p-4 ${priorityConfig[priority]} transition-all duration-700 ${
+        isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'
+      }`}
+      style={{ transitionDelay: `${delay}ms` }}
+    >
+      <div className="flex items-start space-x-3">
+        <div className={`p-2 rounded-lg bg-gradient-to-r ${config.color} animate-glow`}>
+          <Icon className="h-4 w-4 text-white" />
+        </div>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold text-white">{title}</h4>
+            <span className="text-xs text-gray-400">{time}</span>
+          </div>
+          <p className="text-sm text-gray-300 mt-1">{message}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Componente de actividad en tiempo real
+const ActivityStream = () => {
+  const activities = [
+    { id: 1, type: "satellite", message: "Satélite GPS-3 SV06 detectado en órbita", time: "2 min ago", icon: Satellite },
+    { id: 2, type: "signal", message: "Nueva señal de radio detectada en 1420 MHz", time: "5 min ago", icon: Radio },
+    { id: 3, type: "asteroid", message: "Asteroid 2024 AB1 pasa cerca de la Tierra", time: "8 min ago", icon: Target },
+    { id: 4, type: "spacecraft", message: "ISS completa órbita #123,456", time: "12 min ago", icon: Rocket },
+    { id: 5, type: "research", message: "Nuevos datos de exoplanetas procesados", time: "15 min ago", icon: Brain }
+  ];
+
+  return (
+    <div className="glass-card p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+          <Activity className="h-5 w-5 text-blue-400" />
+          <span>Actividad en Tiempo Real</span>
+        </h3>
+        <div className="flex items-center space-x-2">
+          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+          <span className="text-sm text-gray-400">En vivo</span>
+        </div>
+      </div>
+      
+      <div className="space-y-4">
+        {activities.map((activity, index) => (
+          <div 
+            key={activity.id}
+            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-white/5 transition-all duration-300 animate-slide-in-up"
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <div className="p-2 rounded-lg bg-blue-500/20">
+              <activity.icon className="h-4 w-4 text-blue-400" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm text-white">{activity.message}</p>
+              <p className="text-xs text-gray-400">{activity.time}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Componente de gráfico interactivo
+const InteractiveChart = () => {
+  const [selectedPeriod, setSelectedPeriod] = useState("24h");
+  
+  const periods = [
+    { value: "1h", label: "1H" },
+    { value: "24h", label: "24H" },
+    { value: "7d", label: "7D" },
+    { value: "30d", label: "30D" }
+  ];
+
+  return (
+    <div className="glass-card p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+          <BarChart3 className="h-5 w-5 text-purple-400" />
+          <span>Análisis de Datos</span>
+        </h3>
+        <div className="flex space-x-1">
+          {periods.map((period) => (
+            <button
+              key={period.value}
+              onClick={() => setSelectedPeriod(period.value)}
+              className={`px-3 py-1 rounded-lg text-sm font-medium transition-all duration-200 ${
+                selectedPeriod === period.value
+                  ? "bg-purple-500 text-white"
+                  : "bg-gray-700/50 text-gray-300 hover:bg-gray-600/50"
+              }`}
+            >
+              {period.label}
+            </button>
+          ))}
+        </div>
+      </div>
+      
+      <div className="h-64 bg-gradient-to-br from-purple-500/10 to-blue-500/10 rounded-lg border border-purple-500/20 flex items-center justify-center">
+        <div className="text-center">
+          <BarChart3 className="h-12 w-12 text-purple-400 mx-auto mb-4 animate-pulse" />
+          <p className="text-gray-400">Gráfico interactivo de datos espaciales</p>
+          <p className="text-sm text-gray-500 mt-2">Período seleccionado: {selectedPeriod}</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Componente de control de sistema
+const SystemControls = () => {
+  const [isMonitoring, setIsMonitoring] = useState(true);
+  const [isRecording, setIsRecording] = useState(false);
+  const [autoAnalysis, setAutoAnalysis] = useState(true);
+
+  return (
+    <div className="glass-card p-6">
+      <h3 className="text-lg font-semibold text-white mb-6 flex items-center space-x-2">
+        <Settings className="h-5 w-5 text-green-400" />
+        <span>Controles del Sistema</span>
+      </h3>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-300">Monitoreo</span>
+            <button
+              onClick={() => setIsMonitoring(!isMonitoring)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                isMonitoring ? 'bg-green-500' : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  isMonitoring ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-300">Grabación</span>
+            <button
+              onClick={() => setIsRecording(!isRecording)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                isRecording ? 'bg-red-500' : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  isRecording ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+          
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-300">Análisis IA</span>
+            <button
+              onClick={() => setAutoAnalysis(!autoAnalysis)}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                autoAnalysis ? 'bg-blue-500' : 'bg-gray-600'
+              }`}
+            >
+              <span
+                className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                  autoAnalysis ? 'translate-x-6' : 'translate-x-1'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+        
+        <div className="space-y-3">
+          <button className="btn-premium w-full flex items-center justify-center space-x-2">
+            <RefreshCw className="h-4 w-4" />
+            <span>Actualizar</span>
+          </button>
+          
+          <button className="btn-secondary w-full flex items-center justify-center space-x-2">
+            <Download className="h-4 w-4" />
+            <span>Exportar</span>
+          </button>
+          
+          <button className="btn-secondary w-full flex items-center justify-center space-x-2">
+            <Share2 className="h-4 w-4" />
+            <span>Compartir</span>
+          </button>
+        </div>
+        
+        <div className="space-y-3">
+          <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+            <div className="flex items-center space-x-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-sm text-green-400">Sistema Online</span>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">Todos los sistemas funcionando correctamente</p>
+          </div>
+          
+          <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+            <div className="flex items-center space-x-2">
+              <Database className="h-4 w-4 text-blue-400" />
+              <span className="text-sm text-blue-400">Base de Datos</span>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">2.3TB de datos procesados</p>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+};
+
+export default function DashboardPage() {
+  const { t } = useI18n();
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const metrics = [
+    {
+      title: "Satélites Activos",
+      value: "2,847",
+      change: "+12",
+      icon: Satellite,
+      color: "blue",
+      trend: "up" as const,
+      delay: 100
+    },
+    {
+      title: "Señales Detectadas",
+      value: "156",
+      change: "+8",
+      icon: Radio,
+      color: "green",
+      trend: "up" as const,
+      delay: 200
+    },
+    {
+      title: "Anomalías",
+      value: "3",
+      change: "-2",
+      icon: AlertTriangle,
+      color: "orange",
+      trend: "down" as const,
+      delay: 300
+    },
+    {
+      title: "Cobertura Global",
+      value: "98.7%",
+      change: "+0.3%",
+      icon: Globe,
+      color: "purple",
+      trend: "up" as const,
+      delay: 400
+    }
+  ];
+
+  const alerts = [
+    {
+      type: "warning" as const,
+      title: "Alta Actividad Solar",
+      message: "Tormenta geomagnética detectada - monitoreo intensificado",
+      time: "5 min ago",
+      priority: "high" as const,
+      delay: 500
+    },
+    {
+      type: "info" as const,
+      title: "Nuevo Satélite Detectado",
+      message: "Starlink-4567 entró en órbita exitosamente",
+      time: "12 min ago",
+      priority: "medium" as const,
+      delay: 600
+    },
+    {
+      type: "success" as const,
+      title: "Análisis Completado",
+      message: "Datos de exoplanetas procesados - 3 nuevos candidatos",
+      time: "25 min ago",
+      priority: "low" as const,
+      delay: 700
+    }
+  ];
 
   return (
-    <GamificationProvider>
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
-        {/* Hero Section */}
-        <section className="relative overflow-hidden">
-          {/* Fondo animado de estrellas */}
-          <div className="absolute inset-0 bg-[url('/stars.jpg')] bg-cover bg-center opacity-30"></div>
+    <div className="min-h-screen space-y-8">
+      {/* Header con información en tiempo real */}
+      <div className="glass-card p-6 animate-fade-in-scale">
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">
+              COSMIC EYE
+              <span className="text-gradient ml-2">Dashboard</span>
+            </h1>
+            <p className="text-gray-300">
+              Monitoreo avanzado de anomalías espaciales en tiempo real
+            </p>
+          </div>
           
-          <div className="relative z-10 px-6 py-20">
-            <div className="max-w-7xl mx-auto text-center">
-              <div className="mb-8">
-                <h1 className="text-5xl md:text-7xl font-bold text-white mb-6">
-                  COSMIC EYE
-                </h1>
-                <p className="text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                  Tu ventana al universo en tiempo real. Monitorea asteroides, explora el cosmos 
-                  y descubre los secretos del espacio con datos de NASA, ESA y más.
-                </p>
-              </div>
-
-              {/* Botones de acción */}
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a 
-                  href="/skymap" 
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-                >
-                  <Eye className="w-5 h-5" />
-                  Explorar el Cielo
-                </a>
-                <a 
-                  href="/pricing" 
-                  className="inline-flex items-center gap-2 px-8 py-4 bg-gray-700 hover:bg-gray-600 text-white rounded-lg font-semibold transition-colors"
-                >
-                  <Crown className="w-5 h-5" />
-                  Ver Planes
-                </a>
-              </div>
-
-              {/* Estadísticas en tiempo real */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-                {liveStats.map((stat, index) => (
-                  <div key={index} className="bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
-                    <div className="flex items-center justify-center mb-2">
-                      <stat.icon className="w-6 h-6 text-blue-400" />
-                    </div>
-                    <div className="text-2xl font-bold text-white mb-1">{stat.value}</div>
-                    <div className="text-sm text-gray-300">{stat.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Características principales */}
-        <section className="px-6 py-20">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-white mb-4">
-                Explora el Universo
-              </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Accede a herramientas avanzadas de monitoreo espacial y análisis de datos 
-                utilizadas por profesionales y entusiastas de la astronomía.
+          <div className="flex items-center space-x-6">
+            <div className="text-right">
+              <p className="text-sm text-gray-400">Tiempo Universal</p>
+              <p className="text-lg font-mono text-white">
+                {currentTime.toUTCString()}
               </p>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {mainFeatures.map((feature, index) => (
-                <Card key={index} className="bg-gray-800/50 backdrop-blur-sm border-gray-700 hover:border-gray-600 transition-all duration-300 hover:scale-105">
-                  <CardHeader>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`p-3 rounded-lg bg-gradient-to-r ${feature.color}`}>
-                        <feature.icon className="w-6 h-6 text-white" />
-                      </div>
-                      <span className="px-2 py-1 text-xs font-semibold bg-blue-600 text-white rounded">
-                        {feature.badge}
-                      </span>
-                    </div>
-                    <CardTitle className="text-white text-xl">{feature.title}</CardTitle>
-                    <CardDescription className="text-gray-300">
-                      {feature.description}
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <a 
-                      href={feature.href}
-                      className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 transition-colors"
-                    >
-                      Explorar <ArrowRight className="w-4 h-4" />
-                    </a>
-                  </CardContent>
-                </Card>
-              ))}
+            
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-sm text-green-400 font-medium">SISTEMA ONLINE</span>
             </div>
           </div>
-        </section>
-
-        {/* Sección de datos en tiempo real */}
-        <section className="px-6 py-20 bg-gray-800/30">
-          <div className="max-w-7xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold text-white mb-4">
-                Datos en Tiempo Real
-              </h2>
-              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-                Última actualización: {formattedDate}
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Dashboard principal */}
-              <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Activity className="w-5 h-5" />
-                    Actividad Reciente
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex items-center gap-3 p-3 bg-green-900/30 rounded-lg border border-green-500/20">
-                      <CheckCircle className="w-5 h-5 text-green-400" />
-                      <div>
-                        <div className="text-white font-medium">Asteroides detectados hoy</div>
-                        <div className="text-gray-300 text-sm">3 nuevos objetos cercanos a la Tierra</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-blue-900/30 rounded-lg border border-blue-500/20">
-                      <Satellite className="w-5 h-5 text-blue-400" />
-                      <div>
-                        <div className="text-white font-medium">Satélites activos</div>
-                        <div className="text-gray-300 text-sm">4,521 satélites en órbita</div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 bg-yellow-900/30 rounded-lg border border-yellow-500/20">
-                      <Sun className="w-5 h-5 text-yellow-400" />
-                      <div>
-                        <div className="text-white font-medium">Clima espacial</div>
-                        <div className="text-gray-300 text-sm">Actividad solar normal</div>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Enlaces rápidos */}
-              <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <Zap className="w-5 h-5" />
-                    Acceso Rápido
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <a href="/faq" className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Info className="w-5 h-5 text-blue-400" />
-                        <span className="text-white">Preguntas Frecuentes</span>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400" />
-                    </a>
-                    <a href="/chat" className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <Users className="w-5 h-5 text-green-400" />
-                        <span className="text-white">Comunidad</span>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400" />
-                    </a>
-                    <a href="/pricing" className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg hover:bg-gray-700/70 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <CreditCard className="w-5 h-5 text-purple-400" />
-                        <span className="text-white">Planes y Precios</span>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400" />
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        </section>
-
-        {/* Footer de la página de inicio */}
-        <footer className="px-6 py-12 border-t border-gray-700">
-          <div className="max-w-7xl mx-auto text-center">
-            <p className="text-gray-400 mb-4">
-              COSMIC EYE - Monitoreo espacial en tiempo real
-            </p>
-            <p className="text-sm text-gray-500">
-              Datos proporcionados por NASA, ESA, Space-Track.org y otras agencias espaciales
-            </p>
-          </div>
-        </footer>
+        </div>
       </div>
-    </GamificationProvider>
+
+      {/* Métricas principales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {metrics.map((metric, index) => (
+          <MetricCard key={index} {...metric} />
+        ))}
+      </div>
+
+      {/* Contenido principal */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Columna izquierda */}
+        <div className="lg:col-span-2 space-y-8">
+          <InteractiveChart />
+          <ActivityStream />
+        </div>
+        
+        {/* Columna derecha */}
+        <div className="space-y-8">
+          <SystemControls />
+          
+          {/* Alertas */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white flex items-center space-x-2">
+              <Bell className="h-5 w-5 text-orange-400" />
+              <span>Alertas del Sistema</span>
+            </h3>
+            {alerts.map((alert, index) => (
+              <AlertCard key={index} {...alert} />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Footer con estadísticas adicionales */}
+      <div className="glass-card p-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+          <div>
+            <p className="text-2xl font-bold text-white">99.9%</p>
+            <p className="text-sm text-gray-400">Uptime</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-white">2.3TB</p>
+            <p className="text-sm text-gray-400">Datos Procesados</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-white">156</p>
+            <p className="text-sm text-gray-400">Señales Hoy</p>
+          </div>
+          <div>
+            <p className="text-2xl font-bold text-white">24/7</p>
+            <p className="text-sm text-gray-400">Monitoreo</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

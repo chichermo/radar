@@ -365,7 +365,15 @@ export async function getBrightAsteroids(): Promise<any[]> {
   try {
     // Esta función se conectaría con la API de asteroides que ya tenemos
     const response = await fetch('/api/nasa-asteroids');
-    const data = await response.json();
+    const result = await response.json();
+    
+    // Verificar que result tenga la estructura esperada
+    if (!result || !result.data || !result.data.near_earth_objects) {
+      console.warn('Estructura de datos de asteroides inesperada:', result);
+      return [];
+    }
+    
+    const data = result.data;
     
     // Verificar que data tenga la estructura esperada
     if (!data || !data.near_earth_objects) {
@@ -400,22 +408,18 @@ export async function getVisibleSatellites(): Promise<any[]> {
   try {
     // Esta función se conectaría con la API de satélites que ya tenemos
     const response = await fetch('/api/space-track');
-    const data = await response.json();
+    const result = await response.json();
     
-    // Verificar que data tenga la estructura esperada
-    if (!data || !data.data || !Array.isArray(data.data)) {
-      console.warn('Estructura de datos de satélites inesperada:', data);
+    // Verificar que result tenga la estructura esperada
+    if (!result || !result.data || !result.data.satellites) {
+      console.warn('Estructura de datos de satélites inesperada:', result);
       return [];
     }
     
-    // Filtrar solo satélites brillantes y visibles si tienen esa propiedad
-    // Si no tienen magnitud, devolver todos
-    return data.data.filter((satellite: any) => {
-      if (satellite.magnitude !== undefined) {
-        return satellite.magnitude < 6;
-      }
-      return true; // Si no tiene magnitud, incluirlo
-    });
+    const data = result.data;
+    
+    // Devolver los satélites disponibles
+    return data.satellites || [];
   } catch (error) {
     console.error('Error obteniendo satélites visibles:', error);
     return [];
