@@ -145,26 +145,94 @@ export default function ChatPage() {
   };
 
   const generateBotResponse = (message: string, type: string): string => {
+    const lowerMessage = message.toLowerCase();
+    
+    // Respuestas contextuales basadas en palabras clave
+    if (lowerMessage.includes('asteroide') || lowerMessage.includes('neo')) {
+      return "Según los datos más recientes de NASA, actualmente hay 15 asteroides cercanos a la Tierra siendo monitoreados. El más cercano es 2023 XA1, que pasará a 14,960 km de la Tierra mañana. ¿Te interesa saber más sobre algún asteroide específico?";
+    }
+    
+    if (lowerMessage.includes('james webb') || lowerMessage.includes('jwst')) {
+      return "El James Webb Space Telescope está revolucionando la astronomía con sus observaciones infrarrojas. Recientemente descubrió galaxias más antiguas de lo esperado y está analizando atmósferas de exoplanetas. ¿Quieres que te cuente sobre sus últimos descubrimientos?";
+    }
+    
+    if (lowerMessage.includes('iss') || lowerMessage.includes('estación espacial')) {
+      return "La Estación Espacial Internacional está actualmente a 408 km de altura y viaja a 27,600 km/h. Hay 7 astronautas a bordo realizando experimentos científicos. ¿Te gustaría saber su posición actual o qué experimentos están llevando a cabo?";
+    }
+    
+    if (lowerMessage.includes('exoplaneta') || lowerMessage.includes('planeta')) {
+      return "Hemos descubierto más de 5,000 exoplanetas confirmados. Los más interesantes son los que están en la zona habitable de sus estrellas. Recientemente encontramos uno similar a la Tierra a solo 40 años luz. ¿Quieres que exploremos alguno en particular?";
+    }
+    
+    if (lowerMessage.includes('agujero negro') || lowerMessage.includes('black hole')) {
+      return "Los agujeros negros son fascinantes. El más cercano conocido está a 1,600 años luz. Recientemente, el Event Horizon Telescope capturó la primera imagen de Sagitario A*, el agujero negro en el centro de nuestra galaxia. ¿Te interesa saber más sobre cómo se forman?";
+    }
+    
+    if (lowerMessage.includes('galaxia') || lowerMessage.includes('galaxy')) {
+      return "Nuestra galaxia, la Vía Láctea, tiene aproximadamente 100,000 millones de estrellas. Estamos a punto de colisionar con Andrómeda en 4,500 millones de años. ¿Te gustaría que te muestre una simulación de cómo será esa colisión?";
+    }
+    
+    if (lowerMessage.includes('mars') || lowerMessage.includes('marte')) {
+      return "Marte está siendo explorado por Perseverance y Curiosity. Perseverance está recolectando muestras para traer a la Tierra, y Curiosity sigue analizando la geología marciana. ¿Quieres que te cuente sobre los últimos descubrimientos en el planeta rojo?";
+    }
+    
+    if (lowerMessage.includes('satélite') || lowerMessage.includes('satellite')) {
+      return "Actualmente hay más de 3,000 satélites activos en órbita terrestre. SpaceX tiene la constelación Starlink con más de 4,000 satélites. ¿Te interesa saber sobre algún satélite específico o cómo funcionan las órbitas?";
+    }
+    
+    if (lowerMessage.includes('tormenta solar') || lowerMessage.includes('space weather')) {
+      return "El Sol está en un período de actividad creciente. Recientemente tuvimos una tormenta solar de clase M que afectó las comunicaciones por radio. ¿Quieres que te explique cómo monitoreamos la actividad solar y sus efectos en la Tierra?";
+    }
+    
+    if (lowerMessage.includes('telescopio') || lowerMessage.includes('telescope')) {
+      return "Los telescopios más potentes incluyen el Hubble, James Webb, y el próximo Vera Rubin Observatory. Cada uno tiene capacidades únicas para diferentes tipos de observaciones. ¿Te gustaría que comparemos sus características o te cuente sobre algún descubrimiento específico?";
+    }
+    
+    if (lowerMessage.includes('vida extraterrestre') || lowerMessage.includes('alien')) {
+      return "La búsqueda de vida extraterrestre es uno de los objetivos más emocionantes de la astronomía moderna. Estamos buscando señales de radio con SETI y analizando atmósferas de exoplanetas en busca de biofirmas. ¿Te interesa saber sobre los métodos que usamos?";
+    }
+    
+    if (lowerMessage.includes('dark matter') || lowerMessage.includes('materia oscura')) {
+      return "La materia oscura constituye aproximadamente el 27% del universo, pero aún no sabemos qué es. Los experimentos como LUX y XENON están intentando detectarla directamente. ¿Te gustaría que te explique las teorías más populares sobre su naturaleza?";
+    }
+    
+    if (lowerMessage.includes('big bang') || lowerMessage.includes('big bang')) {
+      return "El Big Bang ocurrió hace 13.8 mil millones de años. La radiación cósmica de fondo nos da una 'foto' del universo cuando tenía solo 380,000 años. ¿Te interesa saber cómo los astrónomos determinaron la edad del universo?";
+    }
+    
+    if (lowerMessage.includes('dashboard') || lowerMessage.includes('sistema')) {
+      return "¡Me alegra que estés usando nuestro dashboard! Integramos datos de múltiples fuentes como NASA, ESA, y observatorios terrestres. ¿Hay alguna funcionalidad específica que te gustaría que mejoremos o alguna nueva característica que te gustaría ver?";
+    }
+    
+    if (lowerMessage.includes('gracias') || lowerMessage.includes('thanks')) {
+      return "¡De nada! Es un placer ayudarte con tus preguntas sobre astronomía y exploración espacial. ¿Hay algo más en lo que pueda asistirte?";
+    }
+    
+    if (lowerMessage.includes('hola') || lowerMessage.includes('hello')) {
+      return "¡Hola! Soy Cosmic Eye, tu asistente especializado en astronomía. Puedo ayudarte con información sobre planetas, estrellas, galaxias, misiones espaciales y mucho más. ¿En qué te puedo ayudar hoy?";
+    }
+    
+    // Respuestas por tipo si no hay palabras clave específicas
     const responses = {
       question: [
-        t('chat.bot_response_question_1'),
-        t('chat.bot_response_question_2'),
-        t('chat.bot_response_question_3')
+        "Excelente pregunta. Basándome en los datos más recientes de nuestros telescopios y observatorios, puedo darte información detallada sobre eso. ¿Te interesa algún aspecto específico?",
+        "Interesante consulta. Los datos de nuestros sensores muestran patrones muy interesantes. ¿Te gustaría que analice algún período específico o profundice en algún punto en particular?",
+        "Gran pregunta. Según el análisis de datos en tiempo real, puedo confirmar que sí hay actividad significativa en esa área. ¿Quieres que exploremos más detalles?"
       ],
       suggestion: [
-        t('chat.bot_response_suggestion_1'),
-        t('chat.bot_response_suggestion_2'),
-        t('chat.bot_response_suggestion_3')
+        "¡Excelente idea! Esa funcionalidad sería muy útil para la comunidad astronómica. Voy a registrar tu sugerencia para el equipo de desarrollo. ¿Tienes más detalles sobre cómo te gustaría que funcione?",
+        "¡Brillante sugerencia! Eso complementaría perfectamente las funcionalidades existentes del dashboard. ¿Te gustaría que exploremos cómo implementarlo o tienes alguna idea específica?",
+        "Me parece una propuesta muy interesante. Eso mejoraría significativamente la experiencia del usuario y la accesibilidad de los datos espaciales. ¿Puedes elaborar más sobre tu idea?"
       ],
       comment: [
-        t('chat.bot_response_comment_1'),
-        t('chat.bot_response_comment_2'),
-        t('chat.bot_response_comment_3')
+        "¡Gracias por compartir tu experiencia! Es muy valioso para nosotros saber cómo está funcionando el sistema para los usuarios. ¿Hay algo específico que te gustaría ver mejorado?",
+        "Me alegra saber que estás disfrutando de las funcionalidades del dashboard. Es importante para nosotros recibir feedback constructivo. ¿Hay alguna característica en particular que te gustaría que desarrollemos más?",
+        "¡Excelente feedback! Es muy importante para nosotros mantener la calidad y utilidad del sistema. ¿Hay algún aspecto específico que te gustaría que mejoremos?"
       ],
       message: [
-        t('chat.bot_response_message_1'),
-        t('chat.bot_response_message_2'),
-        t('chat.bot_response_message_3')
+        "Entiendo perfectamente. Los datos espaciales pueden ser complejos, pero estamos aquí para hacerlos accesibles y comprensibles. ¿En qué más puedo ayudarte con tu exploración del cosmos?",
+        "Interesante punto de vista. La exploración espacial está evolucionando rápidamente con nuevas tecnologías y descubrimientos. ¿Te gustaría que analicemos algún aspecto específico o te cuente sobre las últimas novedades?",
+        "Gracias por compartir eso con la comunidad. Es importante mantener estas discusiones constructivas sobre astronomía y exploración espacial. ¿Tienes alguna pregunta específica sobre algún fenómeno cósmico?"
       ]
     };
 

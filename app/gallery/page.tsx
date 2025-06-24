@@ -4,57 +4,57 @@ import { Camera, Image as ImageIcon, Sparkles, Eye, Satellite } from "lucide-rea
 const GALLERY = [
   {
     title: "Pilares de la Creación (Hubble)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/6/68/Pillars_of_Creation.jpg",
     description: "Una de las imágenes más icónicas del Hubble, mostrando la formación estelar en la Nebulosa del Águila.",
     icon: <Camera className="h-6 w-6 text-yellow-400" />,
+    emoji: "🌟"
   },
   {
     title: "Galaxia Cartwheel (JWST)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Cartwheel_Galaxy.jpg/1200px-Cartwheel_Galaxy.jpg",
     description: "Imagen de la galaxia Cartwheel capturada por el James Webb, mostrando detalles nunca antes vistos.",
     icon: <Camera className="h-6 w-6 text-blue-400" />,
+    emoji: "🌀"
   },
   {
     title: "Nebulosa de Orión (JWST)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orion_Nebula_-_Hubble_2006_mosaic_18000.jpg/1200px-Orion_Nebula_-_Hubble_2006_mosaic_18000.jpg",
     description: "Visualización infrarroja de la Nebulosa de Orión, revelando el nacimiento de estrellas.",
     icon: <Sparkles className="h-6 w-6 text-pink-400" />,
+    emoji: "✨"
   },
   {
     title: "Agujero Negro en M87 (EHT)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/Black_hole_-_Messier_87_crop_max_res.jpg/1200px-Black_hole_-_Messier_87_crop_max_res.jpg",
     description: "Primera imagen real de un agujero negro, obtenida por el Event Horizon Telescope.",
     icon: <ImageIcon className="h-6 w-6 text-orange-400" />,
+    emoji: "⚫"
   },
   {
     title: "Supernova SN 1987A (Hubble)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/SN1987A.jpg/1200px-SN1987A.jpg",
     description: "Remanente de supernova en la Gran Nube de Magallanes, capturado por el Hubble.",
     icon: <Camera className="h-6 w-6 text-purple-400" />,
+    emoji: "💥"
   },
   {
     title: "Galaxia Sombrero (Hubble)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/M104_ngc4594_sombrero_galaxy_hi-res.jpg/1200px-M104_ngc4594_sombrero_galaxy_hi-res.jpg",
     description: "La galaxia Sombrero (M104), una de las galaxias más fotogénicas del universo.",
     icon: <Eye className="h-6 w-6 text-cyan-400" />,
+    emoji: "👒"
   },
   {
     title: "Nebulosa del Cangrejo (Hubble)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Crab_Nebula.jpg/1200px-Crab_Nebula.jpg",
     description: "Remanente de supernova en la constelación de Tauro, resultado de una explosión en 1054.",
     icon: <Sparkles className="h-6 w-6 text-red-400" />,
+    emoji: "🦀"
   },
   {
     title: "Galaxia Andrómeda (Hubble)",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Andromeda_Galaxy_%28with_h-alpha%29.jpg/1200px-Andromeda_Galaxy_%28with_h-alpha%29.jpg",
     description: "Nuestra galaxia vecina más cercana, visible a simple vista desde la Tierra.",
     icon: <Eye className="h-6 w-6 text-indigo-400" />,
+    emoji: "🌌"
   },
   {
     title: "Estación Espacial Internacional",
-    src: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/International_Space_Station_after_undocking_of_STS-132.jpg/1200px-International_Space_Station_after_undocking_of_STS-132.jpg",
     description: "La ISS, el laboratorio espacial más grande en órbita terrestre baja.",
     icon: <Satellite className="h-6 w-6 text-green-400" />,
+    emoji: "🛰️"
   }
 ];
 
@@ -73,15 +73,12 @@ export default function GalleryPage() {
                 {item.icon}
                 <span className="text-white font-semibold text-lg">{item.title}</span>
               </div>
-              <img
-                src={item.src}
-                alt={item.title}
-                className="rounded-lg w-full h-48 object-cover mb-2 border border-white/10 shadow"
-                loading="lazy"
-                onError={(e) => {
-                  e.currentTarget.src = "https://via.placeholder.com/400x300/1f2937/ffffff?text=Imagen+No+Disponible";
-                }}
-              />
+              <div className="w-full h-48 mb-2 rounded-lg bg-gradient-to-br from-gray-800 to-gray-900 border border-white/10 shadow flex items-center justify-center">
+                <div className="text-center text-gray-400">
+                  <div className="text-6xl mb-2">{item.emoji}</div>
+                  <div className="text-sm">Visualización</div>
+                </div>
+              </div>
               <p className="text-gray-300 text-sm flex-1">{item.description}</p>
             </div>
           ))}
@@ -89,4 +86,4 @@ export default function GalleryPage() {
       </div>
     </div>
   );
-} 
+}

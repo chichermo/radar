@@ -61,7 +61,8 @@ import {
   Calculator,
   BookOpen,
   Users,
-  MapPin
+  MapPin,
+  DollarSign
 } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 
@@ -435,6 +436,20 @@ const useMenuCategories = () => {
           description: 'Tutoriales y documentación astronómica',
           badge: 'Pro'
         },
+        {
+          title: 'Arqueología Espacial',
+          href: '/archaeology',
+          icon: Search,
+          description: 'Descubrimientos arqueológicos relacionados con el espacio',
+          badge: 'Pro'
+        },
+        {
+          title: 'Precios',
+          href: '/pricing',
+          icon: DollarSign,
+          description: 'Planes y precios de suscripción',
+          badge: 'Principal'
+        }
       ]
     },
     {
