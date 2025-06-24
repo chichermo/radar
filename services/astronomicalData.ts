@@ -367,8 +367,28 @@ export async function getBrightAsteroids(): Promise<any[]> {
     const response = await fetch('/api/nasa-asteroids');
     const data = await response.json();
     
-    // Filtrar solo asteroides brillantes (magnitud < 10)
-    return data.filter((asteroid: any) => asteroid.magnitude < 10);
+    // Verificar que data tenga la estructura esperada
+    if (!data || !data.near_earth_objects) {
+      console.warn('Estructura de datos de asteroides inesperada:', data);
+      return [];
+    }
+    
+    // Extraer asteroides de todas las fechas
+    const allAsteroids: any[] = [];
+    Object.values(data.near_earth_objects).forEach((dateAsteroids: any) => {
+      if (Array.isArray(dateAsteroids)) {
+        allAsteroids.push(...dateAsteroids);
+      }
+    });
+    
+    // Filtrar solo asteroides brillantes (magnitud < 10) si tienen esa propiedad
+    // Si no tienen magnitud, devolver todos
+    return allAsteroids.filter((asteroid: any) => {
+      if (asteroid.absolute_magnitude_h) {
+        return asteroid.absolute_magnitude_h < 10;
+      }
+      return true; // Si no tiene magnitud, incluirlo
+    });
   } catch (error) {
     console.error('Error obteniendo asteroides brillantes:', error);
     return [];
@@ -382,8 +402,20 @@ export async function getVisibleSatellites(): Promise<any[]> {
     const response = await fetch('/api/space-track');
     const data = await response.json();
     
-    // Filtrar solo satélites brillantes y visibles
-    return data.filter((satellite: any) => satellite.magnitude < 6);
+    // Verificar que data tenga la estructura esperada
+    if (!data || !data.data || !Array.isArray(data.data)) {
+      console.warn('Estructura de datos de satélites inesperada:', data);
+      return [];
+    }
+    
+    // Filtrar solo satélites brillantes y visibles si tienen esa propiedad
+    // Si no tienen magnitud, devolver todos
+    return data.data.filter((satellite: any) => {
+      if (satellite.magnitude !== undefined) {
+        return satellite.magnitude < 6;
+      }
+      return true; // Si no tiene magnitud, incluirlo
+    });
   } catch (error) {
     console.error('Error obteniendo satélites visibles:', error);
     return [];

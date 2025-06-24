@@ -57,7 +57,9 @@ import {
   Clock,
   ChevronRight,
   Sparkles,
-  Database
+  Database,
+  Calculator,
+  BookOpen
 } from 'lucide-react';
 import LanguageSelector from './LanguageSelector';
 
@@ -71,17 +73,6 @@ const ClientWrapper = ({ children }: { children: React.ReactNode }) => {
 // Menú reorganizado por categorías lógicas con traducciones
 const useMenuCategories = () => {
   const { t, locale } = useI18n();
-  
-  const BADGE_TRANSLATIONS = {
-    Principal: t('badges.main'),
-    Pro: t('badges.pro'),
-    Premium: t('badges.premium'),
-    Enterprise: t('badges.enterprise'),
-    AI: t('badges.ai'),
-    Nuevo: t('badges.new'),
-    NASA: t('badges.nasa'),
-    Admin: t('badges.admin'),
-  };
   
   return [
     {
@@ -104,7 +95,200 @@ const useMenuCategories = () => {
       ]
     },
     {
-      title: t('categories.ai'),
+      title: '🔭 OBSERVACIÓN ESPACIAL',
+      items: [
+        {
+          title: t('navigation.orbital'),
+          href: '/orbital',
+          icon: Globe,
+          description: 'Posición de satélites en tiempo real',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.skymap'),
+          href: '/skymap',
+          icon: Map,
+          description: 'Visualización de objetos espaciales',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.satellite_map'),
+          href: '/satellite-map',
+          icon: Satellite,
+          description: 'Mapa de satélites en tiempo real',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.signals'),
+          href: '/signals',
+          icon: Radio,
+          description: 'Señales espaciales detectadas',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.seti'),
+          href: '/seti',
+          icon: Search,
+          description: 'Búsqueda de inteligencia extraterrestre',
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.passes'),
+          href: '/passes',
+          icon: Clock,
+          description: 'Próximos pasos de satélites',
+          badge: 'Pro'
+        }
+      ]
+    },
+    {
+      title: '🚀 EXPLORACIÓN ESPACIAL',
+      items: [
+        {
+          title: t('navigation.asteroids'),
+          href: '/asteroids',
+          icon: Circle,
+          description: 'Objetos cercanos a la Tierra',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.mars_missions'),
+          href: '/mars-missions',
+          icon: Circle,
+          description: 'Perseverance, Curiosity, etc.',
+          badge: 'NASA'
+        },
+        {
+          title: t('navigation.exoplanets'),
+          href: '/exoplanets',
+          icon: Circle,
+          description: 'Planetas fuera del sistema solar',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.black_holes'),
+          href: '/black-holes',
+          icon: Circle,
+          description: 'Monitoreo de eventos y descubrimientos',
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.gravitational_waves'),
+          href: '/gravitational-waves',
+          icon: Waves,
+          description: 'Detecciones de LIGO/Virgo',
+          badge: 'Premium'
+        },
+        {
+          title: t('navigation.interstellar_probes'),
+          href: '/interstellar-probes',
+          icon: Rocket,
+          description: 'Voyager, New Horizons',
+          badge: 'Premium'
+        }
+      ]
+    },
+    {
+      title: '🔬 INVESTIGACIÓN CIENTÍFICA',
+      items: [
+        {
+          title: t('navigation.dark_matter'),
+          href: '/dark-matter',
+          icon: Atom,
+          description: 'Investigaciones y experimentos',
+          badge: 'Enterprise'
+        },
+        {
+          title: t('navigation.neutrinos'),
+          href: '/neutrinos',
+          icon: Snowflake,
+          description: 'Detecciones de IceCube',
+          badge: 'Enterprise'
+        },
+        {
+          title: t('navigation.tiangong'),
+          href: '/tiangong',
+          icon: Building,
+          description: 'Tiangong - Estación espacial china',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.reusable_rockets'),
+          href: '/reusable-rockets',
+          icon: Rocket,
+          description: 'SpaceX, Blue Origin',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.machine_learning'),
+          href: '/machine-learning',
+          icon: Cpu,
+          description: 'Algoritmos de IA para análisis espacial',
+          badge: 'AI'
+        }
+      ]
+    },
+    {
+      title: '🌌 FENÓMENOS ESPACIALES',
+      items: [
+        {
+          title: t('navigation.space_weather'),
+          href: '/space-weather',
+          icon: Sun,
+          description: 'Tormentas solares y actividad',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.space_debris'),
+          href: '/space-debris',
+          icon: Circle,
+          description: 'Seguimiento de desechos',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.supernovae'),
+          href: '/supernovae',
+          icon: Star,
+          description: 'Explosiones estelares',
+          badge: 'Pro'
+        },
+        {
+          title: t('navigation.earthquakes'),
+          href: '/earthquakes',
+          icon: Activity,
+          description: 'Actividad sísmica global',
+          badge: 'Pro'
+        }
+      ]
+    },
+    {
+      title: '📡 TELESCOPIOS & OBSERVATORIOS',
+      items: [
+        {
+          title: t('navigation.jwst'),
+          href: '/jwst',
+          icon: Camera,
+          description: 'Telescopio Espacial James Webb',
+          badge: 'NASA'
+        },
+        {
+          title: t('navigation.vera_rubin'),
+          href: '/vera-rubin',
+          icon: Camera,
+          description: 'Legacy Survey of Space and Time (LSST)',
+          badge: 'Nuevo'
+        },
+        {
+          title: t('navigation.nasa_apod'),
+          href: '/nasa-apod',
+          icon: ImageIcon,
+          description: 'Foto del día de la NASA',
+          badge: 'NASA'
+        }
+      ]
+    },
+    {
+      title: '🤖 INTELIGENCIA ARTIFICIAL',
       items: [
         {
           title: t('navigation.ai_predictions'),
@@ -144,160 +328,7 @@ const useMenuCategories = () => {
       ]
     },
     {
-      title: t('categories.visualization'),
-      items: [
-        {
-          title: t('navigation.orbital'),
-          href: '/orbital',
-          icon: Globe,
-          description: 'Posición de satélites en tiempo real',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.skymap'),
-          href: '/skymap',
-          icon: Map,
-          description: 'Visualización de objetos espaciales',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.jwst'),
-          href: '/jwst',
-          icon: Camera,
-          description: 'Telescopio Espacial James Webb',
-          badge: 'NASA'
-        },
-        {
-          title: t('navigation.vera_rubin'),
-          href: '/vera-rubin',
-          icon: Camera,
-          description: 'Legacy Survey of Space and Time (LSST)',
-          badge: 'Nuevo'
-        }
-      ]
-    },
-    {
-      title: t('categories.exploration'),
-      items: [
-        {
-          title: t('navigation.exoplanets'),
-          href: '/exoplanets',
-          icon: Circle,
-          description: 'Planetas fuera del sistema solar',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.black_holes'),
-          href: '/black-holes',
-          icon: Circle,
-          description: 'Monitoreo de eventos y descubrimientos',
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.gravitational_waves'),
-          href: '/gravitational-waves',
-          icon: Waves,
-          description: 'Detecciones de LIGO/Virgo',
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.dark_matter'),
-          href: '/dark-matter',
-          icon: Atom,
-          description: 'Investigaciones y experimentos',
-          badge: 'Enterprise'
-        },
-        {
-          title: t('navigation.neutrinos'),
-          href: '/neutrinos',
-          icon: Snowflake,
-          description: 'Detecciones de IceCube',
-          badge: 'Enterprise'
-        }
-      ]
-    },
-    {
-      title: t('categories.technology'),
-      items: [
-        {
-          title: t('navigation.starlink'),
-          href: '/starlink',
-          icon: Satellite,
-          description: 'Seguimiento de constelaciones',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.tiangong'),
-          href: '/tiangong',
-          icon: Building,
-          description: 'Tiangong - Estación espacial china',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.mars_missions'),
-          href: '/mars-missions',
-          icon: Circle,
-          description: 'Perseverance, Curiosity, etc.',
-          badge: 'NASA'
-        },
-        {
-          title: t('navigation.interstellar_probes'),
-          href: '/interstellar-probes',
-          icon: Rocket,
-          description: 'Voyager, New Horizons',
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.reusable_rockets'),
-          href: '/reusable-rockets',
-          icon: Rocket,
-          description: 'SpaceX, Blue Origin',
-          badge: 'Pro'
-        }
-      ]
-    },
-    {
-      title: t('categories.phenomena'),
-      items: [
-        {
-          title: t('navigation.space_weather'),
-          href: '/space-weather',
-          icon: Sun,
-          description: 'Tormentas solares y actividad',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.asteroids'),
-          href: '/asteroids',
-          icon: Circle,
-          description: 'Objetos cercanos a la Tierra',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.space_debris'),
-          href: '/space-debris',
-          icon: Circle,
-          description: 'Seguimiento de desechos',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.supernovae'),
-          href: '/supernovae',
-          icon: Star,
-          description: 'Explosiones estelares',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.earthquakes'),
-          href: '/earthquakes',
-          icon: Activity,
-          description: 'Actividad sísmica global',
-          badge: 'Pro'
-        }
-      ]
-    },
-    {
-      title: t('categories.integration'),
+      title: '🌐 INTEGRACIÓN GLOBAL',
       items: [
         {
           title: t('navigation.global_integration'),
@@ -307,23 +338,77 @@ const useMenuCategories = () => {
           badge: 'Enterprise'
         },
         {
-          title: t('navigation.nasa_apod'),
-          href: '/nasa-apod',
-          icon: ImageIcon,
-          description: 'Foto del día de la NASA',
-          badge: 'NASA'
+          title: t('navigation.starlink'),
+          href: '/starlink',
+          icon: Satellite,
+          description: 'Seguimiento de constelaciones',
+          badge: 'Pro'
         }
       ]
     },
     {
-      title: t('categories.settings'),
+      title: '📰 NOTICIAS & PROYECTOS',
       items: [
         {
-          title: t('navigation.legal'),
+          title: 'Timeline Espacial',
+          href: '/timeline',
+          icon: History,
+          description: 'Hitos históricos y futuros de la exploración espacial',
+          badge: 'Nuevo'
+        },
+        {
+          title: 'Proyectos Destacados',
+          href: '/projects',
+          icon: Rocket,
+          description: 'Proyectos espaciales actuales y futuros',
+          badge: 'Pro'
+        },
+        {
+          title: 'Herramientas',
+          href: '/tools',
+          icon: Calculator,
+          description: 'Calculadoras y simuladores astronómicos',
+          badge: 'Pro'
+        },
+        {
+          title: 'Galería',
+          href: '/gallery',
+          icon: ImageIcon,
+          description: 'Imágenes y visualizaciones cósmicas',
+          badge: 'Pro'
+        },
+        {
+          title: 'Recursos',
+          href: '/resources',
+          icon: BookOpen,
+          description: 'Tutoriales y documentación astronómica',
+          badge: 'Pro'
+        },
+      ]
+    },
+    {
+      title: '⚙️ CONFIGURACIÓN',
+      items: [
+        {
+          title: t('navigation.settings'),
           href: '/settings',
           icon: Settings,
           description: 'Ajustes del sistema',
           badge: 'Admin'
+        },
+        {
+          title: t('navigation.chat'),
+          href: '/chat',
+          icon: MessageCircle,
+          description: 'Chat con IA',
+          badge: 'AI'
+        },
+        {
+          title: t('navigation.faq'),
+          href: '/faq',
+          icon: Info,
+          description: 'Preguntas frecuentes',
+          badge: 'Principal'
         }
       ]
     }
