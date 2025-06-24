@@ -300,6 +300,27 @@ const useMenuCategories = () => {
           icon: ImageIcon,
           description: 'Foto del día de la NASA',
           badge: 'NASA'
+        },
+        {
+          title: 'Asteroides Cercanos',
+          href: '/asteroids',
+          icon: AlertTriangle,
+          description: 'Monitoreo de NEOs con datos de NASA',
+          badge: 'NASA'
+        },
+        {
+          title: 'Radioaficionados',
+          href: '/satnogs',
+          icon: Radio,
+          description: 'Datos de SatNOGS y estaciones',
+          badge: 'Nuevo'
+        },
+        {
+          title: 'Heavens Above',
+          href: '/heavens',
+          icon: Eye,
+          description: 'Datos astronómicos y satélites visibles',
+          badge: 'Nuevo'
         }
       ]
     },

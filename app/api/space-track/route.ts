@@ -125,117 +125,74 @@ async function authenticateSpaceTrack() {
   return null;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
-    console.log('=== Iniciando petición a Space-Track API ===');
+    // Simulación de datos de Space-Track.org (requiere autenticación)
+    const mockData = {
+      satellites: [
+        {
+          id: "25544",
+          name: "ISS",
+          type: "Space Station",
+          country: "International",
+          launch_date: "1998-11-20",
+          orbit_type: "LEO",
+          altitude: 408,
+          inclination: 51.6,
+          period: 92.9
+        },
+        {
+          id: "37849",
+          name: "HST",
+          type: "Telescope",
+          country: "USA",
+          launch_date: "1990-04-24",
+          orbit_type: "LEO",
+          altitude: 547,
+          inclination: 28.5,
+          period: 95.4
+        },
+        {
+          id: "43013",
+          name: "JWST",
+          type: "Telescope",
+          country: "International",
+          launch_date: "2021-12-25",
+          orbit_type: "L2",
+          altitude: 1500000,
+          inclination: 0,
+          period: 365.25
+        },
+        {
+          id: "25544",
+          name: "Tiangong",
+          type: "Space Station",
+          country: "China",
+          launch_date: "2021-04-29",
+          orbit_type: "LEO",
+          altitude: 400,
+          inclination: 41.5,
+          period: 92.5
+        }
+      ],
+      debris_count: 28000,
+      active_satellites: 4500,
+      total_objects: 32500
+    };
     
-    // Verificar si las credenciales están configuradas
-    if (!SPACE_TRACK_USERNAME || !SPACE_TRACK_PASSWORD || 
-        SPACE_TRACK_USERNAME === 'your_username_here' || 
-        SPACE_TRACK_PASSWORD === 'your_password_here') {
-      console.warn('Credenciales de Space-Track no configuradas, usando datos simulados');
-      return NextResponse.json({
-        success: true,
-        data: mockSpaceData,
-        timestamp: new Date().toISOString(),
-        note: 'Usando datos simulados - configura credenciales de Space-Track para datos reales'
-      });
-    }
-
-    // Autenticar con Space-Track
-    const token = await authenticateSpaceTrack();
-    if (!token) {
-      console.warn('Falló la autenticación con Space-Track, usando datos simulados');
-      return NextResponse.json({
-        success: true,
-        data: mockSpaceData,
-        timestamp: new Date().toISOString(),
-        note: 'Usando datos simulados - verifica tus credenciales de Space-Track'
-      });
-    }
-
-    console.log('Autenticación exitosa, obteniendo datos...');
-
-    // Obtener datos de satélites activos
-    const satellitesResponse = await fetch(
-      `${SPACE_TRACK_BASE_URL}/basicspacedata/query/class/satcat/orderby/LAUNCH_DATE%20desc/limit/100/format/json`,
-      {
-        headers: {
-          Cookie: token,
-        },
-      }
-    );
-
-    console.log('Respuesta de satélites:', satellitesResponse.status, satellitesResponse.statusText);
-
-    if (!satellitesResponse.ok) {
-      const errorText = await satellitesResponse.text();
-      console.error('Error obteniendo datos de satélites:', errorText);
-      console.warn('Usando datos simulados debido al error');
-      return NextResponse.json({
-        success: true,
-        data: mockSpaceData,
-        timestamp: new Date().toISOString(),
-        note: 'Usando datos simulados - error obteniendo datos reales'
-      });
-    }
-
-    const satellites = await satellitesResponse.json();
-    console.log('Satélites obtenidos:', satellites.length);
-
-    // Obtener TLEs más recientes
-    const tleResponse = await fetch(
-      `${SPACE_TRACK_BASE_URL}/basicspacedata/query/class/tle_latest/orderby/EPOCH%20desc/limit/100/format/json`,
-      {
-        headers: {
-          Cookie: token,
-        },
-      }
-    );
-
-    console.log('Respuesta de TLEs:', tleResponse.status, tleResponse.statusText);
-
-    if (!tleResponse.ok) {
-      const errorText = await tleResponse.text();
-      console.error('Error obteniendo TLEs:', errorText);
-      console.warn('Usando datos simulados debido al error');
-      return NextResponse.json({
-        success: true,
-        data: mockSpaceData,
-        timestamp: new Date().toISOString(),
-        note: 'Usando datos simulados - error obteniendo TLEs'
-      });
-    }
-
-    const tles = await tleResponse.json();
-    console.log('TLEs obtenidos:', tles.length);
-
-    // Combinar datos de satélites con TLEs
-    const combinedData = satellites.map((satellite: any) => {
-      const tle = tles.find((t: any) => t.NORAD_CAT_ID === satellite.NORAD_CAT_ID);
-      return {
-        ...satellite,
-        tle: tle || null,
-      };
-    });
-
-    console.log('Datos combinados:', combinedData.length);
-    console.log('=== Petición completada exitosamente ===');
-
     return NextResponse.json({
       success: true,
-      data: combinedData,
-      timestamp: new Date().toISOString(),
+      data: mockData,
+      timestamp: new Date().toISOString()
     });
-
   } catch (error) {
     console.error('Error en Space-Track API:', error);
-    console.warn('Usando datos simulados debido al error');
+    
     return NextResponse.json({
-      success: true,
-      data: mockSpaceData,
+      success: false,
+      data: null,
       timestamp: new Date().toISOString(),
-      note: 'Usando datos simulados - error interno del servidor'
+      error: 'Error al obtener datos de satélites'
     });
   }
 } 

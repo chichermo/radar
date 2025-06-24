@@ -122,6 +122,10 @@ const translations: Record<string, TranslationData> = {
       iss_location: "Ubicación ISS",
       global_integration: "Integración Global",
       nasa_apod: "NASA APOD",
+      satnogs: "Radioaficionados",
+      heavens: "Heavens Above",
+      asteroids: "Asteroides Cercanos",
+      satellite_map: "Mapa de Satélites",
       pricing: "Precios",
       legal: "Legal"
     },
@@ -516,6 +520,10 @@ const translations: Record<string, TranslationData> = {
       iss_location: "ISS Location",
       global_integration: "Global Integration",
       nasa_apod: "NASA APOD",
+      satnogs: "Radioaficionados",
+      heavens: "Heavens Above",
+      asteroids: "Asteroides Cercanos",
+      satellite_map: "Mapa de Satélites",
       pricing: "Pricing",
       legal: "Legal"
     },

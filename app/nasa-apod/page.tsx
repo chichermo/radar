@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { Calendar, Camera, Info } from 'lucide-react';
+import { Calendar, Camera, Info, User, RefreshCw, ExternalLink } from 'lucide-react';
+
+interface APODData {
+  date: string;
+  title: string;
+  explanation: string;
+  url: string;
+  media_type: string;
+  copyright?: string;
+}
 
 function getLastNDates(n: number) {
   const dates = [];
@@ -14,97 +23,40 @@ function getLastNDates(n: number) {
   return dates;
 }
 
-export default function NasaApodPage() {
-  const [data, setData] = useState<any>(null);
-  const [error, setError] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+export default function NASAAPODPage() {
+  const [apodData, setApodData] = useState<APODData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  // Obtener miniaturas de los últimos 4 días
-  const lastDates = getLastNDates(4);
-  const [previousImages, setPreviousImages] = React.useState<any[]>([]);
-  const [loadingPrevious, setLoadingPrevious] = React.useState(true);
-  
-  React.useEffect(() => {
-    setLoadingPrevious(true);
-    // Usar Promise.allSettled para manejar errores individuales
-    Promise.allSettled(
-      lastDates.map(date =>
-        fetch(`/api/nasa-apod?date=${date}`)
-          .then(res => res.json())
-          .then(data => {
-            if (data.error) {
-              throw new Error(data.error);
-            }
-            return data;
-          })
-      )
-    ).then(results => {
-      const images = results.map((result, index) => {
-        if (result.status === 'fulfilled') {
-          return result.value;
-        } else {
-          return { 
-            error: `Error al cargar imagen para ${lastDates[index]}`,
-            date: lastDates[index],
-            title: `Error - ${lastDates[index]}`,
-            url: "https://apod.nasa.gov/apod/image/2401/ngc1566_hst_960.jpg"
-          };
-        }
-      });
-      setPreviousImages(images);
-      setLoadingPrevious(false);
-    });
-  }, []);
+  const fetchAPODData = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/nasa-apod');
+      const result = await response.json();
+      
+      if (result.success) {
+        setApodData(result.data);
+        setError(null);
+      } else {
+        setError('Error al cargar datos de NASA APOD');
+      }
+    } catch (err) {
+      setError('Error de conexión');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch('/api/nasa-apod')
-      .then(res => res.json())
-      .then(json => {
-        if (json.error) {
-          setError(json.error);
-          setData(null);
-        } else {
-          setData(json);
-          setError(null);
-        }
-      })
-      .catch(err => {
-        setError(err.message);
-        setData(null);
-      })
-      .finally(() => setIsLoading(false));
+    fetchAPODData();
   }, []);
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-700 rounded w-1/3 mb-4"></div>
-            <div className="h-96 bg-gray-700 rounded mb-4"></div>
-            <div className="h-4 bg-gray-700 rounded w-full mb-2"></div>
-            <div className="h-4 bg-gray-700 rounded w-3/4"></div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-        <div className="max-w-6xl mx-auto">
-          <div className="bg-red-900/20 border border-red-500 rounded-lg p-6">
-            <h1 className="text-2xl font-bold mb-4">Error al cargar la imagen</h1>
-            <p className="text-red-300">{error}</p>
-            <button 
-              onClick={() => window.location.reload()} 
-              className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded"
-            >
-              Reintentar
-            </button>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Cargando imágenes astronómicas...</p>
         </div>
       </div>
     );
@@ -113,127 +65,76 @@ export default function NasaApodPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
       <div className="max-w-6xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold mb-2 flex items-center text-white">
-            <Camera className="mr-3 h-8 w-8" />
-            Imagen del Día de la NASA
-          </h1>
-          <p className="text-gray-400 flex items-center">
-            <Calendar className="mr-2 h-4 w-4" />
-            {data?.date && new Date(data.date).toLocaleDateString('es-ES', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
-            })}
-          </p>
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold text-white mb-2">NASA APOD</h1>
+          <p className="text-lg text-gray-300">Imagen Astronómica del Día - NASA</p>
+          <button
+            onClick={fetchAPODData}
+            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 mx-auto"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Actualizar
+          </button>
         </div>
 
-        {data && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2">
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 overflow-hidden">
-                {data.media_type === 'video' ? (
-                  <iframe
-                    src={data.url}
-                    title={data.title}
-                    className="w-full h-96"
-                    frameBorder="0"
-                    allowFullScreen
-                  />
-                ) : (
-                  <img
-                    src={data.url}
-                    alt={data.title}
-                    className="w-full h-auto"
-                    onError={(e) => {
-                      e.currentTarget.src = "https://apod.nasa.gov/apod/image/2401/ngc1566_hst_960.jpg";
-                    }}
-                  />
-                )}
-                <div className="p-6">
-                  <h2 className="text-2xl font-bold mb-4 text-white">{data.title}</h2>
-                  <p className="text-gray-300 leading-relaxed">{data.explanation}</p>
-                  {data.copyright && (
-                    <p className="mt-4 text-sm text-gray-400">
-                      Crédito: {data.copyright}
-                    </p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-6">
-                <h3 className="text-xl font-semibold mb-4 flex items-center text-white">
-                  <Info className="mr-2 h-5 w-5" />
-                  Información
-                </h3>
-                <div className="space-y-3">
-                  <div>
-                    <span className="text-gray-400">Tipo:</span>
-                    <span className="ml-2 capitalize text-white">{data.media_type}</span>
-                  </div>
-                  <div>
-                    <span className="text-gray-400">Fecha:</span>
-                    <span className="ml-2 text-white">{data.date}</span>
-                  </div>
-                  {data.hdurl && (
-                    <a
-                      href={data.hdurl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-block px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm"
-                    >
-                      Ver en HD
-                    </a>
-                  )}
-                </div>
-              </div>
-
-              <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 p-6">
-                <h3 className="text-xl font-semibold mb-4 text-white">Imágenes Anteriores</h3>
-                {loadingPrevious ? (
-                  <div className="space-y-3">
-                    {[1, 2, 3, 4].map(i => (
-                      <div key={i} className="animate-pulse">
-                        <div className="h-20 bg-gray-700 rounded"></div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    {previousImages.map((image, index) => (
-                      <div key={index} className="border border-white/10 rounded p-3 bg-white/5">
-                        {image.error ? (
-                          <div className="text-red-400 text-sm">
-                            <p className="font-semibold">{image.title}</p>
-                            <p className="text-xs">{image.error}</p>
-                          </div>
-                        ) : (
-                          <div className="flex items-center space-x-3">
-                            <img
-                              src={image.url}
-                              alt={image.title}
-                              className="w-16 h-16 object-cover rounded"
-                              onError={(e) => {
-                                e.currentTarget.src = "https://apod.nasa.gov/apod/image/2401/ngc1566_hst_960.jpg";
-                              }}
-                            />
-                            <div>
-                              <p className="text-sm font-medium line-clamp-2 text-white">{image.title}</p>
-                              <p className="text-xs text-gray-400">{image.date}</p>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-4 mb-6">
+            <p className="text-red-300">{error}</p>
           </div>
         )}
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {apodData.map((item, index) => (
+            <div key={index} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 hover:bg-white/10 transition-all duration-300">
+              <div className="mb-4 flex items-center gap-2">
+                <Camera className="h-6 w-6 text-blue-400" />
+                <h2 className="text-xl font-semibold text-white">{item.title}</h2>
+              </div>
+              
+              {item.media_type === 'image' ? (
+                <img
+                  src={item.url}
+                  alt={item.title}
+                  className="w-full h-64 object-cover rounded-lg mb-4 border border-white/10"
+                  loading="lazy"
+                  onError={(e) => {
+                    e.currentTarget.src = "https://via.placeholder.com/400x300/1f2937/ffffff?text=Imagen+No+Disponible";
+                  }}
+                />
+              ) : (
+                <div className="w-full h-64 bg-gray-800 rounded-lg mb-4 flex items-center justify-center">
+                  <p className="text-gray-400">Video no disponible</p>
+                </div>
+              )}
+              
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                  <Calendar className="h-4 w-4" />
+                  <span>{new Date(item.date).toLocaleDateString('es-ES')}</span>
+                </div>
+                
+                {item.copyright && (
+                  <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <User className="h-4 w-4" />
+                    <span>{item.copyright}</span>
+                  </div>
+                )}
+                
+                <p className="text-gray-300 text-sm leading-relaxed">{item.explanation}</p>
+                
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 text-blue-400 hover:text-blue-300 text-sm"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Ver imagen original
+                </a>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -1,307 +1,178 @@
 "use client";
-import { AlertTriangle, ArrowRight, Globe, Radar, Rocket } from 'lucide-react';
-import { useEffect, useState } from 'react';
-import { getNeoAsteroids } from '../../services/neoAsteroids';
-import { formatNumber, formatDate, formatTimeOnly } from '@/utils/formatters';
-import { useI18n } from '@/lib/i18n';
+import { useState, useEffect } from "react";
+import { AlertTriangle, Globe, Zap, RefreshCw } from "lucide-react";
 
-// Mock data - esto será reemplazado por datos reales de la API de NASA
-const mockNeos = [
-  {
-    id: '2024-BR1',
-    name: '2024 BR1',
-    diameter: 120,
-    distance: 0.0234,
-    velocity: 12.5,
-    hazard: false,
-    approach_date: '2024-02-26T15:30:00Z',
-    orbit_body: 'Earth',
-    magnitude: 19.2,
-    last_updated: '2024-02-25T12:00:00Z'
-  },
-  {
-    id: '2024-AA2',
-    name: '2024 AA2',
-    diameter: 45,
-    distance: 0.0156,
-    velocity: 8.7,
-    hazard: true,
-    approach_date: '2024-02-27T08:15:00Z',
-    orbit_body: 'Earth',
-    magnitude: 20.1,
-    last_updated: '2024-02-25T12:00:00Z'
-  }
-];
-
-const hazardLevels = {
-  low: 'bg-green-500/10 text-green-400',
-  medium: 'bg-yellow-500/10 text-yellow-400',
-  high: 'bg-red-500/10 text-red-400'
-};
+interface AsteroidData {
+  id: string;
+  name: string;
+  absolute_magnitude_h: number;
+  estimated_diameter: {
+    kilometers: {
+      estimated_diameter_min: number;
+      estimated_diameter_max: number;
+    };
+  };
+  is_potentially_hazardous_asteroid: boolean;
+  close_approach_data: Array<{
+    close_approach_date: string;
+    relative_velocity: {
+      kilometers_per_second: string;
+      kilometers_per_hour: string;
+    };
+    miss_distance: {
+      astronomical: string;
+      lunar: string;
+      kilometers: string;
+    };
+  }>;
+}
 
 export default function AsteroidsPage() {
-  const { t } = useI18n();
-  const [asteroids, setAsteroids] = useState<any[]>([]);
+  const [asteroids, setAsteroids] = useState<AsteroidData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    total: 0,
+    hazardous: 0,
+    averageSize: 0
+  });
+
+  const fetchAsteroids = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/nasa-asteroids');
+      const result = await response.json();
+      
+      if (result.success && result.data.near_earth_objects) {
+        const allAsteroids: AsteroidData[] = [];
+        Object.values(result.data.near_earth_objects).forEach((dayAsteroids: any) => {
+          allAsteroids.push(...dayAsteroids);
+        });
+        
+        setAsteroids(allAsteroids);
+        
+        const hazardous = allAsteroids.filter(a => a.is_potentially_hazardous_asteroid).length;
+        const avgSize = allAsteroids.reduce((sum, a) => {
+          return sum + (a.estimated_diameter.kilometers.estimated_diameter_max + 
+                       a.estimated_diameter.kilometers.estimated_diameter_min) / 2;
+        }, 0) / allAsteroids.length;
+        
+        setStats({
+          total: allAsteroids.length,
+          hazardous,
+          averageSize: avgSize
+        });
+      }
+    } catch (err) {
+      console.error('Error:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const data = await getNeoAsteroids();
-        if (data && data.near_earth_objects) {
-          // Unir todos los días en un solo array
-          const all = Object.values(data.near_earth_objects).flat();
-          setAsteroids(all);
-        } else {
-          // Si no hay datos reales, usar mock data
-          setAsteroids(mockNeos);
-        }
-      } catch (error) {
-        console.error('Error cargando asteroides:', error);
-        setAsteroids(mockNeos);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchData();
+    fetchAsteroids();
   }, []);
 
-  // Función helper para obtener el diámetro de forma segura
-  const getDiameter = (ast: any) => {
-    try {
-      if (ast.estimated_diameter?.meters?.estimated_diameter_max) {
-        return Math.round(ast.estimated_diameter.meters.estimated_diameter_max);
-      }
-      if (ast.diameter) {
-        return ast.diameter;
-      }
-      return 'N/A';
-    } catch {
-      return 'N/A';
-    }
-  };
-
-  // Función helper para obtener la distancia de forma segura
-  const getDistance = (ast: any) => {
-    try {
-      if (ast.close_approach_data?.[0]?.miss_distance?.kilometers) {
-        return formatNumber(Math.round(ast.close_approach_data[0].miss_distance.kilometers));
-      }
-      if (ast.distance) {
-        return formatNumber(Math.round(ast.distance * 149597870.7));
-      }
-      return 'N/A';
-    } catch {
-      return 'N/A';
-    }
-  };
-
-  // Función helper para obtener la velocidad de forma segura
-  const getVelocity = (ast: any) => {
-    try {
-      if (ast.close_approach_data?.[0]?.relative_velocity?.kilometers_per_hour) {
-        return ast.close_approach_data[0].relative_velocity.kilometers_per_hour;
-      }
-      if (ast.velocity) {
-        return ast.velocity;
-      }
-      return 'N/A';
-    } catch {
-      return 'N/A';
-    }
-  };
-
-  // Función helper para obtener la fecha de acercamiento de forma segura
-  const getApproachDate = (ast: any) => {
-    try {
-      if (ast.close_approach_data?.[0]?.close_approach_date_full) {
-        return ast.close_approach_data[0].close_approach_date_full;
-      }
-      if (ast.approach_date) {
-        return formatDate(new Date(ast.approach_date));
-      }
-      return 'N/A';
-    } catch {
-      return 'N/A';
-    }
-  };
-
-  return (
-    <div className="space-y-6 ml-64">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          {t('asteroids.title')}
-        </h1>
-        <p className="text-gray-300">
-          {t('asteroids.subtitle')}
-        </p>
-      </header>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              {t('asteroids.upcoming_approaches')}
-            </h2>
-            <div className="space-y-4">
-              {asteroids.map((ast: any, index: number) => (
-                <div
-                  key={ast.id || index}
-                  className="bg-gray-700/50 rounded-lg p-4 border border-gray-600"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <h3 className="text-lg font-medium text-white">
-                          {ast.name || `${t('asteroids.asteroid')} ${index + 1}`}
-                        </h3>
-                        {(ast.is_potentially_hazardous_asteroid || ast.hazard) && (
-                          <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-500/10 text-red-400">
-                            {t('asteroids.potentially_hazardous')}
-                          </span>
-                        )}
-                      </div>
-                      <div className="mt-2 grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-gray-400">{t('asteroids.diameter')}</p>
-                          <p className="text-white">{getDiameter(ast)} {t('asteroids.meters')}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">{t('asteroids.distance')}</p>
-                          <p className="text-white">{getDistance(ast)} {t('asteroids.km')}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">{t('asteroids.velocity')}</p>
-                          <p className="text-white">{getVelocity(ast)} {t('asteroids.kmh')}</p>
-                        </div>
-                        <div>
-                          <p className="text-gray-400">{t('asteroids.magnitude')}</p>
-                          <p className="text-white">{ast.absolute_magnitude_h || ast.magnitude || 'N/A'}</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm text-gray-400">{t('asteroids.approach')}</p>
-                      <p className="text-white">{getApproachDate(ast)}</p>
-                      <p className="text-xs text-gray-400 mt-1">
-                        {t('asteroids.last_update')}: {formatTimeOnly(new Date())}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-6">
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              {t('asteroids.statistics')}
-            </h2>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-gray-700/50 rounded-lg p-4">
-                <div className="flex items-center space-x-2">
-                  <Globe className="h-5 w-5 text-blue-400" />
-                  <h3 className="font-medium text-white">{t('asteroids.total_neos')}</h3>
-                </div>
-                <p className="text-2xl font-bold text-white mt-2">28,000+</p>
-              </div>
-              <div className="bg-gray-700/50 rounded-lg p-4">
-                <div className="flex items-center space-x-2">
-                  <AlertTriangle className="h-5 w-5 text-yellow-400" />
-                  <h3 className="font-medium text-white">{t('asteroids.potentially_hazardous_title')}</h3>
-                </div>
-                <p className="text-2xl font-bold text-white mt-2">2,300+</p>
-              </div>
-              <div className="bg-gray-700/50 rounded-lg p-4">
-                <div className="flex items-center space-x-2">
-                  <Radar className="h-5 w-5 text-green-400" />
-                  <h3 className="font-medium text-white">{t('asteroids.monitored')}</h3>
-                </div>
-                <p className="text-2xl font-bold text-white mt-2">100%</p>
-              </div>
-              <div className="bg-gray-700/50 rounded-lg p-4">
-                <div className="flex items-center space-x-2">
-                  <Rocket className="h-5 w-5 text-purple-400" />
-                  <h3 className="font-medium text-white">{t('asteroids.active_missions')}</h3>
-                </div>
-                <p className="text-2xl font-bold text-white mt-2">5</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-            <h2 className="text-xl font-semibold text-white mb-4">
-              {t('asteroids.filters')}
-            </h2>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  {t('asteroids.max_distance')}
-                </label>
-                <select className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                  <option>{t('asteroids.distance_option_1')}</option>
-                  <option>{t('asteroids.distance_option_2')}</option>
-                  <option>{t('asteroids.distance_option_3')}</option>
-                  <option>{t('asteroids.distance_option_4')}</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  {t('asteroids.min_size')}
-                </label>
-                <select className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white">
-                  <option>{t('asteroids.size_option_1')}</option>
-                  <option>{t('asteroids.size_option_2')}</option>
-                  <option>{t('asteroids.size_option_3')}</option>
-                  <option>{t('asteroids.size_option_4')}</option>
-                </select>
-              </div>
-              <div>
-                <label className="flex items-center space-x-2">
-                  <input type="checkbox" className="rounded border-gray-600" />
-                  <span className="text-sm text-gray-300">
-                    {t('asteroids.only_hazardous')}
-                  </span>
-                </label>
-              </div>
-            </div>
-          </div>
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <RefreshCw className="h-8 w-8 animate-spin mx-auto mb-4" />
+          <p>Analizando asteroides cercanos...</p>
         </div>
       </div>
+    );
+  }
 
-      <div className="mt-8">
-        <h2 className="text-2xl font-bold text-white mb-4">{t('asteroids.neos_table_title')}</h2>
-        <p className="text-xs text-gray-400 mb-4">{t('asteroids.data_source')}</p>
-        {loading ? (
-          <div className="text-white">{t('asteroids.loading')}</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-gray-800 rounded-lg">
-              <thead>
-                <tr>
-                  <th className="px-4 py-2 text-left text-gray-300">{t('asteroids.table_name')}</th>
-                  <th className="px-4 py-2 text-left text-gray-300">{t('asteroids.table_date')}</th>
-                  <th className="px-4 py-2 text-left text-gray-300">{t('asteroids.table_size')}</th>
-                  <th className="px-4 py-2 text-left text-gray-300">{t('asteroids.table_distance')}</th>
-                  <th className="px-4 py-2 text-left text-gray-300">{t('asteroids.table_risk')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {asteroids.map((ast: any, index: number) => (
-                  <tr key={ast.id || index} className="border-b border-gray-700">
-                    <td className="px-4 py-2 text-white">{ast.name || `${t('asteroids.asteroid')} ${index + 1}`}</td>
-                    <td className="px-4 py-2 text-gray-300">{getApproachDate(ast)}</td>
-                    <td className="px-4 py-2 text-gray-300">{getDiameter(ast)}</td>
-                    <td className="px-4 py-2 text-gray-300">{getDistance(ast)}</td>
-                    <td className="px-4 py-2 text-red-400">{(ast.is_potentially_hazardous_asteroid || ast.hazard) ? t('asteroids.yes') : t('asteroids.no')}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold text-white mb-2">Asteroides Cercanos</h1>
+          <p className="text-lg text-gray-300">Monitoreo de objetos cercanos a la Tierra (NEOs)</p>
+          <button
+            onClick={fetchAsteroids}
+            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg flex items-center gap-2 mx-auto"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Actualizar
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center">
+            <Globe className="h-8 w-8 text-blue-400 mx-auto mb-2" />
+            <h3 className="text-2xl font-bold text-white">{stats.total}</h3>
+            <p className="text-gray-300">Total de Asteroides</p>
           </div>
-        )}
+          
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center">
+            <AlertTriangle className="h-8 w-8 text-red-400 mx-auto mb-2" />
+            <h3 className="text-2xl font-bold text-white">{stats.hazardous}</h3>
+            <p className="text-gray-300">Potencialmente Peligrosos</p>
+          </div>
+          
+          <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6 text-center">
+            <Zap className="h-8 w-8 text-yellow-400 mx-auto mb-2" />
+            <h3 className="text-2xl font-bold text-white">{stats.averageSize.toFixed(2)} km</h3>
+            <p className="text-gray-300">Tamaño Promedio</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {asteroids.map((asteroid) => (
+            <div key={asteroid.id} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-white">{asteroid.name}</h3>
+                {asteroid.is_potentially_hazardous_asteroid && (
+                  <span className="px-2 py-1 bg-red-500/20 text-red-300 text-xs rounded-full">
+                    Peligroso
+                  </span>
+                )}
+              </div>
+              
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Magnitud:</span>
+                  <span className="text-white">{asteroid.absolute_magnitude_h}</span>
+                </div>
+                
+                <div className="flex justify-between">
+                  <span className="text-gray-400">Tamaño:</span>
+                  <span className="text-white">
+                    {asteroid.estimated_diameter.kilometers.estimated_diameter_min.toFixed(3)} - 
+                    {asteroid.estimated_diameter.kilometers.estimated_diameter_max.toFixed(3)} km
+                  </span>
+                </div>
+                
+                {asteroid.close_approach_data[0] && (
+                  <>
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Próximo acercamiento:</span>
+                      <span className="text-white">
+                        {new Date(asteroid.close_approach_data[0].close_approach_date).toLocaleDateString('es-ES')}
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Velocidad:</span>
+                      <span className="text-white">
+                        {parseFloat(asteroid.close_approach_data[0].relative_velocity.kilometers_per_second).toFixed(1)} km/s
+                      </span>
+                    </div>
+                    
+                    <div className="flex justify-between">
+                      <span className="text-gray-400">Distancia mínima:</span>
+                      <span className="text-white">
+                        {parseFloat(asteroid.close_approach_data[0].miss_distance.kilometers).toLocaleString()} km
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

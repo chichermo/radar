@@ -6,8 +6,9 @@ const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minuto
 const MAX_REQUESTS = 5; // Máximo 5 requests por minuto (más restrictivo para asteroides)
 const requestCounts = new Map<string, { count: number; resetTime: number }>();
 
+const NASA_API_KEY = process.env.NASA_API_KEY || 'DEMO_KEY';
+
 export async function GET(request: NextRequest) {
-  const NASA_API_KEY = process.env.NEXT_PUBLIC_NASA_API_KEY || 'DEMO_KEY';
   const startDate = request.nextUrl.searchParams.get('start_date');
   const endDate = request.nextUrl.searchParams.get('end_date');
   
@@ -105,48 +106,56 @@ export async function GET(request: NextRequest) {
     // Cache de la respuesta exitosa
     cache.set(cacheKey, { data, timestamp: Date.now() });
     
-    return NextResponse.json(data);
+    return NextResponse.json({
+      success: true,
+      data: data,
+      timestamp: new Date().toISOString()
+    });
   } catch (error) {
-    console.error('Error fetching NASA Asteroids:', error);
+    console.error('Error en NASA Asteroids API:', error);
     
-    // En caso de error, devolver datos de fallback
+    // Datos de respaldo
     const fallbackData = {
+      element_count: 15,
       near_earth_objects: {
-        [finalStartDate]: [
+        [new Date().toISOString().split('T')[0]]: [
           {
-            id: "fallback_1",
-            name: "(2024 Example)",
+            id: "2523653",
+            name: "(2023 XA1)",
+            nasa_jpl_url: "https://ssd-api.jpl.nasa.gov/sbdb.cgi?sstr=2523653",
+            absolute_magnitude_h: 26.8,
             estimated_diameter: {
-              meters: {
-                estimated_diameter_min: 10,
-                estimated_diameter_max: 50
+              kilometers: {
+                estimated_diameter_min: 0.008,
+                estimated_diameter_max: 0.018
               }
             },
             is_potentially_hazardous_asteroid: false,
             close_approach_data: [
               {
-                miss_distance: {
-                  kilometers: "1000000"
-                },
+                close_approach_date: new Date().toISOString().split('T')[0],
                 relative_velocity: {
-                  kilometers_per_hour: "25000"
+                  kilometers_per_second: "5.2",
+                  kilometers_per_hour: "18720"
+                },
+                miss_distance: {
+                  astronomical: "0.0001",
+                  lunar: "0.04",
+                  kilometers: "14960"
                 }
               }
-            ],
-            orbital_data: {
-              semi_major_axis: "1.5",
-              eccentricity: "0.1",
-              inclination: "5.0"
-            }
+            ]
           }
         ]
-      },
-      element_count: 1,
-      links: {
-        self: url
       }
     };
     
-    return NextResponse.json(fallbackData);
+    return NextResponse.json({
+      success: false,
+      data: fallbackData,
+      timestamp: new Date().toISOString(),
+      error: 'Usando datos de respaldo'
+    });
   }
+} 
 } 
