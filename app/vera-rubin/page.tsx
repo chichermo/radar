@@ -2,8 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Camera, Database, AlertTriangle, TrendingUp, Eye, Clock, Target, Star, Globe, Activity, Zap, Search, BarChart3, Download, RefreshCw } from 'lucide-react';
-import CardComponents from '@/components/ui/card2';
-import { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
 import { useI18n } from '@/lib/i18n';
 import ClientDate from '@/components/ClientDate';
 
