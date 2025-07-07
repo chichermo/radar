@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { AlertTriangle, MapPin, Activity, Clock, Globe, TrendingUp } from 'lucide-react';
 import { formatDate, formatTimeOnly } from '@/utils/formatters';
 import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 interface Earthquake {
   id: string;
@@ -162,7 +163,15 @@ export default function EarthquakesPage() {
           </div>
           <div className="text-right">
             <p className="text-sm text-gray-400">
-              {t('earthquakes.last_update')}: {formatTimeOnly(new Date())}
+              {t('earthquakes.last_update')}: <ClientDate 
+                date={new Date()} 
+                type="time" 
+                options={{
+                  hour: '2-digit',
+                  minute: '2-digit',
+                  second: '2-digit'
+                }}
+              />
             </p>
             <p className="text-xs text-gray-500">
               {t('earthquakes.source')}

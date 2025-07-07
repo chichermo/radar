@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { MapPin, Clock, Navigation, Globe, Zap, Eye } from 'lucide-react';
+import ClientDate from '@/components/ClientDate';
 
 interface ISSPosition {
   latitude: string;
@@ -56,10 +57,6 @@ export default function ISSLocationPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatTimestamp = (timestamp: number) => {
-    return new Date(timestamp * 1000).toLocaleString();
   };
 
   const getVisibilityColor = (visibility: string) => {
@@ -191,7 +188,20 @@ export default function ISSLocationPage() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-gray-300">Última actualización:</span>
-                <span className="text-white">{formatTimestamp(data.timestamp)}</span>
+                <span className="text-white">
+                  <ClientDate 
+                    date={data.timestamp * 1000} 
+                    type="datetime" 
+                    options={{
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    }}
+                  />
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Altitud:</span>
@@ -220,7 +230,17 @@ export default function ISSLocationPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Actualización:</span>
-                <span className="text-white">{lastUpdate.toLocaleTimeString()}</span>
+                <span className="text-white">
+                  <ClientDate 
+                    date={new Date()} 
+                    type="time" 
+                    options={{
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    }}
+                  />
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Latitud solar:</span>

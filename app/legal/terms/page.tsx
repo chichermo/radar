@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { FileText, AlertTriangle, Scale, Copyright, Users, Shield } from 'lucide-react';
+import ClientDate from '@/components/ClientDate';
 
 export default function TermsOfService() {
   return (
@@ -13,8 +14,16 @@ export default function TermsOfService() {
             <FileText className="w-12 h-12 text-blue-400 mr-3" />
             <h1 className="text-4xl font-bold text-white">Términos de Servicio</h1>
           </div>
-          <p className="text-xl text-gray-300">
-            Última actualización: {new Date().toLocaleDateString('es-ES')}
+          <p className="text-sm text-gray-400 mb-8">
+            Última actualización: <ClientDate 
+              date={new Date()} 
+              type="date" 
+              options={{
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              }}
+            />
           </p>
         </div>
 

@@ -1,0 +1,47 @@
+# Lista Completa de Emails - COSMIC EYE
+
+## 🎓 UNIVERSIDADES
+physics@mit.edu
+cfa@cfa.harvard.edu
+physics@stanford.edu
+astro@cam.ac.uk
+info@strw.leidenuniv.nl
+astro@astro.unam.mx
+astro@uchile.cl
+planetarium@amnh.org
+info@griffithobservatory.org
+info@planetario.gob.ar
+
+## 🛰️ AGENCIAS ESPACIALES
+science@nasa.gov
+science@esa.int
+info@conae.gov.ar
+aeb@aeb.gov.br
+
+## 💼 EMPRESAS ESPACIALES
+starlink@spacex.com
+operations@blueorigin.com
+flightops@virgingalactic.com
+
+## 📺 MEDIOS DE COMUNICACIÓN
+science@discovery.com
+science@natgeo.com
+science@bbc.com
+
+## 🔬 OBSERVATORIOS
+science@eso.org
+operations@gemini.edu
+science@lco.global
+
+## 📧 LISTA COMPLETA PARA COPIAR/PEGAR
+physics@mit.edu, cfa@cfa.harvard.edu, physics@stanford.edu, astro@cam.ac.uk, info@strw.leidenuniv.nl, astro@astro.unam.mx, astro@uchile.cl, planetarium@amnh.org, info@griffithobservatory.org, info@planetario.gob.ar, science@nasa.gov, science@esa.int, info@conae.gov.ar, aeb@aeb.gov.br, starlink@spacex.com, operations@blueorigin.com, flightops@virgingalactic.com, science@discovery.com, science@natgeo.com, science@bbc.com, science@eso.org, operations@gemini.edu, science@lco.global
+
+## 📊 ESTADÍSTICAS
+Total de destinatarios: 23
+- Universidades: 10
+- Agencias Espaciales: 4
+- Empresas Espaciales: 3
+- Medios de Comunicación: 3
+- Observatorios: 3
+
+Valor total estimado: $1,085,000 USD 

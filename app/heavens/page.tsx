@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Eye, Satellite, Star, RefreshCw, Clock, Zap } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
+import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 interface HeavensData {
   visible_satellites: Array<{
@@ -117,7 +120,14 @@ export default function HeavensPage() {
                       <div>
                         <span className="text-gray-400">Próximo paso:</span>
                         <p className="text-white">
-                          {new Date(satellite.next_pass).toLocaleTimeString('es-ES')}
+                          <ClientDate 
+                            date={satellite.next_pass} 
+                            type="time" 
+                            options={{
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            }}
+                          />
                         </p>
                       </div>
                     </div>
@@ -180,7 +190,17 @@ export default function HeavensPage() {
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div>
                         <span className="text-gray-400">Pico:</span>
-                        <p className="text-white">{new Date(shower.peak_date).toLocaleDateString('es-ES')}</p>
+                        <p className="text-white">
+                          <ClientDate 
+                            date={shower.peak_date} 
+                            type="date" 
+                            options={{
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            }}
+                          />
+                        </p>
                       </div>
                       <div>
                         <span className="text-gray-400">Tasa horaria:</span>

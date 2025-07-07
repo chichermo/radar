@@ -5,6 +5,7 @@ import { AchievementsPanel, GamificationProvider } from '@/components/Gamificati
 import { useNotifications } from '@/components/NotificationService';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
 import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 import { 
   Globe, 
   Satellite, 
@@ -154,24 +155,50 @@ const mockTLEObjects = [
   }
 ];
 
-// Hook para formatear fechas de manera consistente
-const useFormattedDate = () => {
-  const [formattedDate, setFormattedDate] = useState('');
+// Componente para mostrar la fecha de manera segura para hidratación
+const SafeTimeDisplay = () => {
+  const [mounted, setMounted] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   useEffect(() => {
-    const now = new Date();
-    const options: Intl.DateTimeFormatOptions = {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: 'America/Mexico_City'
-    };
-    setFormattedDate(now.toLocaleDateString('es-ES', options));
+    setMounted(true);
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  return formattedDate;
+  if (!mounted) {
+    return (
+      <div className="text-right">
+        <p className="text-sm text-gray-400">Tiempo Universal</p>
+        <p className="text-lg font-mono text-white">
+          Cargando...
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-right">
+      <p className="text-sm text-gray-400">Tiempo Universal</p>
+      <p className="text-lg font-mono text-white">
+        <ClientDate 
+          date={currentTime} 
+          type="datetime" 
+          options={{
+            timeZone: 'UTC',
+            weekday: 'short',
+            year: 'numeric',
+            month: 'short',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+          }}
+          locale="en-US"
+        />
+      </p>
+    </div>
+  );
 };
 
 // Datos de características principales
@@ -559,12 +586,6 @@ const SystemControls = () => {
 
 export default function DashboardPage() {
   const { t } = useI18n();
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   const metrics = [
     {
@@ -648,12 +669,7 @@ export default function DashboardPage() {
           </div>
           
           <div className="flex items-center space-x-6">
-            <div className="text-right">
-              <p className="text-sm text-gray-400">Tiempo Universal</p>
-              <p className="text-lg font-mono text-white">
-                {currentTime.toUTCString()}
-              </p>
-            </div>
+            <SafeTimeDisplay />
             
             <div className="flex items-center space-x-2">
               <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>

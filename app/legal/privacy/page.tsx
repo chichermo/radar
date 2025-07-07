@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { Shield, Eye, Database, Globe, Lock, Users } from 'lucide-react';
+import ClientDate from '@/components/ClientDate';
 
 export default function PrivacyPolicy() {
   return (
@@ -14,7 +15,15 @@ export default function PrivacyPolicy() {
             <h1 className="text-4xl font-bold text-white">Política de Privacidad</h1>
           </div>
           <p className="text-xl text-gray-300">
-            Última actualización: {new Date().toLocaleDateString('es-ES')}
+            Última actualización: <ClientDate 
+              date={new Date()} 
+              type="date" 
+              options={{
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              }}
+            />
           </p>
         </div>
 

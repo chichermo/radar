@@ -1,0 +1,29 @@
+{
+  "name": "cosmic-eye-email-campaign",
+  "version": "1.0.0",
+  "description": "Herramienta de envío masivo de emails para COSMIC EYE",
+  "main": "email-sender.js",
+  "scripts": {
+    "start": "node email-sender.js",
+    "test": "node email-sender.js todos",
+    "universidades": "node email-sender.js universidad",
+    "agencias": "node email-sender.js agencia_espacial",
+    "empresas": "node email-sender.js empresa_espacial",
+    "medios": "node email-sender.js medio",
+    "observatorios": "node email-sender.js observatorio",
+    "emails": "node email-sender.js emails",
+    "stats": "node email-sender.js stats"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  },
+  "keywords": [
+    "email",
+    "campaign",
+    "cosmic-eye",
+    "space",
+    "astronomy"
+  ],
+  "author": "COSMIC EYE Team",
+  "license": "MIT"
+} 

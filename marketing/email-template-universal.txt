@@ -1,0 +1,46 @@
+Asunto: Revolucionando el Monitoreo Espacial: COSMIC EYE para [NOMBRE_INSTITUCION]
+
+Estimado/a [NOMBRE_CONTACTO],
+
+Espero que este correo le encuentre bien. Soy [TU_NOMBRE], desarrollador de COSMIC EYE, una plataforma de monitoreo espacial avanzada que está transformando la forma en que se observa y analiza el universo.
+
+¿Por qué COSMIC EYE es perfecto para [NOMBRE_INSTITUCION]?
+
+🛰️ Monitoreo en Tiempo Real: Seguimiento preciso de satélites, asteroides y objetos espaciales con actualizaciones cada 15 segundos.
+
+🔬 Datos Integrados: Acceso unificado a múltiples telescopios incluyendo Vera Rubin, JWST, y observatorios globales.
+
+🤖 IA Avanzada: Sistema de inteligencia artificial para clasificación automática y predicción de eventos astronómicos.
+
+🌍 Colaboración Global: Conecta con redes internacionales y permite intercambio de datos en tiempo real.
+
+Características Destacadas:
+• Mapa estelar 3D interactivo con 100,000+ estrellas reales
+• Alertas en tiempo real de eventos astronómicos
+• Dashboard de métricas y estadísticas espaciales
+• Sistema de IA para predicciones climáticas espaciales
+• Interfaz responsive para cualquier dispositivo
+• APIs abiertas para integración con sistemas existentes
+
+Beneficios Específicos para [NOMBRE_INSTITUCION]:
+• Reducción de Costos: Optimización automática de recursos y operaciones
+• Mejora de Eficiencia: Automatización de procesos críticos de monitoreo
+• Ventaja Tecnológica: Plataforma de vanguardia para investigación y operaciones
+• Escalabilidad: Crecimiento adaptado a las necesidades de su organización
+
+Inversión: $[VALOR] USD (incluye licencia perpetua, soporte técnico y actualizaciones)
+
+Demo Disponible: Me encantaría programar una demostración en vivo de 30 minutos para mostrar cómo COSMIC EYE puede beneficiar específicamente a [NOMBRE_INSTITUCION].
+
+¿Podríamos agendar una reunión virtual la próxima semana? Estoy disponible para coordinar horarios que se adapten a su agenda.
+
+Saludos cordiales,
+
+[TU_NOMBRE]
+Desarrollador de COSMIC EYE
+[TU_EMAIL]
+[TU_TELEFONO]
+[TU_LINKEDIN]
+
+---
+Este es un mensaje personalizado para [NOMBRE_INSTITUCION]. Si no desea recibir futuras comunicaciones, puede responder con "Cancelar suscripción". 

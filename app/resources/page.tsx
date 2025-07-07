@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ExternalLink, 
   BookOpen, 
@@ -95,6 +95,9 @@ import {
   MapPin as MapPinIcon,
   DollarSign as DollarSignIcon
 } from 'lucide-react';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
+import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 const RESOURCES = [
   {
@@ -545,7 +548,15 @@ export default function ResourcesPage() {
           Todos los recursos son verificados y actualizados regularmente
         </p>
         <p className="text-sm text-gray-500">
-          Última actualización: {new Date().toLocaleDateString()} • {filteredResources.length} recursos disponibles
+          Última actualización: <ClientDate 
+            date={new Date()} 
+            type="date" 
+            options={{
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            }}
+          /> • {filteredResources.length} recursos disponibles
         </p>
       </div>
     </div>

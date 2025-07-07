@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Radio, Satellite, MapPin, RefreshCw, Clock, Signal } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
+import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 interface SatNOGSData {
   satellites: Array<{
@@ -132,14 +135,29 @@ export default function SatNOGSPage() {
                         <div>
                           <span className="text-gray-400">Último contacto:</span>
                           <p className="text-white">
-                            {new Date(satellite.last_heard).toLocaleTimeString('es-ES')}
+                            <ClientDate 
+                              date={satellite.last_heard} 
+                              type="time" 
+                              options={{
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                              }}
+                            />
                           </p>
                         </div>
                       </div>
                       
                       <div className="mt-3 flex items-center gap-2 text-sm text-gray-400">
                         <Clock className="h-4 w-4" />
-                        <span>Próximo paso: {new Date(satellite.next_pass).toLocaleTimeString('es-ES')}</span>
+                        <span>Próximo paso: <ClientDate 
+                          date={satellite.next_pass} 
+                          type="time" 
+                          options={{
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }}
+                        /></span>
                       </div>
                     </div>
                   ))}

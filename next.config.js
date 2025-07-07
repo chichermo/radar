@@ -1,7 +1,7 @@
 /** @type { import('next').NextConfig } */
 const nextConfig = {
   experimental: {
-    optimizeCss: process.env.NODE_ENV === 'production',
+    // optimizeCss: process.env.NODE_ENV === 'production', // Comentado temporalmente
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
   },
   compress: true,
@@ -53,6 +53,23 @@ const nextConfig = {
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' https:; connect-src 'self' https:;",
+          },
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+          {
+            key: 'Content-Type',
+            value: 'text/css',
           },
         ],
       },

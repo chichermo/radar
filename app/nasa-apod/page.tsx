@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Calendar, Camera, Info, User, RefreshCw, ExternalLink } from 'lucide-react';
+import ClientDate from '@/components/ClientDate';
 
 interface APODData {
   date: string;
@@ -110,7 +111,15 @@ export default function NASAAPODPage() {
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-sm text-gray-400">
                   <Calendar className="h-4 w-4" />
-                  <span>{new Date(item.date).toLocaleDateString('es-ES')}</span>
+                  <ClientDate 
+                    date={item.date} 
+                    type="date" 
+                    options={{
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }}
+                  />
                 </div>
                 
                 {item.copyright && (

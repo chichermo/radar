@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from 'react';
 import { Users, Globe, Calendar, Award, MapPin, Clock } from 'lucide-react';
+import ClientDate from '@/components/ClientDate';
 
 interface PersonInSpace {
   name: string;
@@ -179,7 +180,15 @@ export default function PeopleInSpacePage() {
                 </div>
 
                 <div className="text-xs text-gray-500">
-                  Lanzamiento: {new Date(person.launch_date).toLocaleDateString()}
+                  Lanzamiento: <ClientDate 
+                    date={person.launch_date} 
+                    type="date" 
+                    options={{
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    }}
+                  />
                 </div>
               </div>
             </div>

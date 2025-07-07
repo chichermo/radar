@@ -1,6 +1,9 @@
 "use client";
 import { useState, useEffect } from "react";
 import { AlertTriangle, Globe, Zap, RefreshCw } from "lucide-react";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
+import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 interface AsteroidData {
   id: string;
@@ -150,7 +153,15 @@ export default function AsteroidsPage() {
                     <div className="flex justify-between">
                       <span className="text-gray-400">Próximo acercamiento:</span>
                       <span className="text-white">
-                        {new Date(asteroid.close_approach_data[0].close_approach_date).toLocaleDateString('es-ES')}
+                        <ClientDate 
+                          date={asteroid.close_approach_data[0].close_approach_date} 
+                          type="date" 
+                          options={{
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          }}
+                        />
                       </span>
                     </div>
                     

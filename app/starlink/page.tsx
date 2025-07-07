@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Satellite, Eye, MapPin, Clock, Signal, Globe, TrendingUp, Info, AlertTriangle } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardComponents;
 
@@ -390,14 +392,32 @@ export default function StarlinkPage() {
                       <Clock className="w-4 h-4 text-gray-400 mr-2" />
                       <span className="text-gray-400">Lanzamiento:</span>
                       <span className="text-white ml-2">
-                        {new Date(satellite.launchDate).toLocaleDateString('es-ES')}
+                        <ClientDate 
+                          date={satellite.launchDate} 
+                          type="date" 
+                          options={{
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          }}
+                        />
                       </span>
                     </div>
                     <div className="flex items-center text-sm">
                       <MapPin className="w-4 h-4 text-gray-400 mr-2" />
                       <span className="text-gray-400">Última actualización:</span>
                       <span className="text-white ml-2">
-                        {new Date(satellite.lastUpdate).toLocaleString('es-ES')}
+                        <ClientDate 
+                          date={satellite.lastUpdate} 
+                          type="datetime" 
+                          options={{
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit'
+                          }}
+                        />
                       </span>
                     </div>
                   </div>

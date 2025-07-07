@@ -3,7 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import { Camera, Database, AlertTriangle, TrendingUp, Eye, Clock, Target, Star, Globe, Activity, Zap, Search, BarChart3, Download, RefreshCw } from 'lucide-react';
 import CardComponents from '@/components/ui/card2';
-const { Card, CardHeader, CardTitle, CardDescription, CardContent } = CardComponents;
+import { CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card2';
+import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 // Datos simulados para Vera Rubin
 const veraRubinData = {
@@ -650,6 +652,28 @@ export default function VeraRubinPage() {
                       <span className="text-xs text-green-400">{status}</span>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="text-white">Última Actualización</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Información sobre la última actualización de los datos
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm text-gray-400">
+                  Última actualización: <ClientDate 
+                    date={new Date()} 
+                    type="time" 
+                    options={{
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      second: '2-digit'
+                    }}
+                  />
                 </div>
               </CardContent>
             </Card>

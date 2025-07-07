@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Star, Eye, MapPin, Clock, Zap, Globe, TrendingUp, Info, AlertTriangle, Flame } from 'lucide-react';
 import LoadingSpinner from '@/components/LoadingSpinner';
+import { useI18n } from '@/lib/i18n';
+import ClientDate from '@/components/ClientDate';
 
 const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardComponents;
 
@@ -297,7 +299,15 @@ export default function SupernovaePage() {
                     <div>
                       <CardTitle className="text-white text-xl">{supernova.name}</CardTitle>
                       <CardDescription className="text-gray-400">
-                        {supernova.hostGalaxy} • {new Date(supernova.discoveryDate).toLocaleDateString('es-ES')}
+                        {supernova.hostGalaxy} • <ClientDate 
+                          date={supernova.discoveryDate} 
+                          type="date" 
+                          options={{
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          }}
+                        />
                       </CardDescription>
                     </div>
                     <div className="flex flex-col gap-2">
