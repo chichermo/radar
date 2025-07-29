@@ -150,11 +150,14 @@ export default function InterstellarProbesPage() {
                 <ul className="text-xs text-gray-300 mb-2 list-disc list-inside">
                   {probe.achievements.map((a, j) => <li key={j}>{a}</li>)}
                 </ul>
-                <Button asChild className="bg-blue-600 hover:bg-blue-700 mt-2">
-                  <a href={probe.link} target="_blank" rel="noopener noreferrer">
-                    <ExternalLink className="w-4 h-4 mr-1" /> Ver más
-                  </a>
-                </Button>
+                <a 
+                  href={probe.link} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors mt-2"
+                >
+                  <ExternalLink className="w-4 h-4 mr-1" /> Ver más
+                </a>
               </div>
             </div>
           ))}
