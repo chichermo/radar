@@ -85,7 +85,7 @@ export default function SatelliteMapPage() {
                 
                 <div className="flex justify-between">
                   <span className="text-gray-400">Altitud:</span>
-                  <span className="text-white">{satellite.altitude.toLocaleString()} km</span>
+                  <span className="text-white">{satellite.altitude.toLocaleString('es-ES')} km</span>
                 </div>
                 
                 <div className="flex justify-between">

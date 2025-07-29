@@ -5,7 +5,7 @@
  * Formatea un número usando el formato inglés para consistencia entre servidor y cliente
  */
 export const formatNumber = (num: number): string => {
-  return num.toLocaleString('en-US');
+  return num.toLocaleString('es-ES');
 };
 
 /**
@@ -20,7 +20,7 @@ export const formatNumberWithUnit = (num: number, unit: string): string => {
  */
 export const formatDate = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleString('en-US', {
+  return dateObj.toLocaleString('es-ES', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
@@ -34,7 +34,7 @@ export const formatDate = (date: Date | string): string => {
  */
 export const formatDateOnly = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleDateString('en-US', {
+  return dateObj.toLocaleDateString('es-ES', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
@@ -46,7 +46,7 @@ export const formatDateOnly = (date: Date | string): string => {
  */
 export const formatTimeOnly = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleTimeString('en-US', {
+  return dateObj.toLocaleTimeString('es-ES', {
     hour: '2-digit',
     minute: '2-digit'
   });
@@ -57,7 +57,7 @@ export const formatTimeOnly = (date: Date | string): string => {
  */
 export const formatDateTime = (date: Date | string): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleString('en-US', {
+  return dateObj.toLocaleString('es-ES', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',

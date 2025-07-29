@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Send, User, Bot, MessageCircle, ThumbsUp, ThumbsDown, Share2, Flag, Star } from 'lucide-react';
 import { formatDate, formatTimeOnly } from '@/utils/formatters';
 import { useI18n } from '@/lib/i18n';
+import React from 'react';
 
 interface Message {
   id: string;
@@ -42,63 +43,19 @@ export default function ChatPage() {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Mensajes iniciales simulados
-  const initialMessages: Message[] = [
-    {
-      id: '1',
-      content: t('chat.welcome_message'),
-      sender: 'bot',
-      timestamp: new Date(Date.now() - 3600000),
-      type: 'message',
-      likes: 12,
-      dislikes: 0,
-      replies: []
-    },
-    {
-      id: '2',
-      content: t('chat.asteroid_activity_question'),
-      sender: 'user',
-      timestamp: new Date(Date.now() - 1800000),
-      type: 'question',
-      likes: 8,
-      dislikes: 1,
-      replies: [
-        {
-          id: '2-1',
-          content: t('chat.asteroid_activity_response'),
-          sender: 'bot',
-          timestamp: new Date(Date.now() - 1700000),
-          type: 'message',
-          likes: 5,
-          dislikes: 0,
-          replies: []
-        }
-      ]
-    },
-    {
-      id: '3',
-      content: t('chat.geographic_alerts_suggestion'),
-      sender: 'user',
-      timestamp: new Date(Date.now() - 900000),
-      type: 'suggestion',
-      likes: 15,
-      dislikes: 0,
-      replies: []
-    },
-    {
-      id: '4',
-      content: t('chat.dashboard_praise'),
-      sender: 'user',
-      timestamp: new Date(Date.now() - 300000),
-      type: 'comment',
-      likes: 23,
-      dislikes: 0,
-      replies: []
-    }
-  ];
-
   useEffect(() => {
-    setMessages(initialMessages);
+    // Inicializar con mensaje de bienvenida real
+    const welcomeMessage: Message = {
+      id: '1',
+      content: '¡Bienvenido al chat espacial! Aquí puedes discutir sobre astronomía, exploración espacial y descubrimientos científicos.',
+      sender: 'bot',
+      timestamp: new Date(),
+      type: 'message',
+      likes: 0,
+      dislikes: 0,
+      replies: []
+    };
+    setMessages([welcomeMessage]);
   }, []);
 
   useEffect(() => {
@@ -147,7 +104,11 @@ export default function ChatPage() {
   const generateBotResponse = (message: string, type: string): string => {
     const lowerMessage = message.toLowerCase();
     
-    // Respuestas contextuales basadas en palabras clave
+    // Respuestas más específicas y contextuales
+    if (lowerMessage.includes('hola') || lowerMessage.includes('hello')) {
+      return "¡Hola! Soy tu asistente astronómico especializado. Puedo ayudarte con información sobre exoplanetas, clima espacial, satélites, asteroides y mucho más. ¿En qué puedo ayudarte hoy?";
+    }
+    
     if (lowerMessage.includes('asteroide') || lowerMessage.includes('neo')) {
       return "Según los datos más recientes de NASA, actualmente hay 15 asteroides cercanos a la Tierra siendo monitoreados. El más cercano es 2023 XA1, que pasará a 14,960 km de la Tierra mañana. ¿Te interesa saber más sobre algún asteroide específico?";
     }
@@ -200,44 +161,36 @@ export default function ChatPage() {
       return "El Big Bang ocurrió hace 13.8 mil millones de años. La radiación cósmica de fondo nos da una 'foto' del universo cuando tenía solo 380,000 años. ¿Te interesa saber cómo los astrónomos determinaron la edad del universo?";
     }
     
-    if (lowerMessage.includes('dashboard') || lowerMessage.includes('sistema')) {
-      return "¡Me alegra que estés usando nuestro dashboard! Integramos datos de múltiples fuentes como NASA, ESA, y observatorios terrestres. ¿Hay alguna funcionalidad específica que te gustaría que mejoremos o alguna nueva característica que te gustaría ver?";
+    if (lowerMessage.includes('clima espacial') || lowerMessage.includes('tormenta solar')) {
+      return "El clima espacial puede afectar satélites, redes eléctricas, comunicaciones y sistemas GPS. Las tormentas solares intensas pueden causar apagones y daños a la infraestructura. ¿Quieres que te explique cómo monitoreamos estas amenazas?";
     }
     
-    if (lowerMessage.includes('gracias') || lowerMessage.includes('thanks')) {
-      return "¡De nada! Es un placer ayudarte con tus preguntas sobre astronomía y exploración espacial. ¿Hay algo más en lo que pueda asistirte?";
+    if (lowerMessage.includes('vera rubin') || lowerMessage.includes('lsst')) {
+      return "El Observatorio Vera C. Rubin está construyendo el Legacy Survey of Space and Time (LSST). Este telescopio de 8.4 metros mapeará todo el cielo visible cada pocas noches, descubriendo millones de objetos nuevos. ¿Te interesa saber más sobre sus capacidades?";
     }
     
-    if (lowerMessage.includes('hola') || lowerMessage.includes('hello')) {
-      return "¡Hola! Soy Cosmic Eye, tu asistente especializado en astronomía. Puedo ayudarte con información sobre planetas, estrellas, galaxias, misiones espaciales y mucho más. ¿En qué te puedo ayudar hoy?";
+    if (lowerMessage.includes('exoplaneta k2-18b') || lowerMessage.includes('k2-18b')) {
+      return "K2-18b es un exoplaneta súper-Tierra que orbita una enana roja. Recientemente se detectó vapor de agua en su atmósfera, lo que lo convierte en uno de los candidatos más prometedores para la habitabilidad. ¿Quieres que te cuente más sobre este descubrimiento?";
     }
     
-    // Respuestas por tipo si no hay palabras clave específicas
-    const responses = {
-      question: [
-        "Excelente pregunta. Basándome en los datos más recientes de nuestros telescopios y observatorios, puedo darte información detallada sobre eso. ¿Te interesa algún aspecto específico?",
-        "Interesante consulta. Los datos de nuestros sensores muestran patrones muy interesantes. ¿Te gustaría que analice algún período específico o profundice en algún punto en particular?",
-        "Gran pregunta. Según el análisis de datos en tiempo real, puedo confirmar que sí hay actividad significativa en esa área. ¿Quieres que exploremos más detalles?"
-      ],
-      suggestion: [
-        "¡Excelente idea! Esa funcionalidad sería muy útil para la comunidad astronómica. Voy a registrar tu sugerencia para el equipo de desarrollo. ¿Tienes más detalles sobre cómo te gustaría que funcione?",
-        "¡Brillante sugerencia! Eso complementaría perfectamente las funcionalidades existentes del dashboard. ¿Te gustaría que exploremos cómo implementarlo o tienes alguna idea específica?",
-        "Me parece una propuesta muy interesante. Eso mejoraría significativamente la experiencia del usuario y la accesibilidad de los datos espaciales. ¿Puedes elaborar más sobre tu idea?"
-      ],
-      comment: [
-        "¡Gracias por compartir tu experiencia! Es muy valioso para nosotros saber cómo está funcionando el sistema para los usuarios. ¿Hay algo específico que te gustaría ver mejorado?",
-        "Me alegra saber que estás disfrutando de las funcionalidades del dashboard. Es importante para nosotros recibir feedback constructivo. ¿Hay alguna característica en particular que te gustaría que desarrollemos más?",
-        "¡Excelente feedback! Es muy importante para nosotros mantener la calidad y utilidad del sistema. ¿Hay algún aspecto específico que te gustaría que mejoremos?"
-      ],
-      message: [
-        "Entiendo perfectamente. Los datos espaciales pueden ser complejos, pero estamos aquí para hacerlos accesibles y comprensibles. ¿En qué más puedo ayudarte con tu exploración del cosmos?",
-        "Interesante punto de vista. La exploración espacial está evolucionando rápidamente con nuevas tecnologías y descubrimientos. ¿Te gustaría que analicemos algún aspecto específico o te cuente sobre las últimas novedades?",
-        "Gracias por compartir eso con la comunidad. Es importante mantener estas discusiones constructivas sobre astronomía y exploración espacial. ¿Tienes alguna pregunta específica sobre algún fenómeno cósmico?"
-      ]
-    };
-
-    const typeResponses = responses[type as keyof typeof responses] || responses.message;
-    return typeResponses[Math.floor(Math.random() * typeResponses.length)];
+    if (lowerMessage.includes('cosmos') || lowerMessage.includes('universo')) {
+      return "El cosmos es todo lo que existe: materia, energía, espacio y tiempo. Nuestro universo observable tiene aproximadamente 93 mil millones de años luz de diámetro y contiene al menos 2 billones de galaxias. ¿Te gustaría explorar alguna región específica?";
+    }
+    
+    if (lowerMessage.includes('estrellas') || lowerMessage.includes('stars')) {
+      return "Las estrellas son esferas de plasma que brillan por fusión nuclear. Nuestro Sol es una estrella enana amarilla de tipo G2V. Las estrellas más masivas viven menos tiempo pero brillan más intensamente. ¿Te interesa saber sobre la evolución estelar?";
+    }
+    
+    if (lowerMessage.includes('nebula') || lowerMessage.includes('nebulosa')) {
+      return "Las nebulosas son nubes de gas y polvo en el espacio. Pueden ser regiones de formación estelar (nebulosas de emisión) o restos de estrellas muertas (nebulosas planetarias). La Nebulosa de Orión es una de las más famosas. ¿Quieres que te muestre algunas imágenes?";
+    }
+    
+    if (lowerMessage.includes('supernova') || lowerMessage.includes('supernova')) {
+      return "Las supernovas son explosiones estelares que pueden brillar más que toda una galaxia. Pueden ser de tipo Ia (enanas blancas) o de tipo II (estrellas masivas). La última supernova visible a simple vista fue SN 1987A. ¿Te interesa saber más sobre estos eventos?";
+    }
+    
+    // Respuesta por defecto más útil
+    return "Entiendo tu pregunta. Como asistente astronómico, puedo ayudarte con información sobre exoplanetas, asteroides, galaxias, estrellas, telescopios, misiones espaciales, clima espacial y mucho más. ¿Puedes ser más específico sobre lo que te interesa saber?";
   };
 
   const handleLike = (messageId: string) => {
@@ -271,247 +224,171 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="space-y-6 ml-64">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          {t('chat.title')}
-        </h1>
-        <p className="text-gray-300">
-          {t('chat.subtitle')}
-        </p>
-      </header>
-
-      {/* Información del usuario */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-              <User className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h3 className="text-white font-medium">{currentUser.name}</h3>
-              <p className="text-sm text-gray-400">
-                {currentUser.role} • {currentUser.messageCount} {t('chat.messages')}
-              </p>
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-400">
-              {t('chat.last_activity')}: {formatTimeOnly(new Date())}
-            </p>
-          </div>
-        </div>
+    <div className="wrapper mx-auto max-w-7xl py-8 px-4">
+      <div className="header text-center mb-8">
+        <h1 className="title gradient-text">Chat Astronómico</h1>
+        <p className="subtitle max-w-2xl mx-auto">Interactúa con la IA y otros usuarios sobre astronomía, ciencia y exploración espacial.</p>
       </div>
-
-      {/* Área de chat */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 h-96 flex flex-col">
-        {/* Header del chat */}
-        <div className="p-4 border-b border-gray-700">
-          <div className="flex items-center space-x-3">
-            <MessageCircle className="w-5 h-5 text-blue-400" />
-            <h2 className="text-white font-medium">{t('chat.realtime_chat')}</h2>
-            <div className="flex-1"></div>
-            <div className="flex items-center space-x-2 text-sm text-gray-400">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span>{t('chat.online')}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Mensajes */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
-            <div key={message.id} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs lg:max-w-md ${message.sender === 'user' ? 'order-2' : 'order-1'}`}>
-                <div className={`flex items-start space-x-2 ${message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    message.sender === 'bot' 
-                      ? 'bg-gradient-to-r from-blue-400 to-purple-400' 
-                      : 'bg-gradient-to-r from-green-400 to-blue-400'
-                  }`}>
-                    {message.sender === 'bot' ? <Bot className="w-4 h-4 text-white" /> : <User className="w-4 h-4 text-white" />}
-                  </div>
-                  <div className={`flex-1 ${message.sender === 'user' ? 'text-right' : ''}`}>
-                    <div className={`inline-block p-3 rounded-lg ${
-                      message.sender === 'user' 
-                        ? 'bg-blue-500 text-white' 
-                        : 'bg-gray-700 text-white'
-                    }`}>
-                      <div className="flex items-center space-x-2 mb-1">
-                        <span className="text-sm">{getTypeIcon(message.type)}</span>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getTypeColor(message.type)}`}>
-                          {t('chat.' + message.type)}
-                        </span>
-                      </div>
-                      <p className="text-sm">{message.content}</p>
-                      <p className="text-xs opacity-70 mt-1">
-                        {formatTimeOnly(message.timestamp)}
-                      </p>
-                    </div>
-                    
-                    {/* Acciones del mensaje */}
-                    <div className={`flex items-center space-x-2 mt-2 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <button
-                        onClick={() => handleLike(message.id)}
-                        className="flex items-center space-x-1 text-xs text-gray-400 hover:text-green-400 transition-colors"
-                      >
-                        <ThumbsUp className="w-3 h-3" />
-                        <span>{message.likes}</span>
-                      </button>
-                      <button
-                        onClick={() => handleDislike(message.id)}
-                        className="flex items-center space-x-1 text-xs text-gray-400 hover:text-red-400 transition-colors"
-                      >
-                        <ThumbsDown className="w-3 h-3" />
-                        <span>{message.dislikes}</span>
-                      </button>
-                      <button className="flex items-center space-x-1 text-xs text-gray-400 hover:text-blue-400 transition-colors">
-                        <Share2 className="w-3 h-3" />
-                        <span>{t('chat.share')}</span>
-                      </button>
-                      <button className="flex items-center space-x-1 text-xs text-gray-400 hover:text-yellow-400 transition-colors">
-                        <Flag className="w-3 h-3" />
-                        <span>{t('chat.report')}</span>
-                      </button>
-                    </div>
-
-                    {/* Respuestas */}
-                    {message.replies.length > 0 && (
-                      <div className="mt-3 ml-4 space-y-2">
-                        {message.replies.map((reply) => (
-                          <div key={reply.id} className="bg-gray-600/50 rounded-lg p-2">
-                            <div className="flex items-center space-x-2 mb-1">
-                              <div className="w-6 h-6 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-                                <Bot className="w-3 h-3 text-white" />
-                              </div>
-                              <span className="text-xs text-gray-300">Cosmic Eye</span>
-                            </div>
-                            <p className="text-xs text-gray-300">{reply.content}</p>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Panel de usuarios */}
+        <div className="lg:col-span-1">
+          <div className="glass-card p-6 mb-6">
+            <h3 className="text-lg font-semibold text-white mb-4">Usuarios Activos</h3>
+            <div className="space-y-3">
+              <div className="flex items-center space-x-3 p-3 bg-blue-600/20 rounded-lg border border-blue-500/30">
+                <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                  <Bot className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-white font-medium">COSMIC AI</p>
+                  <p className="text-xs text-blue-400">Asistente IA</p>
+                </div>
+                <div className="w-2 h-2 bg-green-400 rounded-full ml-auto"></div>
+              </div>
+              <div className="flex items-center space-x-3 p-3 bg-gray-700/30 rounded-lg">
+                <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-white" />
+                </div>
+                <div>
+                  <p className="text-white font-medium">Tú</p>
+                  <p className="text-xs text-gray-400">Usuario</p>
                 </div>
               </div>
             </div>
-          ))}
-          
-          {isTyping && (
-            <div className="flex justify-start">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
-                  <Bot className="w-4 h-4 text-white" />
-                </div>
-                <div className="bg-gray-700 rounded-lg p-3">
-                  <div className="flex space-x-1">
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                    <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+          </div>
+        </div>
+        {/* Chat principal */}
+        <div className="lg:col-span-3">
+          <div className="glass-card p-6">
+            {/* Header del chat */}
+            <div className="p-4 border-b border-gray-700/50">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                    <Bot className="h-5 w-5 text-white" />
                   </div>
+                  <div>
+                    <h3 className="text-white font-semibold">COSMIC AI Assistant</h3>
+                    <p className="text-xs text-green-400">En línea • Respondiendo en tiempo real</p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <button className="p-2 bg-gray-700/50 rounded-lg text-gray-400 hover:text-white transition-colors">
+                    <Share2 className="h-4 w-4" />
+                  </button>
+                  <button className="p-2 bg-gray-700/50 rounded-lg text-gray-400 hover:text-white transition-colors">
+                    <Flag className="h-4 w-4" />
+                  </button>
                 </div>
               </div>
             </div>
-          )}
-          
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input del mensaje */}
-        <div className="p-4 border-t border-gray-700">
-          <div className="flex space-x-3">
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value as any)}
-              className="bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
-            >
-              <option value="message">{t('chat.message')}</option>
-              <option value="question">{t('chat.question')}</option>
-              <option value="suggestion">{t('chat.suggestion')}</option>
-              <option value="comment">{t('chat.comment')}</option>
-            </select>
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-              placeholder={t('chat.write_message_placeholder')}
-              className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={!newMessage.trim()}
-              className="bg-blue-500 hover:bg-blue-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg px-4 py-2 transition-colors"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Estadísticas del chat */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <div className="flex items-center space-x-3">
-            <MessageCircle className="h-8 w-8 text-blue-400" />
-            <div>
-              <p className="text-sm text-gray-400">{t('chat.total_messages')}</p>
-              <p className="text-2xl font-bold text-white">{messages.length}</p>
+            {/* Mensajes */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  <div className={`max-w-[80%] ${message.sender === 'user' ? 'order-2' : 'order-1'}`}>
+                    <div className={`flex items-start space-x-3 ${message.sender === 'user' ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                        message.sender === 'user' 
+                          ? 'bg-green-500' 
+                          : 'bg-blue-500'
+                      }`}>
+                        {message.sender === 'user' ? (
+                          <User className="h-4 w-4 text-white" />
+                        ) : (
+                          <Bot className="h-4 w-4 text-white" />
+                        )}
+                      </div>
+                      <div className={`rounded-xl p-4 ${
+                        message.sender === 'user'
+                          ? 'bg-blue-600/20 border border-blue-500/30 text-white'
+                          : 'bg-gray-700/50 border border-gray-600/30 text-white'
+                      }`}>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <span className="text-sm font-medium">
+                            {message.sender === 'user' ? 'Tú' : 'COSMIC AI'}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {formatTimeOnly(message.timestamp)}
+                          </span>
+                        </div>
+                        <p className="text-white">{message.content}</p>
+                        <div className="flex items-center space-x-2 mt-3">
+                          <button 
+                            onClick={() => handleLike(message.id)}
+                            className="flex items-center space-x-1 text-xs text-gray-400 hover:text-green-400 transition-colors"
+                          >
+                            <ThumbsUp className="h-3 w-3" />
+                            <span>{message.likes}</span>
+                          </button>
+                          <button 
+                            onClick={() => handleDislike(message.id)}
+                            className="flex items-center space-x-1 text-xs text-gray-400 hover:text-red-400 transition-colors"
+                          >
+                            <ThumbsDown className="h-3 w-3" />
+                            <span>{message.dislikes}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <Bot className="h-4 w-4 text-white" />
+                    </div>
+                    <div className="bg-gray-700/50 border border-gray-600/30 rounded-xl p-4">
+                      <div className="flex space-x-1">
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                        <div className="w-2 h-2 bg-blue-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
             </div>
-          </div>
-        </div>
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <div className="flex items-center space-x-3">
-            <User className="h-8 w-8 text-green-400" />
-            <div>
-              <p className="text-sm text-gray-400">{t('chat.active_users')}</p>
-              <p className="text-2xl font-bold text-white">24</p>
+            {/* Input del mensaje */}
+            <div className="p-4 border-t border-gray-700/50">
+              <div className="flex space-x-3">
+                <div className="flex-1">
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                      placeholder="Escribe tu mensaje..."
+                      className="w-full px-4 py-3 bg-gray-700/50 border border-gray-600/30 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-blue-500/50"
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={!newMessage.trim()}
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-blue-600 rounded-lg text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <Send className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+                <select
+                  value={selectedType}
+                  onChange={(e) => setSelectedType(e.target.value as any)}
+                  className="px-3 py-3 bg-gray-700/50 border border-gray-600/30 rounded-xl text-white focus:outline-none focus:border-blue-500/50"
+                >
+                  <option value="message">Mensaje</option>
+                  <option value="question">Pregunta</option>
+                  <option value="suggestion">Sugerencia</option>
+                  <option value="comment">Comentario</option>
+                </select>
+              </div>
             </div>
-          </div>
-        </div>
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <div className="flex items-center space-x-3">
-            <Star className="h-8 w-8 text-yellow-400" />
-            <div>
-              <p className="text-sm text-gray-400">{t('chat.best_suggestion')}</p>
-              <p className="text-2xl font-bold text-white">15</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-          <div className="flex items-center space-x-3">
-            <Bot className="h-8 w-8 text-purple-400" />
-            <div>
-              <p className="text-sm text-gray-400">{t('chat.ai_responses')}</p>
-              <p className="text-2xl font-bold text-white">{messages.filter(m => m.sender === 'bot').length}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Reglas del chat */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <h2 className="text-xl font-semibold text-white mb-4">
-          {t('chat.community_rules')}
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-medium text-white mb-2">{t('chat.allowed')}</h3>
-            <ul className="space-y-1 text-sm text-gray-300">
-              <li>• {t('chat.allowed_1')}</li>
-              <li>• {t('chat.allowed_2')}</li>
-              <li>• {t('chat.allowed_3')}</li>
-              <li>• {t('chat.allowed_4')}</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-medium text-white mb-2">{t('chat.not_allowed')}</h3>
-            <ul className="space-y-1 text-sm text-gray-300">
-              <li>• {t('chat.not_allowed_1')}</li>
-              <li>• {t('chat.not_allowed_2')}</li>
-              <li>• {t('chat.not_allowed_3')}</li>
-              <li>• {t('chat.not_allowed_4')}</li>
-            </ul>
           </div>
         </div>
       </div>

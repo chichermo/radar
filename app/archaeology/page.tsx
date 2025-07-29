@@ -102,79 +102,38 @@ export default function ArchaeologyPage() {
   const filteredFinds = activeCategory === 'all' ? finds : finds.filter(find => find.category === activeCategory);
 
   return (
-    <div className="space-y-6 ml-64">
-      <header className="mb-8">
-        <h1 className="text-3xl font-bold text-white mb-2">
-          {t('archaeology.title')}
-        </h1>
-        <p className="text-gray-300 text-lg leading-relaxed">
-          {t('archaeology.subtitle')}
-        </p>
-      </header>
-
-      {/* Estadísticas */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-orange-900/20 border border-orange-500/30 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <Search className="h-5 w-5 text-orange-400" />
-            <span className="text-orange-200 font-semibold">{t('archaeology.findings')}</span>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">{finds.length}</p>
-          <p className="text-orange-300 text-sm">{t('archaeology.documented')}</p>
-        </div>
-        <div className="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <Globe className="h-5 w-5 text-blue-400" />
-            <span className="text-blue-200 font-semibold">{t('archaeology.regions')}</span>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">6</p>
-          <p className="text-blue-300 text-sm">{t('archaeology.continents')}</p>
-        </div>
-        <div className="bg-green-900/20 border border-green-500/30 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <Clock className="h-5 w-5 text-green-400" />
-            <span className="text-green-200 font-semibold">{t('archaeology.period')}</span>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">12K {t('archaeology.years')}</p>
-          <p className="text-green-300 text-sm">{t('archaeology.max_age')}</p>
-        </div>
-        <div className="bg-purple-900/20 border border-purple-500/30 rounded-lg p-4">
-          <div className="flex items-center space-x-2">
-            <AlertTriangle className="h-5 w-5 text-purple-400" />
-            <span className="text-purple-200 font-semibold">{t('archaeology.mysteries')}</span>
-          </div>
-          <p className="text-2xl font-bold text-white mt-2">{t('archaeology.unsolved')}</p>
-          <p className="text-purple-300 text-sm">{t('archaeology.many_cases')}</p>
-        </div>
+    <div className="wrapper mx-auto max-w-7xl py-8 px-4">
+      <div className="header text-center mb-8">
+        <h1 className="title gradient-text">Arqueología y Astronomía Antigua</h1>
+        <p className="subtitle max-w-2xl mx-auto">Descubre los hallazgos arqueológicos más sorprendentes relacionados con la astronomía y la ciencia antigua.</p>
       </div>
 
-      {/* Explicación educativa */}
-      <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-8">
-        <h2 className="text-xl font-semibold text-white mb-4">{t('archaeology.why_important')}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h3 className="text-lg font-medium text-blue-400 mb-2">{t('archaeology.for_science')}</h3>
-            <ul className="text-gray-300 space-y-2 text-sm">
-              <li>• <strong>{t('archaeology.rewrite_history')}:</strong> {t('archaeology.rewrite_history_desc')}</li>
-              <li>• <strong>{t('archaeology.lost_knowledge')}:</strong> {t('archaeology.lost_knowledge_desc')}</li>
-              <li>• <strong>{t('archaeology.connect_eras')}:</strong> {t('archaeology.connect_eras_desc')}</li>
-              <li>• <strong>{t('archaeology.inspire_innovation')}:</strong> {t('archaeology.inspire_innovation_desc')}</li>
-            </ul>
-          </div>
-          <div>
-            <h3 className="text-lg font-medium text-green-400 mb-2">{t('archaeology.for_humanity')}</h3>
-            <ul className="text-gray-300 space-y-2 text-sm">
-              <li>• <strong>{t('archaeology.cultural_heritage')}:</strong> {t('archaeology.cultural_heritage_desc')}</li>
-              <li>• <strong>{t('archaeology.scientific_humility')}:</strong> {t('archaeology.scientific_humility_desc')}</li>
-              <li>• <strong>{t('archaeology.mystery_wonder')}:</strong> {t('archaeology.mystery_wonder_desc')}</li>
-              <li>• <strong>{t('archaeology.temporal_perspective')}:</strong> {t('archaeology.temporal_perspective_desc')}</li>
-            </ul>
-          </div>
+      {/* Métricas principales */}
+      <div className="metricsGrid mb-8">
+        <div className="glass-card p-6 flex flex-col items-center">
+          <Search className="h-8 w-8 text-orange-400 mb-2" />
+          <div className="text-2xl font-bold text-white">{finds.length}</div>
+          <div className="text-gray-400 text-sm">Hallazgos</div>
+        </div>
+        <div className="glass-card p-6 flex flex-col items-center">
+          <Globe className="h-8 w-8 text-blue-400 mb-2" />
+          <div className="text-2xl font-bold text-blue-400">6</div>
+          <div className="text-gray-400 text-sm">Regiones</div>
+        </div>
+        <div className="glass-card p-6 flex flex-col items-center">
+          <Clock className="h-8 w-8 text-green-400 mb-2" />
+          <div className="text-2xl font-bold text-green-400">12K</div>
+          <div className="text-gray-400 text-sm">Años</div>
+        </div>
+        <div className="glass-card p-6 flex flex-col items-center">
+          <AlertTriangle className="h-8 w-8 text-purple-400 mb-2" />
+          <div className="text-2xl font-bold text-purple-400">{t('archaeology.unsolved')}</div>
+          <div className="text-gray-400 text-sm">Misterios</div>
         </div>
       </div>
 
       {/* Filtros por categoría */}
-      <div className="flex flex-wrap gap-2 mb-6">
+      <div className="flex flex-wrap gap-2 mb-6 justify-center">
         {categories.map((category) => (
           <button
             key={category}
@@ -195,7 +154,7 @@ export default function ArchaeologyPage() {
         {filteredFinds.map((find) => (
           <div
             key={find.id}
-            className="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:border-blue-500 transition-colors cursor-pointer"
+            className="glass-card bg-gray-800 rounded-lg border border-gray-700 overflow-hidden hover:border-blue-500 transition-colors cursor-pointer"
             onClick={() => setSelectedFind(find)}
           >
             <div className="relative h-48">
@@ -228,7 +187,7 @@ export default function ArchaeologyPage() {
       {/* Modal para detalles */}
       {selectedFind && (
         <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-600">
+          <div className="glass-card bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-auto border border-gray-600">
             <div className="relative h-64">
               <img
                 src={selectedFind.imageUrl}
@@ -239,13 +198,12 @@ export default function ArchaeologyPage() {
                 onClick={() => setSelectedFind(null)}
                 className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75"
               >
-                ✕
+                ×
               </button>
             </div>
             <div className="p-6">
               <h2 className="text-2xl font-bold text-white mb-2">{selectedFind.title}</h2>
               <p className="text-gray-300 mb-4">{selectedFind.description}</p>
-              
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
                 <div>
                   <span className="text-gray-400">{t('archaeology.location')}:</span>
@@ -264,12 +222,10 @@ export default function ArchaeologyPage() {
                   <p className="text-white">{selectedFind.category}</p>
                 </div>
               </div>
-
               <div className="mb-6">
                 <h3 className="text-lg font-semibold text-blue-400 mb-2">{t('archaeology.historical_significance')}</h3>
                 <p className="text-gray-300">{selectedFind.significance}</p>
               </div>
-
               <div>
                 <h3 className="text-lg font-semibold text-green-400 mb-2">{t('archaeology.find_details')}</h3>
                 <p className="text-gray-300 leading-relaxed">{selectedFind.details}</p>
@@ -278,19 +234,6 @@ export default function ArchaeologyPage() {
           </div>
         </div>
       )}
-
-      {/* Sección de reflexión */}
-      <div className="mt-12 p-6 bg-gray-800/50 border border-gray-700 rounded-lg">
-        <h2 className="text-xl font-semibold text-white mb-4">{t('archaeology.what_teach_us')}</h2>
-        <div className="text-gray-300 space-y-3">
-          <p>
-            {t('archaeology.reflection_1')}
-          </p>
-          <p>
-            <strong>{t('archaeology.most_important_lesson')}:</strong> {t('archaeology.lesson_description')}
-          </p>
-        </div>
-      </div>
     </div>
   );
 } 

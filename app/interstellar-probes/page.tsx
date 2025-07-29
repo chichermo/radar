@@ -1,7 +1,51 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { Rocket, Activity, TrendingUp, AlertCircle } from 'lucide-react';
+import { Rocket, Activity, TrendingUp, AlertCircle, Globe, Award, ExternalLink } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { Button } from '@/components/ui/button';
+
+const probes = [
+  {
+    name: 'Voyager 1',
+    agency: 'NASA',
+    launch: '1977-09-05',
+    status: 'Activo',
+    distance: '24,000,000,000 km',
+    speed: '61,000 km/h',
+    achievements: ['Primera nave en el espacio interestelar', 'Imágenes de Júpiter y Saturno', 'Golden Record'],
+    link: 'https://voyager.jpl.nasa.gov/'
+  },
+  {
+    name: 'Voyager 2',
+    agency: 'NASA',
+    launch: '1977-08-20',
+    status: 'Activo',
+    distance: '20,000,000,000 km',
+    speed: '55,000 km/h',
+    achievements: ['Única nave que visitó Urano y Neptuno', 'Golden Record'],
+    link: 'https://voyager.jpl.nasa.gov/'
+  },
+  {
+    name: 'Pioneer 10',
+    agency: 'NASA',
+    launch: '1972-03-02',
+    status: 'Finalizado',
+    distance: '12,000,000,000 km',
+    speed: '43,000 km/h',
+    achievements: ['Primera nave en cruzar el cinturón de asteroides', 'Primera en sobrevolar Júpiter'],
+    link: 'https://www.nasa.gov/mission_pages/pioneer-10/'
+  },
+  {
+    name: 'New Horizons',
+    agency: 'NASA',
+    launch: '2006-01-19',
+    status: 'Activo',
+    distance: '7,900,000,000 km',
+    speed: '58,000 km/h',
+    achievements: ['Primer sobrevuelo de Plutón', 'Imágenes del Cinturón de Kuiper'],
+    link: 'https://www.nasa.gov/mission_pages/newhorizons/'
+  }
+];
 
 export default function InterstellarProbesPage() {
   const { t } = useI18n();
@@ -95,35 +139,25 @@ export default function InterstellarProbesPage() {
 
         {/* Sondas */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-3">Voyager 1</h3>
-            <div className="space-y-2">
-              <p className="text-gray-400 text-sm">{t('interstellar.launch')}: 1977</p>
-              <p className="text-gray-400 text-sm">{t('interstellar.status')}: {t('interstellar.active')}</p>
-              <p className="text-gray-400 text-sm">{t('interstellar.distance')}: 23.8B km</p>
-              <p className="text-gray-300 text-sm">{t('interstellar.voyager_1_description')}</p>
+          {probes.map((probe, i) => (
+            <div key={i} className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+              <h3 className="text-lg font-semibold text-white mb-3">{probe.name}</h3>
+              <div className="space-y-2">
+                <p className="text-gray-400 text-sm">{t('interstellar.launch')}: {probe.launch}</p>
+                <p className="text-gray-400 text-sm">{t('interstellar.status')}: {probe.status}</p>
+                <p className="text-gray-400 text-sm">{t('interstellar.distance')}: {probe.distance}</p>
+                <p className="text-gray-400 text-sm">{t('interstellar.speed')}: {probe.speed}</p>
+                <ul className="text-xs text-gray-300 mb-2 list-disc list-inside">
+                  {probe.achievements.map((a, j) => <li key={j}>{a}</li>)}
+                </ul>
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 mt-2">
+                  <a href={probe.link} target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="w-4 h-4 mr-1" /> Ver más
+                  </a>
+                </Button>
+              </div>
             </div>
-          </div>
-
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-3">Voyager 2</h3>
-            <div className="space-y-2">
-              <p className="text-gray-400 text-sm">{t('interstellar.launch')}: 1977</p>
-              <p className="text-gray-400 text-sm">{t('interstellar.status')}: {t('interstellar.active')}</p>
-              <p className="text-gray-400 text-sm">{t('interstellar.distance')}: 19.9B km</p>
-              <p className="text-gray-300 text-sm">{t('interstellar.voyager_2_description')}</p>
-            </div>
-          </div>
-
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-3">New Horizons</h3>
-            <div className="space-y-2">
-              <p className="text-gray-400 text-sm">{t('interstellar.launch')}: 2006</p>
-              <p className="text-gray-400 text-sm">{t('interstellar.status')}: {t('interstellar.active')}</p>
-              <p className="text-gray-400 text-sm">{t('interstellar.distance')}: 8.5B km</p>
-              <p className="text-gray-300 text-sm">{t('interstellar.new_horizons_description')}</p>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Información adicional */}

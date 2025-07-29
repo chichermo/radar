@@ -1,0 +1,394 @@
+/* Layout principal - Solo clases locales */
+
+/* Navegación */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.navContainer {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.navContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 4rem;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.logoIcon {
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logoText {
+  font-size: 1.25rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #2cc9ff 0%, #a2db3c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.navLinks {
+  display: none;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  justify-content: center;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  max-width: calc(100vw - 300px);
+}
+
+.navLinks::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .navLinks {
+    display: flex;
+  }
+}
+
+.navLink {
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 500;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.navLink:hover {
+  color: #60a5fa;
+  background: rgba(96, 165, 250, 0.1);
+}
+
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.navButton {
+  padding: 0.5rem;
+  color: #9ca3af;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.navButton:hover {
+  color: white;
+}
+
+.navButtonIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.loginButton {
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  background: linear-gradient(135deg, #10b981 0%, #3b82f6 100%);
+  color: white;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.loginButton:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+/* Contenido principal */
+.main {
+  padding-top: 4rem;
+  min-height: 100vh;
+}
+
+/* Footer */
+.footer {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  margin-top: auto;
+}
+
+.footerContainer {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .footerGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.footerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footerLogo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footerLogoIcon {
+  width: 2rem;
+  height: 2rem;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footerLogoText {
+  font-size: 1.25rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, #2cc9ff 0%, #a2db3c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footerDescription {
+  color: #9ca3af;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.footerLinks {
+  display: flex;
+  gap: 1rem;
+}
+
+.footerLink {
+  color: #9ca3af;
+  transition: color 0.3s;
+}
+
+.footerLink:hover {
+  color: white;
+}
+
+.footerLinkIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.footerTitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 1rem;
+}
+
+.footerList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footerListItem {
+  color: #9ca3af;
+  transition: color 0.3s;
+  cursor: pointer;
+}
+
+.footerListItem:hover {
+  color: white;
+}
+
+.footerBottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footerCopyright {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+.footerPoweredBy {
+  color: #9ca3af;
+  font-size: 0.875rem;
+}
+
+/* Partículas de fondo */
+.particleSystem {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: rgba(44, 201, 255, 0.5);
+  border-radius: 50%;
+  animation: float 20s infinite linear;
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(100vh) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Decoraciones SVG */
+.svgDecoration {
+  position: fixed;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .navContent {
+    padding: 0 0.5rem;
+  }
+  
+  .navLinks {
+    display: none;
+  }
+  
+  .footerContainer {
+    padding: 1rem 0.5rem;
+  }
+  
+  .footerBottom {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+/* Menú desplegable para móviles */
+@media (max-width: 1024px) {
+  .navLinks {
+    max-width: calc(100vw - 200px);
+    gap: 0.25rem;
+  }
+  
+  .navLink {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+  }
+}
+
+/* Menú móvil */
+.mobileMenu {
+  display: block;
+  background-color: rgba(31, 41, 55, 0.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(75, 85, 99, 0.5);
+}
+
+.mobileMenuContent {
+  padding: 1rem;
+  max-height: 24rem;
+  overflow-y: auto;
+}
+
+.mobileMenuItem {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #d1d5db;
+  text-decoration: none;
+  border-radius: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.mobileMenuCategory {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.mobileMenuSubItem {
+  display: block;
+  padding: 0.5rem 1.5rem;
+  font-size: 0.875rem;
+  color: #d1d5db;
+  text-decoration: none;
+  border-radius: 0.25rem;
+}
+
+@media (min-width: 768px) {
+  .mobileMenu {
+    display: none;
+  }
+} 

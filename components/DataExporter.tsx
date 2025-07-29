@@ -1,348 +1,305 @@
 "use client";
 
-import { useState } from 'react';
-import { Download, FileText, Database, Calendar, Filter, Settings } from 'lucide-react';
-import CardComponents from '@/components/ui/card2';
-const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardComponents;
+import React, { useState } from 'react';
+import { Download, FileText, FileSpreadsheet, FileJson } from 'lucide-react';
 
-interface ExportJob {
+export interface ExportData {
   id: string;
   name: string;
-  type: 'csv' | 'json' | 'xlsx' | 'pdf';
-  status: 'pending' | 'processing' | 'completed' | 'failed';
-  progress: number;
-  createdAt: Date;
-  completedAt?: Date;
-  size?: string;
-  downloadUrl?: string;
+  data: any;
+  timestamp: Date;
+  type: 'observations' | 'discoveries' | 'statistics' | 'images';
 }
 
-interface DataSource {
-  id: string;
-  name: string;
-  description: string;
-  recordCount: number;
-  lastUpdated: Date;
-  available: boolean;
+interface DataExporterProps {
+  data: ExportData[];
+  onExport: (format: string, data: ExportData[]) => void;
 }
 
-export function DataExporter() {
-  const [selectedSources, setSelectedSources] = useState<string[]>([]);
-  const [exportType, setExportType] = useState<'csv' | 'json' | 'xlsx' | 'pdf'>('csv');
+export const DataExporter: React.FC<DataExporterProps> = ({ data, onExport }) => {
+  const [selectedFormat, setSelectedFormat] = useState('csv');
+  const [selectedData, setSelectedData] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
-  const [exportJobs, setExportJobs] = useState<ExportJob[]>([]);
   const [isExporting, setIsExporting] = useState(false);
 
-  const dataSources: DataSource[] = [
-    {
-      id: 'exoplanets',
-      name: 'Exoplanetas',
-      description: 'Datos de planetas fuera del sistema solar',
-      recordCount: 5432,
-      lastUpdated: new Date(),
-      available: true
-    },
-    {
-      id: 'satellites',
-      name: 'Satélites',
-      description: 'Posiciones y datos de satélites en órbita',
-      recordCount: 15420,
-      lastUpdated: new Date(),
-      available: true
-    },
-    {
-      id: 'asteroids',
-      name: 'Asteroides',
-      description: 'Objetos cercanos a la Tierra',
-      recordCount: 8923,
-      lastUpdated: new Date(),
-      available: true
-    },
-    {
-      id: 'space-weather',
-      name: 'Clima Espacial',
-      description: 'Datos de actividad solar y tormentas geomagnéticas',
-      recordCount: 2341,
-      lastUpdated: new Date(),
-      available: true
-    },
-    {
-      id: 'vera-rubin',
-      name: 'Vera C. Rubin',
-      description: 'Alertas y observaciones del LSST',
-      recordCount: 2847,
-      lastUpdated: new Date(),
-      available: true
-    },
-    {
-      id: 'gravitational-waves',
-      name: 'Ondas Gravitacionales',
-      description: 'Detecciones de LIGO/Virgo',
-      recordCount: 156,
-      lastUpdated: new Date(),
-      available: true
-    }
+  const formats = [
+    { id: 'csv', name: 'CSV', icon: FileSpreadsheet, description: 'Excel compatible' },
+    { id: 'json', name: 'JSON', icon: FileJson, description: 'Datos estructurados' },
+    { id: 'pdf', name: 'PDF', icon: FileText, description: 'Reporte formateado' },
+    { id: 'txt', name: 'Texto', icon: FileText, description: 'Formato simple' },
   ];
 
-  const handleSourceToggle = (sourceId: string) => {
-    setSelectedSources(prev => 
-      prev.includes(sourceId) 
-        ? prev.filter(id => id !== sourceId)
-        : [...prev, sourceId]
-    );
+  const handleSelectAll = () => {
+    if (selectedData.length === data.length) {
+      setSelectedData([]);
+    } else {
+      setSelectedData(data.map(item => item.id));
+    }
   };
 
   const handleExport = async () => {
-    if (selectedSources.length === 0) {
-      alert('Selecciona al menos una fuente de datos');
-      return;
-    }
+    if (selectedData.length === 0) return;
 
     setIsExporting(true);
-    const jobId = `export-${Date.now()}`;
-    const newJob: ExportJob = {
-      id: jobId,
-      name: `Exportación ${exportType.toUpperCase()} - ${new Date().toLocaleDateString()}`,
-      type: exportType,
-      status: 'pending',
-      progress: 0,
-      createdAt: new Date()
-    };
-
-    setExportJobs(prev => [newJob, ...prev]);
-
-    // Simular proceso de exportación
-    for (let i = 0; i <= 100; i += 10) {
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setExportJobs(prev => prev.map(job => 
-        job.id === jobId 
-          ? { 
-              ...job, 
-              progress: i, 
-              status: i === 100 ? 'completed' : 'processing',
-              completedAt: i === 100 ? new Date() : undefined,
-              size: i === 100 ? '2.4 MB' : undefined,
-              downloadUrl: i === 100 ? `#download-${jobId}` : undefined
-            }
-          : job
-      ));
-    }
-
-    setIsExporting(false);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'text-green-400';
-      case 'processing': return 'text-yellow-400';
-      case 'failed': return 'text-red-400';
-      default: return 'text-gray-400';
+    
+    try {
+      const filteredData = data.filter(item => selectedData.includes(item.id));
+      await onExport(selectedFormat, filteredData);
+    } catch (error) {
+      console.error('Error exporting data:', error);
+    } finally {
+      setIsExporting(false);
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'completed': return '✅';
-      case 'processing': return '⏳';
-      case 'failed': return '❌';
-      default: return '⏸️';
+  const exportToCSV = (data: ExportData[]) => {
+    const headers = ['ID', 'Nombre', 'Tipo', 'Fecha', 'Datos'];
+    const csvContent = [
+      headers.join(','),
+      ...data.map(item => [
+        item.id,
+        `"${item.name}"`,
+        item.type,
+        item.timestamp.toISOString(),
+        `"${JSON.stringify(item.data).replace(/"/g, '""')}"`
+      ].join(','))
+    ].join('\n');
+
+    downloadFile(csvContent, 'data.csv', 'text/csv');
+  };
+
+  const exportToJSON = (data: ExportData[]) => {
+    const jsonContent = JSON.stringify(data, null, 2);
+    downloadFile(jsonContent, 'data.json', 'application/json');
+  };
+
+  const exportToPDF = async (data: ExportData[]) => {
+    // Simulated PDF export
+    const pdfContent = `
+      <html>
+        <head>
+          <title>Reporte de Datos</title>
+          <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+            th { background-color: #f2f2f2; }
+          </style>
+        </head>
+        <body>
+          <h1>Reporte de Datos</h1>
+          <p>Generado el: ${new Date().toLocaleString('es-ES')}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Tipo</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${data.map(item => `
+                <tr>
+                  <td>${item.id}</td>
+                  <td>${item.name}</td>
+                  <td>${item.type}</td>
+                  <td>${item.timestamp.toLocaleString('es-ES')}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </body>
+      </html>
+    `;
+
+    downloadFile(pdfContent, 'report.html', 'text/html');
+  };
+
+  const exportToTXT = (data: ExportData[]) => {
+    const txtContent = data.map(item => 
+      `ID: ${item.id}\nNombre: ${item.name}\nTipo: ${item.type}\nFecha: ${item.timestamp.toLocaleString('es-ES')}\nDatos: ${JSON.stringify(item.data)}\n\n`
+    ).join('---\n');
+
+    downloadFile(txtContent, 'data.txt', 'text/plain');
+  };
+
+  const downloadFile = (content: string, filename: string, mimeType: string) => {
+    const blob = new Blob([content], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleFormatExport = async (data: ExportData[]) => {
+    switch (selectedFormat) {
+      case 'csv':
+        exportToCSV(data);
+        break;
+      case 'json':
+        exportToJSON(data);
+        break;
+      case 'pdf':
+        await exportToPDF(data);
+        break;
+      case 'txt':
+        exportToTXT(data);
+        break;
+      default:
+        exportToCSV(data);
     }
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <Download className="w-8 h-8 text-blue-400 mr-3" />
-          <div>
-            <h2 className="text-2xl font-bold text-white">Exportador de Datos</h2>
-            <p className="text-gray-400">Exporta datos espaciales en múltiples formatos</p>
-          </div>
+    <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6">
+      <div className="flex items-center space-x-3 mb-6">
+        <div className="p-2 bg-blue-500/20 rounded-lg">
+          <Download className="h-5 w-5 text-blue-400" />
+        </div>
+        <div>
+          <h3 className="text-lg font-semibold text-white">Exportar Datos</h3>
+          <p className="text-sm text-gray-400">Selecciona el formato y los datos a exportar</p>
         </div>
       </div>
 
-      {/* Configuración de Exportación */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center">
-            <Settings className="w-5 h-5 mr-2" />
-            Configuración de Exportación
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Fuentes de Datos */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-3">Fuentes de Datos</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {dataSources.map((source) => (
-                <div
-                  key={source.id}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                    selectedSources.includes(source.id)
-                      ? 'bg-blue-600/20 border-blue-500'
-                      : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
-                  }`}
-                  onClick={() => handleSourceToggle(source.id)}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium text-white">{source.name}</h4>
-                      <p className="text-sm text-gray-400">{source.description}</p>
-                      <p className="text-xs text-gray-500">
-                        {source.recordCount.toLocaleString()} registros
-                      </p>
-                    </div>
-                    <div className={`w-4 h-4 rounded border-2 ${
-                      selectedSources.includes(source.id)
-                        ? 'bg-blue-500 border-blue-500'
-                        : 'border-gray-500'
-                    }`}>
-                      {selectedSources.includes(source.id) && (
-                        <div className="w-full h-full bg-blue-500 rounded-sm" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* Filtros */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Rango de fechas
+          </label>
+          <div className="flex space-x-2">
+            <input
+              type="date"
+              value={dateRange.start}
+              onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+              className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
+            />
+            <input
+              type="date"
+              value={dateRange.end}
+              onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              className="flex-1 bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
+            />
           </div>
+        </div>
 
-          {/* Tipo de Exportación */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-3">Formato de Exportación</h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {(['csv', 'json', 'xlsx', 'pdf'] as const).map((type) => (
-                <div
-                  key={type}
-                  className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                    exportType === type
-                      ? 'bg-blue-600/20 border-blue-500'
-                      : 'bg-gray-700/50 border-gray-600 hover:border-gray-500'
-                  }`}
-                  onClick={() => setExportType(type)}
-                >
-                  <div className="text-center">
-                    <FileText className="w-6 h-6 mx-auto mb-2 text-blue-400" />
-                    <span className="text-white font-medium">{type.toUpperCase()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Tipo de datos
+          </label>
+          <select className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm">
+            <option value="all">Todos los tipos</option>
+            <option value="observations">Observaciones</option>
+            <option value="discoveries">Descubrimientos</option>
+            <option value="statistics">Estadísticas</option>
+            <option value="images">Imágenes</option>
+          </select>
+        </div>
 
-          {/* Rango de Fechas */}
-          <div>
-            <h3 className="text-lg font-semibold text-white mb-3">Rango de Fechas</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Fecha Inicio
-                </label>
-                <input
-                  type="date"
-                  value={dateRange.start}
-                  onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Fecha Fin
-                </label>
-                <input
-                  type="date"
-                  value={dateRange.end}
-                  onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                  className="w-full px-3 py-2 bg-gray-700 border border-gray-600 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Botón de Exportación */}
-          <div className="flex justify-center">
-            <button
-              onClick={handleExport}
-              disabled={isExporting || selectedSources.length === 0}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white rounded-lg flex items-center transition-colors"
-            >
-              {isExporting ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                  Exportando...
-                </>
-              ) : (
-                <>
-                  <Download className="w-4 h-4 mr-2" />
-                  Exportar Datos
-                </>
-              )}
-            </button>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Historial de Exportaciones */}
-      <Card className="bg-gray-800/50 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center">
-            <Database className="w-5 h-5 mr-2" />
-            Historial de Exportaciones
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {exportJobs.map((job) => (
-              <div key={job.id} className="flex items-center justify-between p-3 bg-gray-700/30 rounded-lg">
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg">{getStatusIcon(job.status)}</span>
-                  <div>
-                    <h4 className="font-medium text-white">{job.name}</h4>
-                    <p className="text-sm text-gray-400">
-                      {job.createdAt.toLocaleString()} • {job.type.toUpperCase()}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="flex items-center space-x-4">
-                  {job.status === 'processing' && (
-                    <div className="flex items-center space-x-2">
-                      <div className="w-16 bg-gray-600 rounded-full h-2">
-                        <div 
-                          className="bg-blue-500 h-2 rounded-full transition-all duration-300"
-                          style={{ width: `${job.progress}%` }}
-                        />
-                      </div>
-                      <span className="text-sm text-gray-400">{job.progress}%</span>
-                    </div>
-                  )}
-                  
-                  <span className={`text-sm font-medium ${getStatusColor(job.status)}`}>
-                    {job.status === 'completed' ? 'Completado' :
-                     job.status === 'processing' ? 'Procesando' :
-                     job.status === 'failed' ? 'Fallido' : 'Pendiente'}
-                  </span>
-                  
-                  {job.status === 'completed' && job.downloadUrl && (
-                    <button className="p-2 bg-green-600 hover:bg-green-700 text-white rounded-lg">
-                      <Download className="w-4 h-4" />
-                    </button>
-                  )}
-                </div>
-              </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Formato de exportación
+          </label>
+          <select
+            value={selectedFormat}
+            onChange={(e) => setSelectedFormat(e.target.value)}
+            className="w-full bg-gray-700 border border-gray-600 rounded-lg px-3 py-2 text-white text-sm"
+          >
+            {formats.map(format => (
+              <option key={format.id} value={format.id}>
+                {format.name} - {format.description}
+              </option>
             ))}
-            
-            {exportJobs.length === 0 && (
-              <div className="text-center py-8">
-                <Database className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                <h3 className="text-xl text-gray-400 mb-2">No hay exportaciones</h3>
-                <p className="text-gray-500">Configura y ejecuta tu primera exportación</p>
+          </select>
+        </div>
+      </div>
+
+      {/* Formatos disponibles */}
+      <div className="mb-6">
+        <h4 className="text-sm font-medium text-gray-300 mb-3">Formatos disponibles</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {formats.map(format => (
+            <button
+              key={format.id}
+              onClick={() => setSelectedFormat(format.id)}
+              className={`p-3 rounded-lg border transition-colors ${
+                selectedFormat === format.id
+                  ? 'border-blue-500 bg-blue-500/20 text-blue-400'
+                  : 'border-gray-600 bg-gray-700/50 text-gray-300 hover:border-gray-500'
+              }`}
+            >
+              <format.icon className="h-5 w-5 mb-2" />
+              <div className="text-xs font-medium">{format.name}</div>
+              <div className="text-xs text-gray-400">{format.description}</div>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Lista de datos */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="text-sm font-medium text-gray-300">
+            Datos disponibles ({data.length})
+          </h4>
+          <button
+            onClick={handleSelectAll}
+            className="text-sm text-blue-400 hover:text-blue-300"
+          >
+            {selectedData.length === data.length ? 'Deseleccionar todo' : 'Seleccionar todo'}
+          </button>
+        </div>
+        
+        <div className="max-h-64 overflow-y-auto space-y-2">
+          {data.map(item => (
+            <label key={item.id} className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg hover:bg-white/10 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selectedData.includes(item.id)}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setSelectedData(prev => [...prev, item.id]);
+                  } else {
+                    setSelectedData(prev => prev.filter(id => id !== item.id));
+                  }
+                }}
+                className="rounded border-gray-600 text-blue-500 focus:ring-blue-500"
+              />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-white">{item.name}</div>
+                <div className="text-xs text-gray-400">
+                  {item.type} • {item.timestamp.toLocaleString('es-ES')}
+                </div>
               </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Botón de exportación */}
+      <div className="flex items-center justify-between">
+        <div className="text-sm text-gray-400">
+          {selectedData.length} de {data.length} elementos seleccionados
+        </div>
+        <button
+          onClick={handleExport}
+          disabled={selectedData.length === 0 || isExporting}
+          className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg text-white transition-colors"
+        >
+          {isExporting ? (
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+          ) : (
+            <Download className="h-4 w-4" />
+          )}
+          <span>{isExporting ? 'Exportando...' : 'Exportar'}</span>
+        </button>
+      </div>
     </div>
   );
-} 
+}; 

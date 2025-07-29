@@ -1,6 +1,6 @@
 {
-  "name": "COSMIC EYE - Monitoreo Espacial",
-  "short_name": "COSMIC EYE",
+  "name": "COSMIC DATA - Monitoreo Espacial",
+  "short_name": "COSMIC DATA",
   "description": "Plataforma de monitoreo en tiempo real de objetos espaciales y señales anómalas",
   "start_url": "/",
   "display": "standalone",
@@ -62,38 +62,26 @@
   ],
   "shortcuts": [
     {
-      "name": "Dashboard Principal",
+      "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "Acceso rápido al dashboard principal",
       "url": "/",
       "icons": [
         {
-          "src": "/icons/icon-96x96.png",
-          "sizes": "96x96"
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
         }
       ]
     },
     {
-      "name": "Exoplanetas",
-      "short_name": "Exoplanetas",
-      "description": "Explorar exoplanetas descubiertos",
-      "url": "/exoplanets",
+      "name": "Mapa Estelar",
+      "short_name": "Skymap",
+      "description": "Mapa estelar interactivo",
+      "url": "/skymap",
       "icons": [
         {
-          "src": "/icons/icon-96x96.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "NASA APOD",
-      "short_name": "APOD",
-      "description": "Imagen astronómica del día",
-      "url": "/nasa-apod",
-      "icons": [
-        {
-          "src": "/icons/icon-96x96.png",
-          "sizes": "96x96"
+          "src": "/icons/icon-192x192.png",
+          "sizes": "192x192"
         }
       ]
     }

@@ -378,7 +378,7 @@ const ResourceCard = ({ resource, index }: { resource: any; index: number }) => 
             </span>
             <span className="flex items-center gap-1">
               <Eye className="h-3 w-3" />
-              {resource.visits.toLocaleString()}
+              {resource.visits.toLocaleString('es-ES')}
             </span>
           </div>
           <span className="text-green-400 font-medium">Gratuito</span>
@@ -467,36 +467,13 @@ export default function ResourcesPage() {
   });
 
   return (
-    <div className="min-h-screen space-y-8">
-      {/* Header */}
-      <div className="text-center space-y-4 animate-fade-in-scale">
-        <h1 className="text-5xl font-bold text-white mb-4">
-          Recursos Espaciales
-          <span className="text-gradient ml-2">Premium</span>
-        </h1>
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-          Descubre las mejores herramientas, bases de datos y recursos para explorar el universo.
-        </p>
-        
-        {/* Estadísticas */}
-        <div className="flex justify-center gap-8 mt-8">
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">{RESOURCES.flatMap(cat => cat.items).length}</p>
-            <p className="text-gray-400">Recursos</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">6</p>
-            <p className="text-gray-400">Categorías</p>
-          </div>
-          <div className="text-center">
-            <p className="text-2xl font-bold text-white">100%</p>
-            <p className="text-gray-400">Gratuitos</p>
-          </div>
-        </div>
+    <div className="wrapper mx-auto max-w-7xl py-8 px-4">
+      <div className="header text-center mb-8">
+        <h1 className="title gradient-text">Recursos Espaciales</h1>
+        <p className="subtitle max-w-2xl mx-auto">Accede a material educativo, papers, documentales y más recursos del cosmos.</p>
       </div>
-
-      {/* Controles */}
-      <div className="glass-card p-6">
+      <div className="glass-card p-6 mb-8">
+        {/* Controles */}
         <div className="flex flex-col lg:flex-row gap-6 items-center justify-between">
           {/* Búsqueda */}
           <div className="relative flex-1 max-w-md">
@@ -509,7 +486,6 @@ export default function ResourcesPage() {
               className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
             />
           </div>
-
           {/* Ordenar */}
           <select
             value={sortBy}
@@ -521,18 +497,15 @@ export default function ResourcesPage() {
             <option value="name">Alfabético</option>
           </select>
         </div>
-
         {/* Filtros */}
         <FilterBar activeFilter={activeFilter} onFilterChange={setActiveFilter} />
       </div>
-
       {/* Grid de recursos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {filteredResources.map((resource, index) => (
           <ResourceCard key={resource.title} resource={resource} index={index} />
         ))}
       </div>
-
       {/* Mensaje si no hay resultados */}
       {filteredResources.length === 0 && (
         <div className="text-center py-12">
@@ -541,7 +514,6 @@ export default function ResourcesPage() {
           <p className="text-gray-400">Intenta ajustar los filtros o términos de búsqueda</p>
         </div>
       )}
-
       {/* Footer */}
       <div className="glass-card p-6 text-center">
         <p className="text-gray-400 mb-2">

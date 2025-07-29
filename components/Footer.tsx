@@ -65,7 +65,7 @@ export default function Footer() {
               </div>
               <div className="ml-3">
                 <h3 className="text-xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  COSMIC EYE
+                  COSMIC DATA
                 </h3>
                 <p className="text-sm text-gray-400">Enterprise Edition</p>
               </div>

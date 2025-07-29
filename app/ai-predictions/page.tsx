@@ -3,423 +3,119 @@
 import React, { useState, useEffect } from 'react';
 import CardComponents from '@/components/ui/card2';
 const { Card, CardHeader, CardTitle, CardDescription, CardContent } = CardComponents;
-import { 
-  Brain, 
-  TrendingUp, 
-  Target, 
-  AlertTriangle, 
-  Clock, 
-  BarChart3, 
-  Zap, 
-  Eye, 
-  Star,
-  Crown,
-  Award,
-  Activity,
-  Shield,
-  Database,
-  Globe,
-  Search,
-  RefreshCw,
-  Download
-} from 'lucide-react';
-import { formatDate, formatTimeOnly } from '@/utils/formatters';
-import { useI18n } from '@/lib/i18n';
-
-interface Prediction {
-  id: string;
-  type: 'collision' | 'anomaly' | 'pattern' | 'recommendation';
-  title: string;
-  description: string;
-  confidence: number;
-  probability: number;
-  timeframe: string;
-  severity: 'low' | 'medium' | 'high' | 'critical';
-  objects: string[];
-  recommendations: string[];
-  timestamp: Date;
-  status: 'active' | 'resolved' | 'false_positive';
-}
-
-interface AnomalyPattern {
-  id: string;
-  pattern: string;
-  frequency: number;
-  significance: number;
-  objects: number;
-  firstDetected: Date;
-  lastSeen: Date;
-  category: 'orbital' | 'behavioral' | 'temporal' | 'spatial';
-}
-
-// Datos simulados para predicciones IA
-const aiPredictionsData = {
-  models: [
-    {
-      id: 1,
-      name: 'Neural Network Alpha',
-      accuracy: '97.3%',
-      status: 'Activo',
-      lastUpdate: '2024-01-15T14:30:00Z',
-      predictions: 1247,
-      type: 'Anomalías Espaciales'
-    },
-    {
-      id: 2,
-      name: 'Deep Learning Beta',
-      accuracy: '95.8%',
-      status: 'Entrenando',
-      lastUpdate: '2024-01-15T13:15:00Z',
-      predictions: 892,
-      type: 'Patrones Estelares'
-    },
-    {
-      id: 3,
-      name: 'Quantum AI Gamma',
-      accuracy: '99.1%',
-      status: 'Activo',
-      lastUpdate: '2024-01-15T12:45:00Z',
-      predictions: 567,
-      type: 'Predicciones Climáticas'
-    }
-  ],
-  recentPredictions: [
-    {
-      id: 1,
-      object: 'HD 209458',
-      prediction: 'Variación de brillo en 48h',
-      confidence: '94.2%',
-      timestamp: '2024-01-15T14:30:00Z',
-      status: 'Confirmado'
-    },
-    {
-      id: 2,
-      object: 'C/2024 A1',
-      prediction: 'Aproximación cercana a la Tierra',
-      confidence: '87.5%',
-      timestamp: '2024-01-15T13:15:00Z',
-      status: 'Pendiente'
-    },
-    {
-      id: 3,
-      object: 'PSR B1257+12',
-      prediction: 'Señal de radio anómala',
-      confidence: '91.3%',
-      timestamp: '2024-01-15T12:45:00Z',
-      status: 'Investigando'
-    }
-  ],
-  statistics: {
-    totalPredictions: 2706,
-    accuracy: '96.8%',
-    activeModels: 3,
-    processingTime: '1.2s',
-    uptime: '99.9%',
-    dataPoints: '2.3M'
-  }
-};
-
-// Hook para manejar fechas de manera consistente
-const useFormattedDate = (timestamp: string) => {
-  const [formattedDate, setFormattedDate] = useState<string>('');
-
-  useEffect(() => {
-    const date = new Date(timestamp);
-    setFormattedDate(date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    }));
-  }, [timestamp]);
-
-  return formattedDate;
-};
+import { TrendingUp, AlertTriangle, RefreshCw, Sun } from 'lucide-react';
 
 export default function AIPredictionsPage() {
-  const { t } = useI18n();
-  const [isLoading, setIsLoading] = useState(false);
-  const [isClient, setIsClient] = useState(false);
+  const [predictions, setPredictions] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsClient(true);
+    fetchAIPredictions();
   }, []);
 
-  const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'activo': return 'text-green-400 bg-green-400/10 border-green-400/20';
-      case 'entrenando': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
-      case 'confirmado': return 'text-green-400 bg-green-400/10 border-green-400/20';
-      case 'pendiente': return 'text-blue-400 bg-blue-400/10 border-blue-400/20';
-      case 'investigando': return 'text-purple-400 bg-purple-400/10 border-purple-400/20';
-      default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+  const fetchAIPredictions = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await fetch('/api/ai-predictions');
+      if (response.ok) {
+        const data = await response.json();
+        setPredictions(data.predictions || []);
+      } else {
+        throw new Error('No se pudieron obtener datos de predicciones IA');
+      }
+    } catch (error) {
+      console.error('Error fetching AI predictions:', error);
+      setError('No se pudieron cargar los datos de predicciones IA');
+      setPredictions([]);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!isClient) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Cargando predicciones IA...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-white text-lg">{error}</p>
+          <button 
+            onClick={fetchAIPredictions}
+            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-xl border border-blue-500/30">
-              <Brain className="h-8 w-8 text-blue-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white">{t('ai.header')}</h1>
-              <p className="text-gray-400">{t('ai.subtitle')}</p>
-            </div>
+    <div className="min-h-screen space-y-8">
+      <div className="glass-card p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Predicciones IA (NASA DONKI)</h1>
+            <p className="text-gray-300 max-w-xl">
+              Notificaciones y eventos solares/anómalos detectados por la NASA (DONKI). Estos datos provienen en tiempo real de la API oficial de la NASA.
+            </p>
           </div>
-          
-          {/* Estadísticas rápidas */}
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{t('ai.predictions')}</p>
-                    <p className="text-2xl font-bold text-white">{aiPredictionsData.statistics.totalPredictions.toLocaleString()}</p>
-                  </div>
-                  <Target className="h-8 w-8 text-blue-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{t('ai.accuracy')}</p>
-                    <p className="text-2xl font-bold text-green-400">{aiPredictionsData.statistics.accuracy}</p>
-                  </div>
-                  <Award className="h-8 w-8 text-green-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{t('ai.active_models')}</p>
-                    <p className="text-2xl font-bold text-purple-400">{aiPredictionsData.statistics.activeModels}</p>
-                  </div>
-                  <Brain className="h-8 w-8 text-purple-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{t('ai.processing_time')}</p>
-                    <p className="text-2xl font-bold text-yellow-400">{aiPredictionsData.statistics.processingTime}</p>
-                  </div>
-                  <Zap className="h-8 w-8 text-yellow-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{t('ai.uptime')}</p>
-                    <p className="text-2xl font-bold text-cyan-400">{aiPredictionsData.statistics.uptime}</p>
-                  </div>
-                  <Shield className="h-8 w-8 text-cyan-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">{t('ai.data')}</p>
-                    <p className="text-2xl font-bold text-pink-400">{aiPredictionsData.statistics.dataPoints}</p>
-                  </div>
-                  <Database className="h-8 w-8 text-pink-400" />
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Contenido principal */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Modelos IA */}
-          <div className="lg:col-span-2">
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-white">{t('ai.models')}</CardTitle>
-                    <CardDescription className="text-gray-400">{t('ai.models_desc')}</CardDescription>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={handleRefresh}
-                      disabled={isLoading}
-                      className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors disabled:opacity-50"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                    </button>
-                    <button className="p-2 bg-gray-700/50 rounded-lg border border-gray-600/30 text-gray-400 hover:bg-gray-600/50 transition-colors">
-                      <Download className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {aiPredictionsData.models.map((model) => {
-                    const FormattedDate = () => {
-                      const formattedDate = useFormattedDate(model.lastUpdate);
-                      return <span>{formattedDate}</span>;
-                    };
-
-                    return (
-                      <div
-                        key={model.id}
-                        className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:border-blue-500/30 transition-colors"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="text-lg font-semibold text-white">{model.name}</h3>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(model.status)}`}>
-                                {t('ai.' + model.status.toLowerCase())}
-                              </span>
-                              <Crown className="h-4 w-4 text-yellow-400" />
-                            </div>
-                            <p className="text-gray-300 mb-2">{t('ai.' + model.type.replace(/ /g, '_').toLowerCase())}</p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-400">
-                              <span className="flex items-center">
-                                <Target className="h-4 w-4 mr-1" />
-                                {t('ai.accuracy_label')}: {model.accuracy}
-                              </span>
-                              <span className="flex items-center">
-                                <BarChart3 className="h-4 w-4 mr-1" />
-                                {model.predictions.toLocaleString()} {t('ai.predictions_label')}
-                              </span>
-                              <span className="flex items-center">
-                                <Clock className="h-4 w-4 mr-1" />
-                                <FormattedDate />
-                              </span>
-                            </div>
-                          </div>
-                          <button className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors">
-                            <Eye className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Panel lateral */}
-          <div className="space-y-6">
-            {/* Predicciones recientes */}
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardHeader>
-                <CardTitle className="text-white">{t('ai.recent_predictions')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('ai.recent_predictions_desc')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {aiPredictionsData.recentPredictions.map((prediction) => {
-                    const FormattedDate = () => {
-                      const formattedDate = useFormattedDate(prediction.timestamp);
-                      return <span>{formattedDate}</span>;
-                    };
-
-                    return (
-                      <div
-                        key={prediction.id}
-                        className="p-3 bg-gray-700/30 rounded-lg border border-gray-600/30"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <h4 className="text-sm font-semibold text-white">{prediction.object}</h4>
-                          <span className={`px-2 py-0.5 rounded-full text-xs font-medium border ${getStatusColor(prediction.status)}`}>
-                            {t('ai.' + prediction.status.toLowerCase())}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-300 mb-2">{prediction.prediction}</p>
-                        <div className="flex items-center justify-between text-xs text-gray-400">
-                          <span>{t('ai.confidence')}: {prediction.confidence}</span>
-                          <FormattedDate />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Acciones rápidas */}
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardHeader>
-                <CardTitle className="text-white">{t('ai.quick_actions')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('ai.quick_actions_desc')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <button className="w-full p-3 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:from-blue-500/20 hover:to-purple-500/20 transition-all duration-300 flex items-center justify-between">
-                    <span className="flex items-center">
-                      <Brain className="h-4 w-4 mr-2" />
-                      {t('ai.train_model')}
-                    </span>
-                    <Star className="h-4 w-4" />
-                  </button>
-                  
-                  <button className="w-full p-3 bg-gradient-to-r from-green-600/20 to-emerald-600/20 rounded-lg border border-green-500/30 text-green-400 hover:from-green-500/20 hover:to-emerald-500/20 transition-all duration-300 flex items-center justify-between">
-                    <span className="flex items-center">
-                      <TrendingUp className="h-4 w-4 mr-2" />
-                      {t('ai.predictive_analysis')}
-                    </span>
-                    <Award className="h-4 w-4" />
-                  </button>
-                  
-                  <button className="w-full p-3 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-lg border border-purple-500/30 text-purple-400 hover:from-purple-500/20 hover:to-pink-500/20 transition-all duration-300 flex items-center justify-between">
-                    <span className="flex items-center">
-                      <Search className="h-4 w-4 mr-2" />
-                      {t('ai.anomaly_detection')}
-                    </span>
-                    <Activity className="h-4 w-4" />
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="flex items-center space-x-4">
+            <button 
+              onClick={fetchAIPredictions}
+              className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+            >
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Actualizar
+            </button>
           </div>
         </div>
       </div>
+
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center space-x-2">
+            <Sun className="h-5 w-5" />
+            <span>Eventos y Alertas Solares</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {predictions.length === 0 ? (
+            <div className="text-center text-gray-300 py-8">
+              <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-white mb-2">Sin Datos Disponibles</h2>
+              <p>No hay eventos recientes disponibles en este momento.</p>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              {predictions.map((item: any, idx: number) => (
+                <div key={item.messageID || idx} className="p-4 bg-gray-800/50 rounded-lg flex flex-col md:flex-row md:justify-between md:items-center">
+                  <div className="mb-2 md:mb-0">
+                    <div className="text-white font-semibold">{item.messageType || 'Tipo desconocido'}</div>
+                    <div className="text-gray-300 text-sm">{item.messageBody?.slice(0, 120) || 'Sin descripción'}...</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs text-blue-400">{item.messageIssueTime ? new Date(item.messageIssueTime).toLocaleString() : 'Fecha desconocida'}</div>
+                    <div className="text-xs text-gray-400">ID: {item.messageID}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

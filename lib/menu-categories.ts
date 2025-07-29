@@ -1,5 +1,8 @@
 import { useI18n } from './i18n';
 import type { MenuCategory, BadgeTranslations } from '@/types/menu';
+import {
+  Home, BarChart3, TrendingUp, Satellite, AlertTriangle, Wifi, Building, Globe, Star, Sun, Flame, Circle, Atom, Zap, Rocket, RefreshCw, Eye, Camera, Search, Radio, Brain, Tag, Map, Play, BookOpen, User, Archive, Clock, Image as ImageIcon, Library, Smartphone, Download, MessageCircle, Folder, Share2, Settings, Bell, DollarSign, HelpCircle
+} from 'lucide-react';
 
 // Hook para obtener las categorías del menú con traducciones
 export const useMenuCategories = (): MenuCategory[] => {
@@ -18,288 +21,102 @@ export const useMenuCategories = (): MenuCategory[] => {
 
   return [
     {
-      title: t('navigation.dashboard'),
+      title: 'Dashboard',
       items: [
-        {
-          title: t('navigation.dashboard'),
-          href: '/',
-          icon: 'Home',
-          description: t('dashboard.description'),
-          badge: 'Principal'
-        },
-        {
-          title: t('navigation.metrics'),
-          href: '/metrics',
-          icon: 'BarChart3',
-          description: 'Análisis detallado de datos',
-          badge: 'Pro'
-        }
+        { title: 'Vista General', href: '/', icon: Home, description: 'Dashboard principal', badge: '' },
+        { title: 'Métricas', href: '/metrics', icon: BarChart3, description: 'Métricas del sistema', badge: '' },
+        { title: 'Analytics', href: '/analytics', icon: TrendingUp, description: 'Análisis avanzado', badge: '' }
       ]
     },
     {
-      title: t('categories.ai'),
+      title: 'Objetos Espaciales',
       items: [
-        {
-          title: t('navigation.ai_predictions'),
-          href: '/ai-predictions',
-          icon: 'Brain',
-          description: t('categories.ai_predictions_desc'),
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.pattern_analysis'),
-          href: '/pattern-analysis',
-          icon: 'Target',
-          description: t('categories.pattern_analysis_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.climate_predictions'),
-          href: '/climate-predictions',
-          icon: 'TrendingUp',
-          description: t('categories.climate_predictions_desc'),
-          badge: 'Enterprise'
-        },
-        {
-          title: t('navigation.auto_classification'),
-          href: '/auto-classification',
-          icon: 'Tags',
-          description: t('categories.auto_classification_desc'),
-          badge: 'AI'
-        },
-        {
-          title: t('navigation.signal_detection'),
-          href: '/signal-detection',
-          icon: 'Search',
-          description: t('categories.signal_detection_desc'),
-          badge: 'Premium'
-        }
+        { title: 'Satélites', href: '/satellites', icon: Satellite, description: 'Seguimiento de satélites', badge: '' },
+        { title: 'Basura Espacial', href: '/space-debris', icon: AlertTriangle, description: 'Monitoreo de basura espacial', badge: '' },
+        { title: 'Starlink', href: '/starlink', icon: Wifi, description: 'Constelación Starlink', badge: '' },
+        { title: 'Tiangong', href: '/tiangong', icon: Building, description: 'Estación espacial china', badge: '' },
+        { title: 'Asteroides', href: '/asteroids', icon: Globe, description: 'Asteroides cercanos a la Tierra', badge: '' },
+        { title: 'Exoplanetas', href: '/exoplanets', icon: Star, description: 'Planetas fuera del sistema solar', badge: '' }
       ]
     },
     {
-      title: t('categories.visualization'),
+      title: 'Fenómenos Espaciales',
       items: [
-        {
-          title: t('navigation.orbital'),
-          href: '/orbital',
-          icon: 'Globe',
-          description: t('categories.orbital_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.skymap'),
-          href: '/skymap',
-          icon: 'Map',
-          description: t('categories.skymap_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.jwst'),
-          href: '/jwst',
-          icon: 'Camera',
-          description: t('categories.jwst_desc'),
-          badge: 'NASA'
-        },
-        {
-          title: t('navigation.vera_rubin'),
-          href: '/vera-rubin',
-          icon: 'Camera',
-          description: t('categories.vera_rubin_desc'),
-          badge: 'Nuevo'
-        }
+        { title: 'Clima Espacial', href: '/space-weather', icon: Sun, description: 'Actividad solar y tormentas', badge: '' },
+        { title: 'Fenómenos Extremos', href: '/extreme-phenomena', icon: Flame, description: 'Fenómenos extremos', badge: '' },
+        { title: 'Agujeros Negros', href: '/black-holes', icon: Circle, description: 'Estudio de agujeros negros', badge: '' },
+        { title: 'Supernovas', href: '/supernovae', icon: Star, description: 'Explosiones estelares', badge: '' },
+        { title: 'Materia Oscura', href: '/dark-matter', icon: Atom, description: 'Investigación de materia oscura', badge: '' },
+        { title: 'Neutrinos', href: '/neutrinos', icon: Zap, description: 'Detección de neutrinos', badge: '' }
       ]
     },
     {
-      title: t('categories.phenomena'),
+      title: 'Misiones Espaciales',
       items: [
-        {
-          title: t('navigation.space_weather'),
-          href: '/space-weather',
-          icon: 'Sun',
-          description: t('categories.space_weather_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.asteroids'),
-          href: '/asteroids',
-          icon: 'Circle',
-          description: t('categories.asteroids_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.space_debris'),
-          href: '/space-debris',
-          icon: 'Circle',
-          description: t('categories.space_debris_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.supernovae'),
-          href: '/supernovae',
-          icon: 'Star',
-          description: t('categories.supernovae_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.earthquakes'),
-          href: '/earthquakes',
-          icon: 'Activity',
-          description: t('categories.earthquakes_desc'),
-          badge: 'Pro'
-        }
+        { title: 'Misiones a Marte', href: '/mars-missions', icon: Globe, description: 'Exploración del planeta rojo', badge: '' },
+        { title: 'Sondas Interestelares', href: '/interstellar-probes', icon: Rocket, description: 'Misiones interestelares', badge: '' },
+        { title: 'Cohetes Reutilizables', href: '/reusable-rockets', icon: RefreshCw, description: 'Tecnología de cohetes', badge: '' },
+        { title: 'JWST', href: '/jwst', icon: Eye, description: 'Telescopio espacial James Webb', badge: '' },
+        { title: 'Vera Rubin', href: '/vera-rubin', icon: Camera, description: 'Observatorio Vera Rubin', badge: '' }
       ]
     },
     {
-      title: "Tecnología Espacial",
+      title: 'Investigación',
       items: [
-        {
-          title: t('navigation.starlink'),
-          href: '/starlink',
-          icon: 'Satellite',
-          description: 'Seguimiento de constelaciones',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.tiangong'),
-          href: '/tiangong',
-          icon: 'Building',
-          description: 'Tiangong - Estación espacial china',
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.mars_missions'),
-          href: '/mars-missions',
-          icon: 'Circle',
-          description: 'Perseverance, Curiosity, etc.',
-          badge: 'NASA'
-        },
-        {
-          title: t('navigation.interstellar_probes'),
-          href: '/interstellar-probes',
-          icon: 'Rocket',
-          description: 'Voyager, New Horizons',
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.reusable_rockets'),
-          href: '/reusable-rockets',
-          icon: 'Rocket',
-          description: 'SpaceX, Blue Origin',
-          badge: 'Pro'
-        }
+        { title: 'SETI', href: '/seti', icon: Search, description: 'Búsqueda de inteligencia extraterrestre', badge: '' },
+        { title: 'Análisis de Señales y Patrones', href: '/signal-detection', icon: Radio, description: 'Análisis de señales espaciales', badge: '' },
+        { title: 'Análisis de Patrones', href: '/pattern-analysis', icon: BarChart3, description: 'Identificación de patrones', badge: '' },
+        { title: 'Machine Learning', href: '/machine-learning', icon: Brain, description: 'IA para análisis espacial', badge: '' },
+        { title: 'Auto-clasificación', href: '/auto-classification', icon: Tag, description: 'Clasificación automática', badge: '' },
+        { title: 'Predicciones IA', href: '/ai-predictions', icon: TrendingUp, description: 'Predicciones con IA', badge: '' }
       ]
     },
     {
-      title: t('categories.integration'),
+      title: 'Herramientas',
       items: [
-        {
-          title: t('navigation.global_integration'),
-          href: '/global-integration',
-          icon: 'Globe2',
-          description: t('categories.global_integration_desc'),
-          badge: 'Enterprise'
-        },
-        {
-          title: t('navigation.machine_learning'),
-          href: '/machine-learning',
-          icon: 'Brain',
-          description: t('categories.machine_learning_desc'),
-          badge: 'AI'
-        },
-        {
-          title: t('navigation.seti'),
-          href: '/seti',
-          icon: 'Search',
-          description: t('categories.seti_desc'),
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.signals'),
-          href: '/signals',
-          icon: 'Radio',
-          description: t('categories.signals_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: t('navigation.passes'),
-          href: '/passes',
-          icon: 'Clock',
-          description: t('categories.passes_desc'),
-          badge: 'Pro'
-        }
+        { title: 'Mapa Satelital', href: '/satellite-map', icon: Map, description: 'Visualización de satélites', badge: '' },
+        { title: 'Mapa del Cielo', href: '/skymap', icon: Star, description: 'Mapa estelar interactivo', badge: '' },
+        { title: 'Globo Interactivo', href: '/globe', icon: Globe, description: 'Globo terrestre 3D', badge: '' },
+        { title: 'Simulaciones', href: '/simulations', icon: Play, description: 'Simulaciones espaciales', badge: '' },
+        { title: 'Realidad Virtual', href: '/virtual-reality', icon: Eye, description: 'Experiencias VR', badge: '' },
+        { title: 'Herramientas Profesionales', href: '/professional-tools', icon: Camera, description: 'Herramientas para investigadores', badge: '' }
       ]
     },
     {
-      title: "Investigación Avanzada",
+      title: 'Educación',
       items: [
-        {
-          title: t('navigation.black_holes'),
-          href: '/black-holes',
-          icon: 'Circle',
-          description: t('categories.black_holes_desc'),
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.dark_matter'),
-          href: '/dark-matter',
-          icon: 'Circle',
-          description: t('categories.dark_matter_desc'),
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.gravitational_waves'),
-          href: '/gravitational-waves',
-          icon: 'Wave',
-          description: t('categories.gravitational_waves_desc'),
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.neutrinos'),
-          href: '/neutrinos',
-          icon: 'Zap',
-          description: t('categories.neutrinos_desc'),
-          badge: 'Premium'
-        },
-        {
-          title: t('navigation.exoplanets'),
-          href: '/exoplanets',
-          icon: 'Globe',
-          description: t('categories.exoplanets_desc'),
-          badge: 'Pro'
-        }
+        { title: 'Centro Educativo', href: '/education', icon: BookOpen, description: 'Recursos educativos', badge: '' },
+        { title: 'Carl Sagan', href: '/carl-sagan', icon: User, description: 'Legado de Carl Sagan', badge: '' },
+        { title: 'Datos Históricos', href: '/historical-data', icon: Archive, description: 'Historia espacial', badge: '' },
+        { title: 'Línea de Tiempo', href: '/timeline', icon: Clock, description: 'Cronología espacial', badge: '' },
+        { title: 'Galería', href: '/gallery', icon: ImageIcon, description: 'Galería de imágenes', badge: '' },
+        { title: 'Recursos', href: '/resources', icon: Library, description: 'Biblioteca de recursos', badge: '' }
       ]
     },
     {
-      title: "Comunidad y Soporte",
+      title: 'Aplicación Móvil',
       items: [
-        {
-          title: 'Preguntas Frecuentes',
-          href: '/faq',
-          icon: 'HelpCircle',
-          description: 'Encuentra respuestas a tus dudas',
-          badge: 'Principal'
-        },
-        {
-          title: t('navigation.chat'),
-          href: '/chat',
-          icon: 'MessageCircle',
-          description: t('categories.chat_desc'),
-          badge: 'Pro'
-        },
-        {
-          title: 'Precios',
-          href: '/pricing',
-          icon: 'CreditCard',
-          description: 'Planes y suscripciones',
-          badge: 'Principal'
-        },
-        {
-          title: t('navigation.settings'),
-          href: '/settings',
-          icon: 'Settings',
-          description: t('categories.settings_desc'),
-          badge: 'Admin'
-        }
+        { title: 'COSMIC DATA Mobile', href: '/mobile-app', icon: Smartphone, description: 'App móvil', badge: '' },
+        { title: 'Descargar App', href: '/download', icon: Download, description: 'Descargar aplicación', badge: '' },
+        { title: 'Características', href: '/features', icon: Star, description: 'Funcionalidades de la app', badge: '' }
+      ]
+    },
+    {
+      title: 'Comunidad',
+      items: [
+        { title: 'Chat', href: '/chat', icon: MessageCircle, description: 'Chat en tiempo real', badge: '' },
+        { title: 'Proyectos', href: '/projects', icon: Folder, description: 'Proyectos comunitarios', badge: '' },
+        { title: 'Integración Social', href: '/social', icon: Share2, description: 'Redes sociales', badge: '' },
+        { title: 'Personalización', href: '/personalization', icon: Settings, description: 'Configuración personal', badge: '' }
+      ]
+    },
+    {
+      title: 'Configuración',
+      items: [
+        { title: 'Ajustes', href: '/settings', icon: Settings, description: 'Configuración del sistema', badge: '' },
+        { title: 'Notificaciones', href: '/notifications', icon: Bell, description: 'Gestión de notificaciones', badge: '' },
+        { title: 'Precios', href: '/pricing', icon: DollarSign, description: 'Planes y precios', badge: '' },
+        { title: 'FAQ', href: '/faq', icon: HelpCircle, description: 'Preguntas frecuentes', badge: '' }
       ]
     }
   ];

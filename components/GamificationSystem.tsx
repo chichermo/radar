@@ -1,323 +1,473 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from 'react';
-import { Trophy, Star, Target, Zap, Eye, Satellite } from 'lucide-react';
+import React, { useState, useEffect, createContext, useContext } from 'react';
+import { Trophy, Star, Target, Eye, Camera, Satellite, Zap, Crown, Medal, Award, Gift } from 'lucide-react';
 
-interface Achievement {
+export interface Achievement {
   id: string;
   name: string;
   description: string;
   icon: string;
+  category: 'observations' | 'discoveries' | 'exploration' | 'social' | 'special';
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  points: number;
   unlocked: boolean;
   unlockedAt?: Date;
-  progress: number;
-  maxProgress: number;
-  category: 'exploration' | 'observation' | 'discovery' | 'mastery';
+  progress?: number;
+  maxProgress?: number;
 }
 
-interface UserStats {
-  totalObservations: number;
-  objectsDiscovered: number;
-  alertsReceived: number;
-  timeSpent: number;
-  streakDays: number;
+export interface Badge {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  color: string;
+  unlocked: boolean;
+  unlockedAt?: Date;
+}
+
+export interface UserProfile {
+  level: number;
+  experience: number;
+  experienceToNext: number;
+  achievements: Achievement[];
+  badges: Badge[];
+  totalPoints: number;
+  rank: string;
+  streak: number;
   lastLogin: Date;
 }
 
 interface GamificationContextType {
-  achievements: Achievement[];
-  stats: UserStats;
-  level: number;
-  experience: number;
+  userProfile: UserProfile;
   unlockAchievement: (id: string) => void;
   addExperience: (amount: number) => void;
-  updateStats: (updates: Partial<UserStats>) => void;
-  getProgress: (achievementId: string) => number;
+  unlockBadge: (id: string) => void;
+  getProgress: () => number;
 }
 
 const GamificationContext = createContext<GamificationContextType | undefined>(undefined);
 
-const INITIAL_ACHIEVEMENTS: Achievement[] = [
-  {
-    id: 'first_observation',
-    name: 'Primer Vistazo',
-    description: 'Realiza tu primera observacion espacial',
-    icon: '👁️',
-    unlocked: false,
-    progress: 0,
-    maxProgress: 1,
-    category: 'exploration'
-  },
-  {
-    id: 'satellite_master',
-    name: 'Maestro de Satelites',
-    description: 'Observa 100 satelites diferentes',
-    icon: '🛰️',
-    unlocked: false,
-    progress: 0,
-    maxProgress: 100,
-    category: 'observation'
-  },
-  {
-    id: 'exoplanet_hunter',
-    name: 'Cazador de Exoplanetas',
-    description: 'Explora 50 exoplanetas',
-    icon: '🌍',
-    unlocked: false,
-    progress: 0,
-    maxProgress: 50,
-    category: 'discovery'
-  },
-  {
-    id: 'collision_alert',
-    name: 'Vigilante Espacial',
-    description: 'Recibe 10 alertas de colision',
-    icon: '🚨',
-    unlocked: false,
-    progress: 0,
-    maxProgress: 10,
-    category: 'mastery'
-  },
-  {
-    id: 'week_streak',
-    name: 'Constante',
-    description: 'Usa la app por 7 dias consecutivos',
-    icon: '🔥',
-    unlocked: false,
-    progress: 0,
-    maxProgress: 7,
-    category: 'mastery'
-  },
-  {
-    id: 'space_weather_expert',
-    name: 'Experto del Clima Espacial',
-    description: 'Monitorea 25 eventos de clima espacial',
-    icon: '🌞',
-    unlocked: false,
-    progress: 0,
-    maxProgress: 25,
-    category: 'observation'
-  }
-];
-
-export function GamificationProvider({ children }: { children: React.ReactNode }) {
-  const [achievements, setAchievements] = useState<Achievement[]>(INITIAL_ACHIEVEMENTS);
-  const [stats, setStats] = useState<UserStats>({
-    totalObservations: 0,
-    objectsDiscovered: 0,
-    alertsReceived: 0,
-    timeSpent: 0,
-    streakDays: 0,
-    lastLogin: new Date()
-  });
-  const [level, setLevel] = useState(1);
-  const [experience, setExperience] = useState(0);
-
-  useEffect(() => {
-    const savedAchievements = localStorage.getItem('cosmic-eye-achievements');
-    const savedStats = localStorage.getItem('cosmic-eye-stats');
-    const savedLevel = localStorage.getItem('cosmic-eye-level');
-    const savedExp = localStorage.getItem('cosmic-eye-exp');
-
-    if (savedAchievements) {
-      setAchievements(JSON.parse(savedAchievements));
-    }
-    if (savedStats) {
-      setStats(JSON.parse(savedStats));
-    }
-    if (savedLevel) {
-      setLevel(parseInt(savedLevel));
-    }
-    if (savedExp) {
-      setExperience(parseInt(savedExp));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem('cosmic-eye-achievements', JSON.stringify(achievements));
-    localStorage.setItem('cosmic-eye-stats', JSON.stringify(stats));
-    localStorage.setItem('cosmic-eye-level', level.toString());
-    localStorage.setItem('cosmic-eye-exp', experience.toString());
-  }, [achievements, stats, level, experience]);
-
-  const unlockAchievement = (id: string) => {
-    setAchievements(prev => prev.map(achievement => {
-      if (achievement.id === id && !achievement.unlocked) {
-        return {
-          ...achievement,
-          unlocked: true,
-          unlockedAt: new Date(),
-          progress: achievement.maxProgress
-        };
-      }
-      return achievement;
-    }));
-  };
-
-  const addExperience = (amount: number) => {
-    const newExp = experience + amount;
-    const expNeeded = level * 100;
-    
-    if (newExp >= expNeeded) {
-      setLevel(prev => prev + 1);
-      setExperience(newExp - expNeeded);
-    } else {
-      setExperience(newExp);
-    }
-  };
-
-  const updateStats = (updates: Partial<UserStats>) => {
-    setStats(prev => ({ ...prev, ...updates }));
-  };
-
-  const getProgress = (achievementId: string): number => {
-    const achievement = achievements.find(a => a.id === achievementId);
-    return achievement ? (achievement.progress / achievement.maxProgress) * 100 : 0;
-  };
-
-  return (
-    <GamificationContext.Provider value={{
-      achievements,
-      stats,
-      level,
-      experience,
-      unlockAchievement,
-      addExperience,
-      updateStats,
-      getProgress
-    }}>
-      {children}
-    </GamificationContext.Provider>
-  );
-}
-
-export function useGamification() {
+export const useGamification = () => {
   const context = useContext(GamificationContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useGamification must be used within a GamificationProvider');
   }
   return context;
-}
+};
 
-export function AchievementsPanel() {
-  const { achievements, stats, level, experience } = useGamification();
+const defaultAchievements: Achievement[] = [
+  {
+    id: 'first_observation',
+    name: 'Primera Observación',
+    description: 'Completa tu primera observación astronómica',
+    icon: 'Eye',
+    category: 'observations',
+    rarity: 'common',
+    points: 10,
+    unlocked: false,
+    progress: 0,
+    maxProgress: 1
+  },
+  {
+    id: 'discovery_master',
+    name: 'Maestro Descubridor',
+    description: 'Descubre 10 objetos astronómicos',
+    icon: 'Star',
+    category: 'discoveries',
+    rarity: 'rare',
+    points: 50,
+    unlocked: false,
+    progress: 0,
+    maxProgress: 10
+  },
+  {
+    id: 'telescope_expert',
+    name: 'Experto Telescópico',
+    description: 'Utiliza todos los instrumentos disponibles',
+    icon: 'Satellite',
+    category: 'exploration',
+    rarity: 'epic',
+    points: 100,
+    unlocked: false,
+    progress: 0,
+    maxProgress: 5
+  },
+  {
+    id: 'cosmic_explorer',
+    name: 'Explorador Cósmico',
+    description: 'Explora 50 objetos diferentes',
+    icon: 'Satellite',
+    category: 'exploration',
+    rarity: 'legendary',
+    points: 500,
+    unlocked: false,
+    progress: 0,
+    maxProgress: 50
+  },
+  {
+    id: 'photo_enthusiast',
+    name: 'Entusiasta Fotográfico',
+    description: 'Captura 25 imágenes astronómicas',
+    icon: 'Camera',
+    category: 'observations',
+    rarity: 'rare',
+    points: 75,
+    unlocked: false,
+    progress: 0,
+    maxProgress: 25
+  },
+  {
+    id: 'streak_master',
+    name: 'Maestro de Racha',
+    description: 'Mantén una racha de 7 días',
+    icon: 'Zap',
+    category: 'social',
+    rarity: 'epic',
+    points: 150,
+    unlocked: false,
+    progress: 0,
+    maxProgress: 7
+  }
+];
 
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case 'exploration': return <Eye className="w-4 h-4" />;
-      case 'observation': return <Satellite className="w-4 h-4" />;
-      case 'discovery': return <Target className="w-4 h-4" />;
-      case 'mastery': return <Trophy className="w-4 h-4" />;
-      default: return <Star className="w-4 h-4" />;
-    }
+const defaultBadges: Badge[] = [
+  {
+    id: 'newcomer',
+    name: 'Recién Llegado',
+    description: 'Comienza tu viaje astronómico',
+    icon: 'Star',
+    color: 'text-blue-400',
+    unlocked: true,
+    unlockedAt: new Date()
+  },
+  {
+    id: 'observer',
+    name: 'Observador',
+    description: 'Completa 10 observaciones',
+    icon: 'Eye',
+    color: 'text-green-400',
+    unlocked: false
+  },
+  {
+    id: 'discoverer',
+    name: 'Descubridor',
+    description: 'Haz 5 descubrimientos',
+    icon: 'Satellite',
+    color: 'text-purple-400',
+    unlocked: false
+  },
+  {
+    id: 'explorer',
+    name: 'Explorador',
+    description: 'Alcanza el nivel 10',
+    icon: 'Satellite',
+    color: 'text-gold-400',
+    unlocked: false
+  },
+  {
+    id: 'master',
+    name: 'Maestro',
+    description: 'Desbloquea todos los logros',
+    icon: 'Crown',
+    color: 'text-red-400',
+    unlocked: false
+  }
+];
+
+export const GamificationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [userProfile, setUserProfile] = useState<UserProfile>({
+    level: 1,
+    experience: 0,
+    experienceToNext: 100,
+    achievements: defaultAchievements,
+    badges: defaultBadges,
+    totalPoints: 0,
+    rank: 'Novato',
+    streak: 0,
+    lastLogin: new Date()
+  });
+
+  const calculateLevel = (experience: number) => {
+    return Math.floor(experience / 100) + 1;
   };
 
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case 'exploration': return 'text-blue-500';
-      case 'observation': return 'text-green-500';
-      case 'discovery': return 'text-purple-500';
-      case 'mastery': return 'text-yellow-500';
-      default: return 'text-gray-500';
-    }
+  const calculateExperienceToNext = (level: number) => {
+    return level * 100;
   };
 
-  const unlockedAchievements = achievements.filter(a => a.unlocked);
-  const lockedAchievements = achievements.filter(a => !a.unlocked);
+  const unlockAchievement = (id: string) => {
+    setUserProfile(prev => {
+      const achievement = prev.achievements.find(a => a.id === id);
+      if (achievement && !achievement.unlocked) {
+        const updatedAchievements = prev.achievements.map(a =>
+          a.id === id ? { ...a, unlocked: true, unlockedAt: new Date() } : a
+        );
+        
+        const newExperience = prev.experience + achievement.points;
+        const newLevel = calculateLevel(newExperience);
+        const newExperienceToNext = calculateExperienceToNext(newLevel);
+        
+        return {
+          ...prev,
+          achievements: updatedAchievements,
+          experience: newExperience,
+          level: newLevel,
+          experienceToNext: newExperienceToNext,
+          totalPoints: prev.totalPoints + achievement.points
+        };
+      }
+      return prev;
+    });
+  };
+
+  const addExperience = (amount: number) => {
+    setUserProfile(prev => {
+      const newExperience = prev.experience + amount;
+      const newLevel = calculateLevel(newExperience);
+      const newExperienceToNext = calculateExperienceToNext(newLevel);
+      
+      return {
+        ...prev,
+        experience: newExperience,
+        level: newLevel,
+        experienceToNext: newExperienceToNext
+      };
+    });
+  };
+
+  const unlockBadge = (id: string) => {
+    setUserProfile(prev => {
+      const badge = prev.badges.find(b => b.id === id);
+      if (badge && !badge.unlocked) {
+        const updatedBadges = prev.badges.map(b =>
+          b.id === id ? { ...b, unlocked: true, unlockedAt: new Date() } : b
+        );
+        
+        return {
+          ...prev,
+          badges: updatedBadges
+        };
+      }
+      return prev;
+    });
+  };
+
+  const getProgress = () => {
+    const currentLevelExp = userProfile.experience - ((userProfile.level - 1) * 100);
+    const levelExpNeeded = userProfile.experienceToNext - ((userProfile.level - 1) * 100);
+    return (currentLevelExp / levelExpNeeded) * 100;
+  };
+
+  // Check for achievement unlocks
+  useEffect(() => {
+    const checkAchievements = () => {
+      // Example: Check if user has made observations
+      const observationCount = 5; // This would come from actual data
+      const achievement = userProfile.achievements.find(a => a.id === 'first_observation');
+      
+      if (achievement && !achievement.unlocked && observationCount >= 1) {
+        unlockAchievement('first_observation');
+      }
+    };
+
+    checkAchievements();
+  }, [userProfile.achievements]);
 
   return (
-    <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 border border-white/20">
-      <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl font-bold text-white">Sistema de Logros</h3>
-        <div className="flex items-center space-x-2">
-          <Trophy className="w-6 h-6 text-yellow-400" />
-          <span className="text-white font-semibold">Nivel {level}</span>
-        </div>
-      </div>
+    <GamificationContext.Provider
+      value={{
+        userProfile,
+        unlockAchievement,
+        addExperience,
+        unlockBadge,
+        getProgress
+      }}
+    >
+      {children}
+    </GamificationContext.Provider>
+  );
+};
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-white">{stats.totalObservations}</div>
-          <div className="text-sm text-gray-300">Observaciones</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-white">{stats.objectsDiscovered}</div>
-          <div className="text-sm text-gray-300">Descubrimientos</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-white">{stats.alertsReceived}</div>
-          <div className="text-sm text-gray-300">Alertas</div>
-        </div>
-        <div className="bg-white/5 rounded-lg p-3 text-center">
-          <div className="text-2xl font-bold text-white">{stats.streakDays}</div>
-          <div className="text-sm text-gray-300">Dias Seguidos</div>
-        </div>
-      </div>
+export const AchievementCard: React.FC<{ achievement: Achievement }> = ({ achievement }) => {
+  const getRarityColor = (rarity: string) => {
+    switch (rarity) {
+      case 'common':
+        return 'border-gray-400 bg-gray-400/10';
+      case 'rare':
+        return 'border-blue-400 bg-blue-400/10';
+      case 'epic':
+        return 'border-purple-400 bg-purple-400/10';
+      case 'legendary':
+        return 'border-gold-400 bg-gold-400/10';
+      default:
+        return 'border-gray-400 bg-gray-400/10';
+    }
+  };
 
-      <div className="mb-6">
-        <div className="flex justify-between text-sm text-gray-300 mb-2">
-          <span>Experiencia</span>
-          <span>{experience} / {level * 100} XP</span>
-        </div>
-        <div className="w-full bg-white/10 rounded-full h-2">
-          <div 
-            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${(experience / (level * 100)) * 100}%` }}
-          />
-        </div>
-      </div>
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'Eye':
+        return <Eye className="h-6 w-6" />;
+      case 'Star':
+        return <Star className="h-6 w-6" />;
+      case 'Satellite':
+        return <Satellite className="h-6 w-6" />;
+      case 'Camera':
+        return <Camera className="h-6 w-6" />;
+      case 'Zap':
+        return <Zap className="h-6 w-6" />;
+      default:
+        return <Star className="h-6 w-6" />;
+    }
+  };
 
-      {unlockedAchievements.length > 0 && (
-        <div className="mb-6">
-          <h4 className="text-lg font-semibold text-white mb-3">Logros Desbloqueados</h4>
-          <div className="space-y-2">
-            {unlockedAchievements.map((achievement) => (
-              <div key={achievement.id} className="flex items-center space-x-3 bg-green-500/10 border border-green-500/20 rounded-lg p-3">
-                <div className="text-2xl">{achievement.icon}</div>
-                <div className="flex-1">
-                  <div className="font-semibold text-white">{achievement.name}</div>
-                  <div className="text-sm text-gray-300">{achievement.description}</div>
-                </div>
-                <div className={`${getCategoryColor(achievement.category)}`}>
-                  {getCategoryIcon(achievement.category)}
-                </div>
+  return (
+    <div className={`p-4 rounded-lg border transition-all ${
+      achievement.unlocked 
+        ? 'opacity-100' 
+        : 'opacity-60'
+    } ${getRarityColor(achievement.rarity)}`}>
+      <div className="flex items-center space-x-3">
+        <div className={`p-2 rounded-lg ${
+          achievement.unlocked ? 'bg-white/20' : 'bg-gray-600/20'
+        }`}>
+          {getIcon(achievement.icon)}
+        </div>
+        <div className="flex-1">
+          <h4 className="text-sm font-medium text-white">{achievement.name}</h4>
+          <p className="text-xs text-gray-400">{achievement.description}</p>
+          {achievement.maxProgress && (
+            <div className="mt-2">
+              <div className="flex justify-between text-xs text-gray-400 mb-1">
+                <span>Progreso</span>
+                <span>{achievement.progress || 0}/{achievement.maxProgress}</span>
               </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {lockedAchievements.length > 0 && (
-        <div>
-          <h4 className="text-lg font-semibold text-white mb-3">Logros Pendientes</h4>
-          <div className="space-y-2">
-            {lockedAchievements.map((achievement) => (
-              <div key={achievement.id} className="flex items-center space-x-3 bg-white/5 border border-white/10 rounded-lg p-3">
-                <div className="text-2xl opacity-50">{achievement.icon}</div>
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-400">{achievement.name}</div>
-                  <div className="text-sm text-gray-500">{achievement.description}</div>
-                  <div className="mt-1">
-                    <div className="flex justify-between text-xs text-gray-400 mb-1">
-                      <span>Progreso</span>
-                      <span>{achievement.progress} / {achievement.maxProgress}</span>
-                    </div>
-                    <div className="w-full bg-white/10 rounded-full h-1">
-                      <div 
-                        className="bg-blue-500 h-1 rounded-full transition-all duration-300"
-                        style={{ width: `${(achievement.progress / achievement.maxProgress) * 100}%` }}
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="text-gray-500">
-                  {getCategoryIcon(achievement.category)}
-                </div>
+              <div className="w-full bg-gray-700 rounded-full h-1">
+                <div 
+                  className="bg-blue-500 h-1 rounded-full transition-all"
+                  style={{ width: `${((achievement.progress || 0) / achievement.maxProgress) * 100}%` }}
+                ></div>
               </div>
-            ))}
-          </div>
+            </div>
+          )}
         </div>
-      )}
+        <div className="text-right">
+          <div className="text-sm font-bold text-white">{achievement.points}</div>
+          <div className="text-xs text-gray-400">pts</div>
+        </div>
+      </div>
     </div>
   );
-} 
+};
+
+export const BadgeCard: React.FC<{ badge: Badge }> = ({ badge }) => {
+  const getIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'Star':
+        return <Star className="h-5 w-5" />;
+      case 'Eye':
+        return <Eye className="h-5 w-5" />;
+      case 'Satellite':
+        return <Satellite className="h-5 w-5" />;
+      case 'Crown':
+        return <Crown className="h-5 w-5" />;
+      default:
+        return <Star className="h-5 w-5" />;
+    }
+  };
+
+  return (
+    <div className={`p-3 rounded-lg border transition-all ${
+      badge.unlocked 
+        ? 'opacity-100 border-current' 
+        : 'opacity-40 border-gray-600'
+    } ${badge.color}`}>
+      <div className="text-center">
+        <div className="mb-2">
+          {getIcon(badge.icon)}
+        </div>
+        <h4 className="text-xs font-medium">{badge.name}</h4>
+        <p className="text-xs opacity-75">{badge.description}</p>
+      </div>
+    </div>
+  );
+};
+
+export const GamificationDashboard: React.FC = () => {
+  const { userProfile, getProgress } = useGamification();
+
+  return (
+    <div className="space-y-6">
+      {/* Perfil del usuario */}
+      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6">
+        <div className="flex items-center space-x-4 mb-4">
+          <div className="p-3 bg-gradient-to-r from-gold-600/20 to-yellow-600/20 rounded-xl border border-gold-500/30">
+            <Crown className="h-8 w-8 text-gold-400" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-white">Perfil de Usuario</h2>
+            <p className="text-gray-400">Nivel {userProfile.level} • {userProfile.rank}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="text-center p-4 bg-white/5 rounded-lg">
+            <div className="text-2xl font-bold text-white">{userProfile.level}</div>
+            <div className="text-sm text-gray-400">Nivel</div>
+          </div>
+          <div className="text-center p-4 bg-white/5 rounded-lg">
+            <div className="text-2xl font-bold text-white">{userProfile.experience}</div>
+            <div className="text-sm text-gray-400">Experiencia</div>
+          </div>
+          <div className="text-center p-4 bg-white/5 rounded-lg">
+            <div className="text-2xl font-bold text-white">{userProfile.totalPoints}</div>
+            <div className="text-sm text-gray-400">Puntos</div>
+          </div>
+          <div className="text-center p-4 bg-white/5 rounded-lg">
+            <div className="text-2xl font-bold text-white">{userProfile.streak}</div>
+            <div className="text-sm text-gray-400">Racha</div>
+          </div>
+        </div>
+
+        {/* Barra de progreso */}
+        <div className="mb-4">
+          <div className="flex justify-between text-sm text-gray-400 mb-2">
+            <span>Progreso al siguiente nivel</span>
+            <span>{Math.round(getProgress())}%</span>
+          </div>
+          <div className="w-full bg-gray-700 rounded-full h-3">
+            <div 
+              className="bg-gradient-to-r from-gold-500 to-yellow-500 h-3 rounded-full transition-all"
+              style={{ width: `${getProgress()}%` }}
+            ></div>
+          </div>
+          <div className="text-xs text-gray-400 mt-1">
+            {userProfile.experience} / {userProfile.experienceToNext} XP
+          </div>
+        </div>
+      </div>
+
+      {/* Logros */}
+      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Logros</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {userProfile.achievements.map(achievement => (
+            <AchievementCard key={achievement.id} achievement={achievement} />
+          ))}
+        </div>
+      </div>
+
+      {/* Insignias */}
+      <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Insignias</h3>
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {userProfile.badges.map(badge => (
+            <BadgeCard key={badge.id} badge={badge} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}; 

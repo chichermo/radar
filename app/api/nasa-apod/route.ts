@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-const NASA_API_KEY = process.env.NASA_API_KEY || 'DEMO_KEY';
+const NASA_API_KEY = process.env.NASA_API_KEY;
 
 export async function GET() {
   try {

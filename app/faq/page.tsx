@@ -3,7 +3,7 @@
 import React from 'react';
 import { HelpCircle, Star, Globe, Database, Users, Zap } from 'lucide-react';
 
-export default function FAQPage() {
+export default function FaqPage() {
   const faqs = [
     {
       category: "Datos y Fuentes",
@@ -98,17 +98,11 @@ export default function FAQPage() {
   ];
 
   return (
-    <div className="space-y-8">
-      <header className="mb-8">
-        <div className="flex items-center gap-3 mb-4">
-          <HelpCircle className="w-8 h-8 text-blue-400" />
-          <h1 className="text-3xl font-bold text-white">Preguntas Frecuentes</h1>
-        </div>
-        <p className="text-gray-300 max-w-3xl">
-          Encuentra respuestas a las preguntas más comunes sobre COSMIC EYE. 
-          Si no encuentras lo que buscas, no dudes en contactarnos.
-        </p>
-      </header>
+    <div className="wrapper mx-auto max-w-7xl py-8 px-4">
+      <div className="header text-center mb-8">
+        <h1 className="title gradient-text">Preguntas Frecuentes</h1>
+        <p className="subtitle max-w-2xl mx-auto">Encuentra respuestas a las dudas más comunes sobre el dashboard, datos espaciales y funcionalidades.</p>
+      </div>
 
       {/* Estadísticas rápidas */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">

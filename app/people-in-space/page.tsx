@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Users, Globe, Calendar, Award, MapPin, Clock } from 'lucide-react';
 import ClientDate from '@/components/ClientDate';
+import React from 'react';
 
 interface PersonInSpace {
   name: string;
@@ -85,7 +86,11 @@ export default function PeopleInSpacePage() {
   if (!data) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
+    <div className="wrapper mx-auto max-w-7xl py-8 px-4">
+      <div className="header text-center mb-8">
+        <h1 className="title gradient-text">Personas en el Espacio</h1>
+        <p className="subtitle max-w-2xl mx-auto">Consulta cuántas personas están actualmente en el espacio, sus misiones y naves espaciales activas.</p>
+      </div>
       <div className="max-w-6xl mx-auto">
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-bold text-white mb-2">Personas en el Espacio</h1>

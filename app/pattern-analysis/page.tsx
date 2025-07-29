@@ -24,351 +24,254 @@ import {
 
 const { Card, CardHeader, CardTitle, CardDescription, CardContent } = CardComponents;
 
-// Datos simulados para análisis de patrones
-const mockPatternData = {
-  anomalies: [
-    {
-      id: 1,
-      type: 'Variación de brillo',
-      object: 'HD 209458',
-      confidence: 94.2,
-      timestamp: '2024-01-15T14:30:00Z',
-      severity: 'Alta',
-      description: 'Detección de variación anómala en el brillo de la estrella'
-    },
-    {
-      id: 2,
-      type: 'Señal de radio',
-      object: 'WOW! Signal',
-      confidence: 87.5,
-      timestamp: '2024-01-14T09:15:00Z',
-      severity: 'Media',
-      description: 'Señal de radio no identificada detectada'
-    },
-    {
-      id: 3,
-      type: 'Movimiento orbital',
-      object: 'Oumuamua',
-      confidence: 92.1,
-      timestamp: '2024-01-13T16:45:00Z',
-      severity: 'Alta',
-      description: 'Cambio inesperado en la trayectoria orbital'
-    }
-  ],
-  statistics: {
-    totalDetections: 1247,
-    anomaliesToday: 23,
-    falsePositives: 8,
-    accuracy: 96.5,
-    processingTime: '2.3s'
-  }
-};
-
-// Hook para manejar fechas de manera consistente
-const useFormattedDate = (timestamp: string) => {
-  const [formattedDate, setFormattedDate] = useState<string>('');
-
-  useEffect(() => {
-    const date = new Date(timestamp);
-    setFormattedDate(date.toLocaleString('es-ES', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false
-    }));
-  }, [timestamp]);
-
-  return formattedDate;
-};
-
 export default function PatternAnalysisPage() {
-  const [activeTab, setActiveTab] = useState('anomalies');
-  const [isLoading, setIsLoading] = useState(false);
+  const [patternData, setPatternData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('all');
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
+    fetchPatternData();
   }, []);
 
-  const handleRefresh = () => {
-    setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-  };
+  const fetchPatternData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity.toLowerCase()) {
-      case 'alta': return 'text-red-400 bg-red-400/10 border-red-400/20';
-      case 'media': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20';
-      case 'baja': return 'text-green-400 bg-green-400/10 border-green-400/20';
-      default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20';
+      // Intentar obtener datos reales de análisis de patrones
+      const [signalsResponse, anomaliesResponse, statsResponse] = await Promise.allSettled([
+        fetch('/api/signals'),
+        fetch('/api/anomalies'),
+        fetch('/api/pattern-stats')
+      ]);
+
+      const realData: any = {
+        anomalies: [],
+        statistics: {
+          totalDetections: 0,
+          anomaliesToday: 0,
+          falsePositives: 0,
+          accuracy: 0,
+          processingTime: '0s'
+        }
+      };
+
+      // Procesar datos de anomalías si están disponibles
+      if (anomaliesResponse.status === 'fulfilled') {
+        const anomaliesData = await anomaliesResponse.value.json();
+        if (anomaliesData.success && anomaliesData.data) {
+          realData.anomalies = anomaliesData.data.slice(0, 10);
+        }
+      }
+
+      // Procesar datos de estadísticas si están disponibles
+      if (statsResponse.status === 'fulfilled') {
+        const statsData = await statsResponse.value.json();
+        if (statsData.success && statsData.data) {
+          realData.statistics = {
+            ...realData.statistics,
+            ...statsData.data
+          };
+        }
+      }
+
+      setPatternData(realData);
+    } catch (error) {
+      console.error('Error fetching pattern data:', error);
+      setError('No se pudieron cargar los datos de análisis de patrones');
+      setPatternData(null);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!isClient) {
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-center h-96">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-400"></div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Cargando análisis de patrones...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-white text-lg">{error}</p>
+          <button 
+            onClick={fetchPatternData}
+            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 bg-blue-600/20 rounded-xl border border-blue-500/30">
-              <Target className="h-8 w-8 text-blue-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white">Análisis de Patrones</h1>
-              <p className="text-gray-400">Detección inteligente de anomalías espaciales</p>
-            </div>
+    <div className="min-h-screen space-y-8">
+      <div className="glass-card p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Análisis de Patrones</h1>
+            <p className="text-gray-300 max-w-xl">
+              Identificación y análisis de patrones anómalos en datos espaciales
+            </p>
           </div>
-          
-          {/* Estadísticas rápidas */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Total Detecciones</p>
-                    <p className="text-2xl font-bold text-white">{mockPatternData.statistics.totalDetections}</p>
-                  </div>
-                  <BarChart3 className="h-8 w-8 text-blue-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Anomalías Hoy</p>
-                    <p className="text-2xl font-bold text-red-400">{mockPatternData.statistics.anomaliesToday}</p>
-                  </div>
-                  <AlertTriangle className="h-8 w-8 text-red-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Precisión</p>
-                    <p className="text-2xl font-bold text-green-400">{mockPatternData.statistics.accuracy}%</p>
-                  </div>
-                  <Target className="h-8 w-8 text-green-400" />
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-gray-400 text-sm">Tiempo Procesamiento</p>
-                    <p className="text-2xl font-bold text-purple-400">{mockPatternData.statistics.processingTime}</p>
-                  </div>
-                  <Zap className="h-8 w-8 text-purple-400" />
-                </div>
-              </CardContent>
-            </Card>
+          <div className="flex items-center space-x-4">
+            <div className="flex space-x-2">
+              <button 
+                onClick={fetchPatternData}
+                className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Actualizar
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Contenido principal */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="bg-gray-800/50 border border-gray-700/50">
-            <TabsTrigger value="anomalies" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-400">
-              <AlertTriangle className="h-4 w-4 mr-2" />
-              Anomalías Detectadas
-            </TabsTrigger>
-            <TabsTrigger value="patterns" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-400">
-              <TrendingUp className="h-4 w-4 mr-2" />
-              Patrones Identificados
-            </TabsTrigger>
-            <TabsTrigger value="algorithms" className="data-[state=active]:bg-blue-600/20 data-[state=active]:text-blue-400">
-              <Activity className="h-4 w-4 mr-2" />
-              Algoritmos
-            </TabsTrigger>
-          </TabsList>
+      {/* Estadísticas */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Target className="h-5 w-5" />
+              <span>Detecciones Totales</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-400">
+              {patternData?.statistics?.totalDetections?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Patrones detectados</p>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="anomalies" className="space-y-6">
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-white">Anomalías Recientes</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      Detecciones automáticas de patrones anómalos en datos espaciales
-                    </CardDescription>
-                  </div>
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={handleRefresh}
-                      disabled={isLoading}
-                      className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors disabled:opacity-50"
-                    >
-                      <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
-                    </button>
-                    <button className="p-2 bg-gray-700/50 rounded-lg border border-gray-600/30 text-gray-400 hover:bg-gray-600/50 transition-colors">
-                      <Download className="h-4 w-4" />
-                    </button>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <AlertTriangle className="h-5 w-5" />
+              <span>Anomalías Hoy</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-yellow-400">
+              {patternData?.statistics?.anomaliesToday?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Anomalías detectadas</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5" />
+              <span>Precisión</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-400">
+              {patternData?.statistics?.accuracy || '0'}%
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Tasa de precisión</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Activity className="h-5 w-5" />
+              <span>Tiempo Procesamiento</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-purple-400">
+              {patternData?.statistics?.processingTime || '0s'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Tiempo promedio</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Análisis de Patrones */}
+      <Tabs defaultValue="anomalies" className="w-full">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="anomalies">Anomalías</TabsTrigger>
+          <TabsTrigger value="patterns">Patrones</TabsTrigger>
+          <TabsTrigger value="trends">Tendencias</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="anomalies" className="space-y-4">
+          <Card className="glass-card">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center space-x-2">
+                <AlertTriangle className="h-5 w-5" />
+                <span>Anomalías Detectadas</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {patternData?.anomalies && patternData.anomalies.length > 0 ? (
                 <div className="space-y-4">
-                  {mockPatternData.anomalies.map((anomaly) => {
-                    const FormattedDate = () => {
-                      const formattedDate = useFormattedDate(anomaly.timestamp);
-                      return <span>{formattedDate}</span>;
-                    };
-
-                    return (
-                      <div
-                        key={anomaly.id}
-                        className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30 hover:border-blue-500/30 transition-colors"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex-1">
-                            <div className="flex items-center space-x-3 mb-2">
-                              <h3 className="text-lg font-semibold text-white">{anomaly.type}</h3>
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getSeverityColor(anomaly.severity)}`}>
-                                {anomaly.severity}
-                              </span>
-                            </div>
-                            <p className="text-gray-300 mb-2">{anomaly.description}</p>
-                            <div className="flex items-center space-x-4 text-sm text-gray-400">
-                              <span className="flex items-center">
-                                <Globe className="h-4 w-4 mr-1" />
-                                {anomaly.object}
-                              </span>
-                              <span className="flex items-center">
-                                <Clock className="h-4 w-4 mr-1" />
-                                <FormattedDate />
-                              </span>
-                              <span className="flex items-center">
-                                <Target className="h-4 w-4 mr-1" />
-                                {anomaly.confidence}% confianza
-                              </span>
-                            </div>
-                          </div>
-                          <button className="p-2 bg-blue-600/20 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-600/30 transition-colors">
-                            <Eye className="h-4 w-4" />
-                          </button>
+                  {patternData.anomalies.map((anomaly: any, index: number) => (
+                    <div key={index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+                        <div>
+                          <div className="text-white font-semibold">{anomaly.type || 'Anomalía'}</div>
+                          <div className="text-gray-300 text-sm">{anomaly.object || 'Objeto desconocido'}</div>
+                          <div className="text-gray-400 text-xs">{anomaly.description || 'Sin descripción'}</div>
                         </div>
                       </div>
-                    );
-                  })}
+                      <div className="text-right">
+                        <div className="text-white font-semibold">{anomaly.confidence || 'N/A'}%</div>
+                        <div className="text-gray-300 text-sm">{anomaly.severity || 'N/A'}</div>
+                        <div className="text-gray-400 text-xs">{anomaly.timestamp || 'Tiempo desconocido'}</div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="patterns" className="space-y-6">
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardHeader>
-                <CardTitle className="text-white">Patrones Identificados</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Análisis de correlaciones y patrones recurrentes en datos astronómicos
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Star className="h-6 w-6 text-yellow-400" />
-                      <h3 className="text-lg font-semibold text-white">Variaciones Estelares</h3>
-                    </div>
-                    <p className="text-gray-400 text-sm mb-3">
-                      Patrón detectado en variaciones de brillo de estrellas tipo Cefeidas
-                    </p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">Confianza: 89%</span>
-                      <span className="text-green-400">✓ Verificado</span>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30">
-                    <div className="flex items-center space-x-3 mb-3">
-                      <Satellite className="h-6 w-6 text-blue-400" />
-                      <h3 className="text-lg font-semibold text-white">Órbitas Anómalas</h3>
-                    </div>
-                    <p className="text-gray-400 text-sm mb-3">
-                      Agrupación de objetos con trayectorias orbitales inusuales
-                    </p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-gray-400">Confianza: 76%</span>
-                      <span className="text-yellow-400">⚠ En análisis</span>
-                    </div>
-                  </div>
+              ) : (
+                <div className="text-center py-8">
+                  <AlertTriangle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-300">No hay anomalías detectadas en este momento</p>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <TabsContent value="algorithms" className="space-y-6">
-            <Card className="bg-gray-800/50 border-gray-700/50">
-              <CardHeader>
-                <CardTitle className="text-white">Algoritmos de Detección</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Configuración y rendimiento de los algoritmos de machine learning
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30">
-                    <h3 className="text-lg font-semibold text-white mb-2">Random Forest</h3>
-                    <p className="text-gray-400 text-sm mb-3">
-                      Algoritmo principal para clasificación de anomalías
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400 text-sm">Precisión: 94.2%</span>
-                      <span className="text-green-400 text-sm">Activo</span>
-                    </div>
-                  </div>
+        <TabsContent value="patterns" className="space-y-4">
+          <Card className="glass-card">
+            <CardContent className="p-6 text-center">
+              <BarChart3 className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-white mb-2">Análisis de Patrones</h2>
+              <p className="text-gray-300">
+                Funcionalidad de análisis de patrones en desarrollo.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-                  <div className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30">
-                    <h3 className="text-lg font-semibold text-white mb-2">Isolation Forest</h3>
-                    <p className="text-gray-400 text-sm mb-3">
-                      Detección de outliers en series temporales
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400 text-sm">Precisión: 91.8%</span>
-                      <span className="text-green-400 text-sm">Activo</span>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-gray-700/30 rounded-xl border border-gray-600/30">
-                    <h3 className="text-lg font-semibold text-white mb-2">LSTM Neural Network</h3>
-                    <p className="text-gray-400 text-sm mb-3">
-                      Predicción de eventos basada en patrones históricos
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-400 text-sm">Precisión: 88.5%</span>
-                      <span className="text-yellow-400 text-sm">Entrenando</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+        <TabsContent value="trends" className="space-y-4">
+          <Card className="glass-card">
+            <CardContent className="p-6 text-center">
+              <TrendingUp className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-white mb-2">Análisis de Tendencias</h2>
+              <p className="text-gray-300">
+                Funcionalidad de análisis de tendencias en desarrollo.
+              </p>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 } 

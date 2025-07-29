@@ -1,35 +1,35 @@
 import type { Metadata } from 'next';
+import { Inter } from 'next/font/google';
 import './globals.css';
-import Sidebar from '@/components/Sidebar';
+import styles from './layout.module.css';
 import { I18nProvider } from '@/lib/i18n';
+import { GamificationProvider } from '@/components/GamificationSystem';
+import { NotificationProvider } from '@/components/NotificationService';
+import Navigation from '@/components/Navigation';
+import MobileNavigation from '@/components/MobileNavigation';
+import HelpGuide from '@/components/HelpGuide';
+
+const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'COSMIC EYE - Monitoreo Avanzado de Anomalías Espaciales',
-  description: 'Plataforma profesional de monitoreo espacial con IA, análisis predictivo y detección de anomalías en tiempo real. Solución empresarial para observatorios, agencias espaciales y centros de investigación.',
-  keywords: 'monitoreo espacial, IA, anomalías, satélites, astronomía, predicciones, análisis, observatorio, espacio, tecnología',
-  authors: [{ name: 'COSMIC EYE Team' }],
-  creator: 'COSMIC EYE',
-  publisher: 'COSMIC EYE',
-  formatDetection: {
-    email: false,
-    address: false,
-    telephone: false,
-  },
-  metadataBase: new URL('https://cosmic-eye.com'),
-  alternates: {
-    canonical: '/',
-  },
+  title: 'Espacio Anomalías Dashboard',
+  description: 'Explorando el cosmos y descubriendo anomalías espaciales',
+  keywords: 'espacio, astronomía, exoplanetas, asteroides, satélites, clima espacial',
+  authors: [{ name: 'Espacio Anomalías Team' }],
+  creator: 'Espacio Anomalías Team',
+  publisher: 'Espacio Anomalías',
+  robots: 'index, follow',
   openGraph: {
-    title: 'COSMIC EYE - Monitoreo Avanzado de Anomalías Espaciales',
-    description: 'Plataforma profesional de monitoreo espacial con IA, análisis predictivo y detección de anomalías en tiempo real.',
-    url: 'https://cosmic-eye.com',
-    siteName: 'COSMIC EYE',
+    title: 'Espacio Anomalías Dashboard',
+    description: 'Explorando el cosmos y descubriendo anomalías espaciales',
+    url: 'https://espacio-anomalias.com',
+    siteName: 'Espacio Anomalías Dashboard',
     images: [
       {
-        url: '/og-image.jpg',
+        url: '/icon.svg',
         width: 1200,
         height: 630,
-        alt: 'COSMIC EYE - Monitoreo Espacial Avanzado',
+        alt: 'Espacio Anomalías Dashboard',
       },
     ],
     locale: 'es_ES',
@@ -37,38 +37,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'COSMIC EYE - Monitoreo Avanzado de Anomalías Espaciales',
-    description: 'Plataforma profesional de monitoreo espacial con IA y análisis predictivo.',
-    images: ['/og-image.jpg'],
+    title: 'Espacio Anomalías Dashboard',
+    description: 'Explorando el cosmos y descubriendo anomalías espaciales',
+    images: ['/icon.svg'],
   },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
-  },
-  verification: {
-    google: 'your-google-verification-code',
-  },
-  category: 'technology',
-  classification: 'Space Monitoring Platform',
-  other: {
-    'mobile-web-app-capable': 'yes',
-    'mobile-web-app-status-bar-style': 'default',
-    'mobile-web-app-title': 'COSMIC EYE',
-    'application-name': 'COSMIC EYE',
-    'apple-mobile-web-app-title': 'COSMIC EYE',
-    'apple-mobile-web-app-status-bar-style': 'default',
-    'apple-mobile-web-app-capable': 'yes',
-    'msapplication-TileColor': '#1e40af',
-    'msapplication-config': '/browserconfig.xml',
-    'theme-color': '#1e40af',
-  },
+  viewport: 'width=device-width, initial-scale=1',
+  themeColor: '#2cc9ff',
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
@@ -77,62 +52,96 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className="scroll-smooth">
+    <html lang="es">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/icons/icon-192x192.png" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#1e40af" />
+        <meta name="theme-color" content="#2cc9ff" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="COSMIC EYE" />
-        <meta name="application-name" content="COSMIC EYE" />
-        <meta name="msapplication-TileColor" content="#1e40af" />
+        <meta name="apple-mobile-web-app-title" content="Espacio Anomalías" />
+        <meta name="msapplication-TileColor" content="#2cc9ff" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </head>
-      <body className="antialiased font-sans bg-black overflow-x-hidden">
+      <body>
         <I18nProvider>
-          {/* Fondo animado con estrellas */}
-          <div className="fixed inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-blue-900/20 to-purple-900/20"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1),transparent_50%)]"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,rgba(147,51,234,0.1),transparent_50%)]"></div>
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_80%,rgba(236,72,153,0.1),transparent_50%)]"></div>
-            
-            {/* Estrellas animadas */}
-            <div className="absolute inset-0 overflow-hidden">
-              {[...Array(50)].map((_, i) => (
-                <div
-                  key={i}
-                  className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
-                  style={{
-                    left: `${Math.random() * 100}%`,
-                    top: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 3}s`,
-                    animationDuration: `${2 + Math.random() * 3}s`
-                  }}
-                />
-              ))}
-            </div>
-            
-            {/* Nebulosa flotante */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-r from-pink-500/10 to-orange-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          </div>
-
-          {/* Contenido principal */}
-          <div className="relative z-10 min-h-screen">
-            <Sidebar />
-            <main className="lg:ml-72 min-h-screen">
-              <div className="p-6">
-                {children}
+          <GamificationProvider>
+            <NotificationProvider>
+              {/* Sistema de partículas de fondo */}
+              <div className="particle-system">
+                {Array.from({ length: 50 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="particle"
+                    style={{
+                      left: `${Math.random() * 100}%`,
+                      top: `${Math.random() * 100}%`,
+                      animationDelay: `${Math.random() * 8}s`,
+                      animationDuration: `${8 + Math.random() * 12}s`
+                    }}
+                  />
+                ))}
               </div>
-            </main>
-          </div>
+
+              {/* Decoraciones SVG inspiradas en Outreach.space */}
+              <div className="svg-decoration" style={{ top: '10%', left: '5%', opacity: 0.1 }}>
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="url(#gradient1)" strokeWidth="2" opacity="0.3">
+                    <animate attributeName="r" values="40;45;40" dur="4s" repeatCount="indefinite" />
+                  </circle>
+                  <defs>
+                    <linearGradient id="gradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#2cc9ff" />
+                      <stop offset="100%" stopColor="#a2db3c" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              <div className="svg-decoration" style={{ top: '60%', right: '10%', opacity: 0.1 }}>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                  <polygon points="40,10 50,30 70,30 55,45 60,65 40,55 20,65 25,45 10,30 30,30" fill="none" stroke="url(#gradient2)" strokeWidth="2" opacity="0.3">
+                    <animateTransform attributeName="transform" type="rotate" values="0 40 40;360 40 40" dur="8s" repeatCount="indefinite" />
+                  </polygon>
+                  <defs>
+                    <linearGradient id="gradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#ff6b6b" />
+                      <stop offset="100%" stopColor="#2cc9ff" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+
+              {/* Navegación principal */}
+              <Navigation />
+
+              {/* Navegación móvil */}
+              <MobileNavigation />
+
+              {/* Contenido principal */}
+              <main className={styles.main}>
+                {children}
+              </main>
+
+              {/* Componente de ayuda */}
+              <HelpGuide />
+
+              {/* Footer simplificado */}
+              <footer className={styles.footer}>
+                <div className={styles.footerContainer}>
+                  <div className={styles.footerBottom}>
+                    <div className={styles.footerCopyright}>
+                      © 2024 Espacio Anomalías. Todos los derechos reservados.
+                    </div>
+                    <div className={styles.footerPoweredBy}>
+                      Desarrollado por Espacio Anomalías Team
+                    </div>
+                  </div>
+                </div>
+              </footer>
+            </NotificationProvider>
+          </GamificationProvider>
         </I18nProvider>
       </body>
     </html>

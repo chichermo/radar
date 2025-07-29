@@ -1,49 +1,31 @@
 "use client";
-import { useState, useEffect } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import CardComponents from '@/components/ui/card2';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Satellite, Eye, MapPin, Clock, Signal, Globe, TrendingUp, Info, AlertTriangle } from 'lucide-react';
-import LoadingSpinner from '@/components/LoadingSpinner';
+const { Card, CardHeader, CardTitle, CardDescription, CardContent } = CardComponents;
+import { 
+  Satellite, 
+  Globe, 
+  Activity, 
+  TrendingUp, 
+  AlertTriangle,
+  BarChart3,
+  RefreshCw,
+  Download,
+  Users,
+  Wifi,
+  MapPin,
+  Clock,
+  Database,
+  Rocket,
+  Upload
+} from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
-import ClientDate from '@/components/ClientDate';
-
-const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardComponents;
-
-interface StarlinkSatellite {
-  id: string;
-  name: string;
-  noradId: string;
-  launchDate: string;
-  altitude: number;
-  inclination: number;
-  status: string;
-  constellation: string;
-  lastUpdate: string;
-  position: {
-    latitude: number;
-    longitude: number;
-    altitude: number;
-  };
-}
-
-interface Constellation {
-  name: string;
-  totalSatellites: number;
-  activeSatellites: number;
-  coverage: string;
-  status: string;
-}
 
 export default function StarlinkPage() {
-  const [satellites, setSatellites] = useState<StarlinkSatellite[]>([]);
-  const [constellations, setConstellations] = useState<Constellation[]>([]);
+  const [starlinkData, setStarlinkData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedConstellation, setSelectedConstellation] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchStarlinkData();
@@ -52,424 +34,320 @@ export default function StarlinkPage() {
   const fetchStarlinkData = async () => {
     try {
       setLoading(true);
-      // Simular datos de Starlink
-      const mockSatellites: StarlinkSatellite[] = [
-        {
-          id: "STL-001",
-          name: "Starlink-1",
-          noradId: "44235",
-          launchDate: "2019-05-24",
-          altitude: 550,
-          inclination: 53,
-          status: "Activo",
-          constellation: "Starlink v1.0",
-          lastUpdate: "2024-01-15T10:30:00Z",
-          position: { latitude: 45.0, longitude: -75.0, altitude: 550 }
-        },
-        {
-          id: "STL-002",
-          name: "Starlink-2",
-          noradId: "44236",
-          launchDate: "2019-05-24",
-          altitude: 550,
-          inclination: 53,
-          status: "Activo",
-          constellation: "Starlink v1.0",
-          lastUpdate: "2024-01-15T10:30:00Z",
-          position: { latitude: 44.8, longitude: -74.8, altitude: 550 }
-        },
-        {
-          id: "STL-1001",
-          name: "Starlink-1001",
-          noradId: "44713",
-          launchDate: "2020-01-07",
-          altitude: 550,
-          inclination: 53,
-          status: "Activo",
-          constellation: "Starlink v1.0",
-          lastUpdate: "2024-01-15T10:30:00Z",
-          position: { latitude: 46.2, longitude: -76.1, altitude: 550 }
-        },
-        {
-          id: "STL-2001",
-          name: "Starlink-2001",
-          noradId: "45600",
-          launchDate: "2021-01-20",
-          altitude: 570,
-          inclination: 70,
-          status: "Activo",
-          constellation: "Starlink v1.5",
-          lastUpdate: "2024-01-15T10:30:00Z",
-          position: { latitude: 43.5, longitude: -73.2, altitude: 570 }
-        },
-        {
-          id: "STL-3001",
-          name: "Starlink-3001",
-          noradId: "52000",
-          launchDate: "2022-01-06",
-          altitude: 530,
-          inclination: 53,
-          status: "Activo",
-          constellation: "Starlink v2.0",
-          lastUpdate: "2024-01-15T10:30:00Z",
-          position: { latitude: 47.1, longitude: -77.5, altitude: 530 }
-        },
-        {
-          id: "STL-4001",
-          name: "Starlink-4001",
-          noradId: "55000",
-          launchDate: "2023-02-27",
-          altitude: 525,
-          inclination: 43,
-          status: "Activo",
-          constellation: "Starlink v2.0",
-          lastUpdate: "2024-01-15T10:30:00Z",
-          position: { latitude: 42.8, longitude: -72.9, altitude: 525 }
-        }
-      ];
+      setError(null);
 
-      const mockConstellations: Constellation[] = [
-        {
-          name: "Starlink v1.0",
-          totalSatellites: 1584,
-          activeSatellites: 1450,
-          coverage: "Global",
-          status: "Operacional"
+      // Intentar obtener datos reales de Starlink
+      const [starlinkResponse, launchesResponse, statsResponse] = await Promise.allSettled([
+        fetch('/api/starlink'),
+        fetch('/api/starlink-launches'),
+        fetch('/api/starlink-stats')
+      ]);
+
+      const realData: any = {
+        statistics: {
+          totalSatellites: 0,
+          activeSatellites: 0,
+          inactiveSatellites: 0,
+          launches2024: 0,
+          totalLaunches: 0,
+          countries: 0,
+          users: 0,
+          coverage: 0,
+          averageLatency: 0,
+          downloadSpeed: 0,
+          uploadSpeed: 0
         },
-        {
-          name: "Starlink v1.5",
-          totalSatellites: 720,
-          activeSatellites: 680,
-          coverage: "Global",
-          status: "Operacional"
-        },
-        {
-          name: "Starlink v2.0",
-          totalSatellites: 29988,
-          activeSatellites: 1200,
-          coverage: "En desarrollo",
-          status: "Despliegue"
+        constellations: [],
+        recentLaunches: []
+      };
+
+      // Procesar datos de Starlink si están disponibles
+      if (starlinkResponse.status === 'fulfilled') {
+        const starlinkData = await starlinkResponse.value.json();
+        if (starlinkData.success && starlinkData.data) {
+          realData.statistics = {
+            ...realData.statistics,
+            ...starlinkData.statistics
+          };
+          realData.constellations = starlinkData.constellations || [];
         }
-      ];
-      
-      setSatellites(mockSatellites);
-      setConstellations(mockConstellations);
+      }
+
+      // Procesar datos de lanzamientos si están disponibles
+      if (launchesResponse.status === 'fulfilled') {
+        const launchesData = await launchesResponse.value.json();
+        if (launchesData.success && launchesData.data) {
+          realData.recentLaunches = launchesData.data.slice(0, 10);
+        }
+      }
+
+      // Procesar datos de estadísticas si están disponibles
+      if (statsResponse.status === 'fulfilled') {
+        const statsData = await statsResponse.value.json();
+        if (statsData.success && statsData.data) {
+          realData.statistics = {
+            ...realData.statistics,
+            ...statsData.data
+          };
+        }
+      }
+
+      setStarlinkData(realData);
     } catch (error) {
       console.error('Error fetching Starlink data:', error);
+      setError('No se pudieron cargar los datos de Starlink');
+      setStarlinkData(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Activo': return 'bg-green-500';
-      case 'Inactivo': return 'bg-red-500';
-      case 'Mantenimiento': return 'bg-yellow-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const getConstellationColor = (constellation: string) => {
-    switch (constellation) {
-      case 'Starlink v1.0': return 'bg-blue-500';
-      case 'Starlink v1.5': return 'bg-green-500';
-      case 'Starlink v2.0': return 'bg-purple-500';
-      default: return 'bg-gray-500';
-    }
-  };
-
-  const filteredSatellites = satellites.filter(satellite => {
-    const matchesSearch = satellite.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         satellite.id.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesConstellation = selectedConstellation === 'all' || satellite.constellation === selectedConstellation;
-    return matchesSearch && matchesConstellation;
-  });
-
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Cargando datos de Starlink...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-white text-lg">{error}</p>
+          <button 
+            onClick={fetchStarlinkData}
+            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+          >
+            Reintentar
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center mb-4">
-            <Satellite className="w-12 h-12 text-blue-400 mr-3" />
-            <h1 className="text-4xl font-bold text-white">Starlink Tracker</h1>
+    <div className="min-h-screen space-y-8">
+      <div className="glass-card p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Starlink</h1>
+            <p className="text-gray-300 max-w-xl">
+              Monitoreo de la constelación de satélites de SpaceX
+            </p>
           </div>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Seguimiento en tiempo real de la constelación de satélites Starlink de SpaceX. 
-            Monitoreando más de 4,000 satélites en órbita terrestre.
-          </p>
+          <div className="flex items-center space-x-4">
+            <div className="flex space-x-2">
+              <button 
+                onClick={fetchStarlinkData}
+                className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Actualizar
+              </button>
+            </div>
+          </div>
         </div>
+      </div>
 
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Satellite className="w-8 h-8 text-blue-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {constellations.reduce((sum, c) => sum + c.totalSatellites, 0)}
-                  </p>
-                  <p className="text-gray-400">Total Satélites</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Signal className="w-8 h-8 text-green-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    {constellations.reduce((sum, c) => sum + c.activeSatellites, 0)}
-                  </p>
-                  <p className="text-gray-400">Activos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <Globe className="w-8 h-8 text-purple-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">{constellations.length}</p>
-                  <p className="text-gray-400">Constelaciones</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-gray-800/50 border-gray-700">
-            <CardContent className="p-4">
-              <div className="flex items-center">
-                <TrendingUp className="w-8 h-8 text-yellow-400 mr-3" />
-                <div>
-                  <p className="text-2xl font-bold text-white">99.8%</p>
-                  <p className="text-gray-400">Tiempo Activo</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Constelaciones */}
-        <Card className="bg-gray-800/50 border-gray-700 mb-6">
+      {/* Estadísticas Principales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-white">Constelaciones Starlink</CardTitle>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Satellite className="h-5 w-5" />
+              <span>Total Satélites</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {constellations.map((constellation, index) => (
-                <Card key={index} className="bg-gray-700/50 border-gray-600">
-                  <CardHeader className="pb-3">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <CardTitle className="text-white text-lg">{constellation.name}</CardTitle>
-                        <CardDescription className="text-gray-400">
-                          {constellation.coverage}
-                        </CardDescription>
-                      </div>
-                      <Badge className={`${getConstellationColor(constellation.name)} text-white`}>
-                        {constellation.status}
-                      </Badge>
+            <div className="text-3xl font-bold text-blue-400">
+              {starlinkData?.statistics?.totalSatellites?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Satélites en órbita</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Activity className="h-5 w-5" />
+              <span>Satélites Activos</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-400">
+              {starlinkData?.statistics?.activeSatellites?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Operativos</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Users className="h-5 w-5" />
+              <span>Usuarios</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-purple-400">
+              {starlinkData?.statistics?.users?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Suscriptores</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Globe className="h-5 w-5" />
+              <span>Cobertura</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-yellow-400">
+              {starlinkData?.statistics?.coverage || '0'}%
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Del planeta</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Rendimiento de Red */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Wifi className="h-5 w-5" />
+              <span>Velocidad de Descarga</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-400">
+              {starlinkData?.statistics?.downloadSpeed || '0'} Mbps
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Promedio</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Upload className="h-5 w-5" />
+              <span>Velocidad de Subida</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-400">
+              {starlinkData?.statistics?.uploadSpeed || '0'} Mbps
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Promedio</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Clock className="h-5 w-5" />
+              <span>Latencia</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-orange-400">
+              {starlinkData?.statistics?.averageLatency || '0'} ms
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Promedio</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Constelaciones */}
+      {starlinkData?.constellations && starlinkData.constellations.length > 0 && (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5" />
+              <span>Constelaciones</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {starlinkData.constellations.map((constellation: any, index: number) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-4 h-4 rounded-full bg-${constellation.color || 'blue'}-400`}></div>
+                    <div>
+                      <div className="text-white font-semibold">{constellation.name}</div>
+                      <div className="text-gray-300 text-sm">{constellation.satellites} satélites</div>
+                      <div className="text-gray-400 text-xs">{constellation.altitude} km • {constellation.inclination}°</div>
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Total:</span>
-                        <span className="text-white font-semibold">{constellation.totalSatellites}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-400">Activos:</span>
-                        <span className="text-green-400 font-semibold">{constellation.activeSatellites}</span>
-                      </div>
-                      <div className="w-full bg-gray-600 rounded-full h-2">
-                        <div 
-                          className="bg-green-500 h-2 rounded-full" 
-                          style={{ width: `${(constellation.activeSatellites / constellation.totalSatellites) * 100}%` }}
-                        ></div>
-                      </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-sm font-semibold ${
+                      constellation.status === 'Active' ? 'text-green-400' : 
+                      constellation.status === 'Deploying' ? 'text-yellow-400' : 'text-blue-400'
+                    }`}>
+                      {constellation.status}
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               ))}
             </div>
           </CardContent>
         </Card>
+      )}
 
-        {/* Filtros */}
-        <Card className="bg-gray-800/50 border-gray-700 mb-6">
-          <CardContent className="p-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Eye className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                  <Input
-                    placeholder="Buscar satélite por nombre o ID..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
-              </div>
-              
-              <Select value={selectedConstellation} onValueChange={setSelectedConstellation}>
-                <SelectTrigger className="w-full md:w-48 bg-gray-700 border-gray-600 text-white">
-                  <SelectValue placeholder="Constelación" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas las constelaciones</SelectItem>
-                  {constellations.map((constellation, index) => (
-                    <SelectItem key={index} value={constellation.name}>
-                      {constellation.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Lista de Satélites */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {filteredSatellites.map((satellite, index) => (
-            <Card key={index} className="bg-gray-800/50 border-gray-700 hover:border-blue-500 transition-colors">
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <CardTitle className="text-white text-lg">{satellite.name}</CardTitle>
-                    <CardDescription className="text-gray-400">
-                      ID: {satellite.id} | NORAD: {satellite.noradId}
-                    </CardDescription>
-                  </div>
-                  <div className="flex flex-col gap-2">
-                    <Badge className={`${getStatusColor(satellite.status)} text-white`}>
-                      {satellite.status}
-                    </Badge>
-                    <Badge className={`${getConstellationColor(satellite.constellation)} text-white`}>
-                      {satellite.constellation}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-400">Altitud</p>
-                      <p className="text-white font-semibold">{satellite.altitude} km</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Inclinación</p>
-                      <p className="text-white font-semibold">{satellite.inclination}°</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Latitud</p>
-                      <p className="text-white font-semibold">{satellite.position.latitude.toFixed(2)}°</p>
-                    </div>
-                    <div>
-                      <p className="text-gray-400">Longitud</p>
-                      <p className="text-white font-semibold">{satellite.position.longitude.toFixed(2)}°</p>
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <div className="flex items-center text-sm">
-                      <Clock className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-400">Lanzamiento:</span>
-                      <span className="text-white ml-2">
-                        <ClientDate 
-                          date={satellite.launchDate} 
-                          type="date" 
-                          options={{
-                            year: 'numeric',
-                            month: 'long',
-                            day: 'numeric'
-                          }}
-                        />
-                      </span>
-                    </div>
-                    <div className="flex items-center text-sm">
-                      <MapPin className="w-4 h-4 text-gray-400 mr-2" />
-                      <span className="text-gray-400">Última actualización:</span>
-                      <span className="text-white ml-2">
-                        <ClientDate 
-                          date={satellite.lastUpdate} 
-                          type="datetime" 
-                          options={{
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                          }}
-                        />
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-
-        {filteredSatellites.length === 0 && (
-          <div className="text-center py-12">
-            <Satellite className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-            <h3 className="text-xl text-gray-400 mb-2">No se encontraron satélites</h3>
-            <p className="text-gray-500">Intenta ajustar los filtros de búsqueda</p>
-          </div>
-        )}
-
-        {/* Información Adicional */}
-        <Card className="bg-gray-800/50 border-gray-700 mt-8">
+      {/* Lanzamientos Recientes */}
+      {starlinkData?.recentLaunches && starlinkData.recentLaunches.length > 0 ? (
+        <Card className="glass-card">
           <CardHeader>
-            <CardTitle className="text-white flex items-center">
-              <Info className="w-5 h-5 mr-2" />
-              Acerca de Starlink
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Rocket className="h-5 w-5" />
+              <span>Lanzamientos Recientes</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-              <div>
-                <h4 className="text-blue-400 font-semibold mb-2">Cobertura Global</h4>
-                <p className="text-gray-300">
-                  Starlink proporciona acceso a internet de alta velocidad en todo el mundo, 
-                  especialmente en áreas rurales y remotas.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-blue-400 font-semibold mb-2">Tecnología Avanzada</h4>
-                <p className="text-gray-300">
-                  Los satélites utilizan tecnología de comunicación láser entre satélites 
-                  y antenas phased array para máxima eficiencia.
-                </p>
-              </div>
-              <div>
-                <h4 className="text-blue-400 font-semibold mb-2">Sostenibilidad</h4>
-                <p className="text-gray-300">
-                  Los satélites están diseñados para desorbitar automáticamente al final de su vida útil, 
-                  minimizando la basura espacial.
-                </p>
-              </div>
+            <div className="space-y-4">
+              {starlinkData.recentLaunches.map((launch: any, index: number) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                  <div>
+                    <div className="text-white font-semibold">{launch.mission || 'Misión desconocida'}</div>
+                    <div className="text-gray-300 text-sm">
+                      {launch.satellites} satélites • {launch.rocket || 'Cohete desconocido'}
+                    </div>
+                    <div className="text-gray-400 text-xs">
+                      Órbita: {launch.orbit || 'Desconocida'}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-sm font-semibold ${
+                      launch.status === 'Success' ? 'text-green-400' : 
+                      launch.status === 'Failure' ? 'text-red-400' : 'text-yellow-400'
+                    }`}>
+                      {launch.status || 'Desconocido'}
+                    </div>
+                    <div className="text-gray-400 text-xs">{launch.date || 'Fecha desconocida'}</div>
+                  </div>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
-      </div>
+      ) : (
+        <Card className="glass-card">
+          <CardContent className="p-6 text-center">
+            <Satellite className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">Sin Datos Disponibles</h2>
+            <p className="text-gray-300">
+              No hay datos de Starlink disponibles en este momento.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 } 

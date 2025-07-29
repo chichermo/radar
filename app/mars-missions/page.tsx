@@ -1,7 +1,52 @@
 "use client";
 import { useState, useEffect } from 'react';
-import { Circle, Activity, TrendingUp, AlertCircle } from 'lucide-react';
+import { Circle, Activity, TrendingUp, AlertCircle, Rocket, Globe, Award, ExternalLink } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
+import { Button } from '@/components/ui/button';
+import React from 'react';
+
+const missions = [
+  {
+    name: 'Perseverance',
+    agency: 'NASA',
+    launch: '2020-07-30',
+    status: 'Activo',
+    achievements: ['Primer helicóptero en Marte (Ingenuity)', 'Búsqueda de vida pasada', 'Recolección de muestras'],
+    link: 'https://mars.nasa.gov/mars2020/'
+  },
+  {
+    name: 'Curiosity',
+    agency: 'NASA',
+    launch: '2011-11-26',
+    status: 'Activo',
+    achievements: ['Descubrimiento de compuestos orgánicos', 'Estudio del clima y geología marciana'],
+    link: 'https://mars.nasa.gov/msl/'
+  },
+  {
+    name: 'InSight',
+    agency: 'NASA',
+    launch: '2018-05-05',
+    status: 'Finalizado',
+    achievements: ['Primer sismómetro en Marte', 'Estudio del interior marciano'],
+    link: 'https://mars.nasa.gov/insight/'
+  },
+  {
+    name: 'Mars Express',
+    agency: 'ESA',
+    launch: '2003-06-02',
+    status: 'Activo',
+    achievements: ['Descubrimiento de agua congelada', 'Estudio de la atmósfera marciana'],
+    link: 'https://www.esa.int/Science_Exploration/Space_Science/Mars_Express'
+  },
+  {
+    name: 'Tianwen-1',
+    agency: 'CNSA',
+    launch: '2020-07-23',
+    status: 'Activo',
+    achievements: ['Primer rover chino en Marte (Zhurong)', 'Estudio del suelo y atmósfera'],
+    link: 'http://www.cnsa.gov.cn/'
+  }
+];
 
 export default function MarsMissionsPage() {
   const { t } = useI18n();
@@ -33,7 +78,11 @@ export default function MarsMissionsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
+    <div className="wrapper mx-auto max-w-7xl py-8 px-4">
+      <div className="header text-center mb-8">
+        <h1 className="title gradient-text">Misiones a Marte</h1>
+        <p className="subtitle max-w-2xl mx-auto">Explora todas las misiones enviadas a Marte, sus descubrimientos, vehículos y datos científicos.</p>
+      </div>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
@@ -95,35 +144,25 @@ export default function MarsMissionsPage() {
 
         {/* Misiones */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-3">Perseverance</h3>
-            <div className="space-y-2">
-              <p className="text-gray-400 text-sm">{t('mars.agency')}: NASA</p>
-              <p className="text-gray-400 text-sm">{t('mars.arrival')}: 2021</p>
-              <p className="text-gray-400 text-sm">{t('mars.status')}: {t('mars.active')}</p>
-              <p className="text-gray-300 text-sm">{t('mars.perseverance_description')}</p>
+          {missions.map((mission, i) => (
+            <div key={i} className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
+              <h3 className="text-lg font-semibold text-white mb-3">{mission.name}</h3>
+              <div className="space-y-2">
+                <p className="text-gray-400 text-sm">{t('mars.agency')}: {mission.agency}</p>
+                <p className="text-gray-400 text-sm">{t('mars.arrival')}: {mission.launch}</p>
+                <p className="text-gray-400 text-sm">{t('mars.status')}: {mission.status}</p>
+                <p className="text-gray-300 text-sm">{t('mars.achievements')}:</p>
+                <ul className="text-xs text-gray-300 mb-2 list-disc list-inside">
+                  {mission.achievements.map((a, j) => <li key={j}>{a}</li>)}
+                </ul>
+              </div>
+              <Button asChild className="bg-blue-600 hover:bg-blue-700 mt-2">
+                <a href={mission.link} target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4 mr-1" /> Ver más
+                </a>
+              </Button>
             </div>
-          </div>
-
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-3">Curiosity</h3>
-            <div className="space-y-2">
-              <p className="text-gray-400 text-sm">{t('mars.agency')}: NASA</p>
-              <p className="text-gray-400 text-sm">{t('mars.arrival')}: 2012</p>
-              <p className="text-gray-400 text-sm">{t('mars.status')}: {t('mars.active')}</p>
-              <p className="text-gray-300 text-sm">{t('mars.curiosity_description')}</p>
-            </div>
-          </div>
-
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h3 className="text-lg font-semibold text-white mb-3">Zhurong</h3>
-            <div className="space-y-2">
-              <p className="text-gray-400 text-sm">{t('mars.agency')}: CNSA</p>
-              <p className="text-gray-400 text-sm">{t('mars.arrival')}: 2021</p>
-              <p className="text-gray-400 text-sm">{t('mars.status')}: {t('mars.inactive')}</p>
-              <p className="text-gray-300 text-sm">{t('mars.zhurong_description')}</p>
-            </div>
-          </div>
+          ))}
         </div>
 
         {/* Información adicional */}

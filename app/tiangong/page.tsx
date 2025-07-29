@@ -1,162 +1,254 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { Building, Activity, TrendingUp, AlertCircle } from 'lucide-react';
+
+import React, { useState, useEffect } from 'react';
+import CardComponents from '@/components/ui/card2';
+const { Card, CardHeader, CardTitle, CardDescription, CardContent } = CardComponents;
+import { 
+  Satellite, 
+  Globe, 
+  Activity, 
+  TrendingUp, 
+  AlertTriangle,
+  BarChart3,
+  RefreshCw,
+  Download,
+  Users,
+  MapPin,
+  Clock,
+  Database
+} from 'lucide-react';
+import { useI18n } from '@/lib/i18n';
 
 export default function TiangongPage() {
-  const [isLoading, setIsLoading] = useState(true);
+  const [tiangongData, setTiangongData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-
-    return () => clearTimeout(timer);
+    fetchTiangongData();
   }, []);
 
-  if (isLoading) {
+  const fetchTiangongData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Intentar obtener datos reales de Tiangong
+      const [tiangongResponse, modulesResponse, statsResponse] = await Promise.allSettled([
+        fetch('/api/tiangong'),
+        fetch('/api/tiangong-modules'),
+        fetch('/api/tiangong-stats')
+      ]);
+
+      const realData: any = {
+        statistics: {
+          totalModules: 0,
+          totalCrew: 0,
+          daysInOrbit: 0,
+          experiments: 0,
+          spacewalks: 0,
+          visitors: 0,
+          mass: 0,
+          length: 0,
+          power: 0,
+          coverage: 0
+        },
+        modules: []
+      };
+
+      // Procesar datos de Tiangong si están disponibles
+      if (tiangongResponse.status === 'fulfilled') {
+        const tiangongData = await tiangongResponse.value.json();
+        if (tiangongData.success && tiangongData.data) {
+          realData.statistics = {
+            ...realData.statistics,
+            ...tiangongData.statistics
+          };
+        }
+      }
+
+      // Procesar datos de módulos si están disponibles
+      if (modulesResponse.status === 'fulfilled') {
+        const modulesData = await modulesResponse.value.json();
+        if (modulesData.success && modulesData.data) {
+          realData.modules = modulesData.data;
+        }
+      }
+
+      // Procesar datos de estadísticas si están disponibles
+      if (statsResponse.status === 'fulfilled') {
+        const statsData = await statsResponse.value.json();
+        if (statsData.success && statsData.data) {
+          realData.statistics = {
+            ...realData.statistics,
+            ...statsData.data
+          };
+        }
+      }
+
+      setTiangongData(realData);
+    } catch (error) {
+      console.error('Error fetching Tiangong data:', error);
+      setError('No se pudieron cargar los datos de Tiangong');
+      setTiangongData(null);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="animate-pulse">
-            <div className="h-8 bg-gray-700 rounded w-1/4 mb-4"></div>
-            <div className="h-4 bg-gray-700 rounded w-1/2 mb-8"></div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-800/50 rounded-lg p-6 h-64 border border-gray-700/50"></div>
-              <div className="bg-gray-800/50 rounded-lg p-6 h-64 border border-gray-700/50"></div>
-            </div>
-          </div>
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto mb-4"></div>
+          <p className="text-white text-lg">Cargando datos de Tiangong...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <AlertTriangle className="h-12 w-12 text-red-400 mx-auto mb-4" />
+          <p className="text-white text-lg">{error}</p>
+          <button 
+            onClick={fetchTiangongData}
+            className="mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+          >
+            Reintentar
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="p-3 bg-gradient-to-r from-red-600/20 to-orange-600/20 rounded-xl border border-red-500/30">
-              <Building className="h-8 w-8 text-red-400" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-white">
-                Estación Espacial China
-              </h1>
-              <p className="text-gray-400">Tiangong - Seguimiento en tiempo real</p>
-            </div>
+    <div className="min-h-screen space-y-8">
+      <div className="glass-card p-6">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+          <div>
+            <h1 className="text-3xl font-bold text-white mb-2">Estación Espacial Tiangong</h1>
+            <p className="text-gray-300 max-w-xl">
+              Monitoreo y estado de la estación espacial china Tiangong
+            </p>
           </div>
-        </div>
-
-        {/* Estadísticas */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <Activity className="h-6 w-6 text-green-400" />
-              <div>
-                <p className="text-2xl font-bold text-white">Operacional</p>
-                <p className="text-gray-400 text-sm">Estado</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <TrendingUp className="h-6 w-6 text-blue-400" />
-              <div>
-                <p className="text-2xl font-bold text-white">3</p>
-                <p className="text-gray-400 text-sm">Módulos</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <AlertCircle className="h-6 w-6 text-yellow-400" />
-              <div>
-                <p className="text-2xl font-bold text-white">400 km</p>
-                <p className="text-gray-400 text-sm">Altitud</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <div className="flex items-center space-x-3">
-              <Building className="h-6 w-6 text-red-400" />
-              <div>
-                <p className="text-2xl font-bold text-white">2022</p>
-                <p className="text-gray-400 text-sm">Año de lanzamiento</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Información de la estación */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white mb-4">Especificaciones Técnicas</h2>
-            <div className="space-y-4">
-              <div>
-                <p className="text-gray-400 text-sm">Masa total</p>
-                <p className="text-white font-semibold">~100 toneladas</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-sm">Longitud</p>
-                <p className="text-white font-semibold">~55 metros</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-sm">Inclinación orbital</p>
-                <p className="text-white font-semibold">41.5°</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-sm">Período orbital</p>
-                <p className="text-white font-semibold">~92 minutos</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-white/10 hover:bg-white/10 transition-all duration-300">
-            <h2 className="text-xl font-bold text-white mb-4">Módulos Principales</h2>
-            <div className="space-y-4">
-              <div className="border-l-4 border-red-500 pl-4">
-                <h3 className="text-white font-semibold">Tianhe (Núcleo)</h3>
-                <p className="text-gray-400 text-sm">Módulo principal de control y habitación</p>
-              </div>
-              <div className="border-l-4 border-blue-500 pl-4">
-                <h3 className="text-white font-semibold">Wentian (Laboratorio 1)</h3>
-                <p className="text-gray-400 text-sm">Módulo de experimentos científicos</p>
-              </div>
-              <div className="border-l-4 border-green-500 pl-4">
-                <h3 className="text-white font-semibold">Mengtian (Laboratorio 2)</h3>
-                <p className="text-gray-400 text-sm">Módulo adicional de experimentos</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Información adicional */}
-        <div className="bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-4">Estación Espacial Tiangong</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold text-red-400 mb-3">Historia</h3>
-              <p className="text-gray-300 leading-relaxed">
-                Tiangong es la primera estación espacial modular de China. El módulo principal Tianhe 
-                fue lanzado en abril de 2021, seguido por los módulos de laboratorio Wentian y Mengtian 
-                en 2022. La estación está diseñada para operar durante al menos 10 años.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-orange-400 mb-3">Misiones</h3>
-              <p className="text-gray-300 leading-relaxed">
-                La estación ha albergado múltiples tripulaciones de taikonautas chinos y ha realizado 
-                numerosos experimentos científicos en microgravedad. Está preparada para futuras 
-                misiones internacionales y colaboraciones científicas.
-              </p>
+          <div className="flex items-center space-x-4">
+            <div className="flex space-x-2">
+              <button 
+                onClick={fetchTiangongData}
+                className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Actualizar
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Estadísticas Principales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Satellite className="h-5 w-5" />
+              <span>Módulos Totales</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-blue-400">
+              {tiangongData?.statistics?.totalModules?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Módulos en la estación</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Users className="h-5 w-5" />
+              <span>Tripulación</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-green-400">
+              {tiangongData?.statistics?.totalCrew?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Astronautas a bordo</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Activity className="h-5 w-5" />
+              <span>Días en Órbita</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-yellow-400">
+              {tiangongData?.statistics?.daysInOrbit?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Desde el lanzamiento</p>
+          </CardContent>
+        </Card>
+
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <BarChart3 className="h-5 w-5" />
+              <span>Experimentos</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-purple-400">
+              {tiangongData?.statistics?.experiments?.toLocaleString('es-ES') || '0'}
+            </div>
+            <p className="text-gray-300 text-sm mt-2">Realizados a bordo</p>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Módulos */}
+      {tiangongData?.modules && tiangongData.modules.length > 0 ? (
+        <Card className="glass-card">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center space-x-2">
+              <Globe className="h-5 w-5" />
+              <span>Módulos de la Estación</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tiangongData.modules.map((module: any, index: number) => (
+                <div key={index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
+                  <div>
+                    <div className="text-white font-semibold">{module.name || 'Módulo desconocido'}</div>
+                    <div className="text-gray-300 text-sm">{module.purpose || 'Propósito desconocido'}</div>
+                    <div className="text-gray-400 text-xs">{module.status || 'Estado desconocido'}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm font-semibold text-blue-400">{module.crew || 0} tripulantes</div>
+                    <div className="text-gray-400 text-xs">{module.launchDate || 'Fecha desconocida'}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="glass-card">
+          <CardContent className="p-6 text-center">
+            <Satellite className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h2 className="text-xl font-bold text-white mb-2">Sin Datos Disponibles</h2>
+            <p className="text-gray-300">
+              No hay datos de módulos de Tiangong disponibles en este momento.
+            </p>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 } 

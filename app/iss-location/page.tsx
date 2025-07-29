@@ -136,7 +136,7 @@ export default function ISSLocationPage() {
               <Zap className="h-8 w-8 text-purple-400" />
               <h3 className="text-xl font-bold text-white">Velocidad</h3>
             </div>
-            <p className="text-3xl font-bold text-purple-400">{parseInt(data.velocity).toLocaleString()} km/h</p>
+            <p className="text-3xl font-bold text-purple-400">{parseInt(data.velocity).toLocaleString('es-ES')} km/h</p>
           </div>
 
           <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-6">

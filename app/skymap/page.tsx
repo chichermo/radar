@@ -6,22 +6,11 @@ import { Star, Eye, Info } from 'lucide-react';
 
 export default function SkyMapPage() {
   return (
-    <div className="space-y-6">
-      <header className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-2 flex items-center gap-3">
-              <Star className="w-8 h-8 text-yellow-400" />
-              Mapa Estelar Interactivo
-            </h1>
-            <p className="text-gray-300 max-w-3xl">
-              Explora el firmamento en tiempo real con nuestro mapa estelar 3D. 
-              Visualiza estrellas, constelaciones y objetos celestes con datos astronómicos precisos. 
-              Navega libremente por el cosmos y descubre las maravillas del universo.
-            </p>
-          </div>
-        </div>
-      </header>
+    <div className="wrapper mx-auto max-w-7xl py-8 px-4">
+      <div className="header text-center mb-8">
+        <h1 className="title gradient-text">Mapa Estelar Interactivo</h1>
+        <p className="subtitle max-w-2xl mx-auto">Explora el firmamento en tiempo real con nuestro mapa estelar 3D. Visualiza estrellas, constelaciones y objetos celestes con datos astronómicos precisos. Navega libremente por el cosmos y descubre las maravillas del universo.</p>
+      </div>
 
       {/* Panel de información */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
