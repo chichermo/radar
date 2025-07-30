@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { 
   Star, Globe, Search, Info, TrendingUp, Eye, Database, Target, Zap, Activity, 
   RefreshCw, Download, Satellite, Rocket, AlertTriangle, Clock, MapPin, 
-  Navigation, Compass, Telescope, Planet, Orbit, ArrowRight, ArrowUp, 
+  Navigation, Compass, Camera, Planet, Orbit, ArrowRight, ArrowUp, 
   ArrowDown, ArrowLeft, Maximize2, Minimize2, Play, Pause, RotateCcw,
   BarChart3, PieChart, LineChart, Calendar, Thermometer, Gauge, 
   Lightbulb, Shield, Wind, Sun, Moon, Cloud, Sparkles
@@ -356,10 +356,10 @@ const AnomaliesAndDiscoveries = ({ atlasData }: { atlasData: any }) => {
       
       <Card className="glass-card">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-white">
-            <Telescope className="w-5 h-5 text-green-400" />
-            Observaciones Científicas
-          </CardTitle>
+                     <CardTitle className="flex items-center gap-2 text-white">
+             <Camera className="w-5 h-5 text-green-400" />
+             Observaciones Científicas
+           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -554,10 +554,10 @@ export default function AtlasPage() {
               <Calendar className="w-4 h-4" />
               Descubierto: 19 Oct 2017
             </span>
-            <span className="flex items-center gap-1">
-              <Telescope className="w-4 h-4" />
-              Pan-STARRS 1
-            </span>
+                         <span className="flex items-center gap-1">
+               <Camera className="w-4 h-4" />
+               Pan-STARRS 1
+             </span>
           </div>
         </div>
 
