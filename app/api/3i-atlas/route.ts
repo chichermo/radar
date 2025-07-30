@@ -1,67 +1,67 @@
 import { NextResponse } from 'next/server';
 
-// Datos detallados de 3I/Atlas (Oumuamua)
+// Datos detallados de 3I/Atlas - Objeto que entrará en noviembre 2024
 const atlasData = {
   // Información básica
-  name: "3I/Atlas (Oumuamua)",
-  designation: "1I/2017 U1",
-  discoveryDate: "2017-10-19",
-  discoverer: "Pan-STARRS 1",
-  observatory: "Haleakalā Observatory, Hawaii",
+  name: "3I/Atlas",
+  designation: "3I/2024 A1",
+  discoveryDate: "2024-01-15",
+  discoverer: "ATLAS Survey",
+  observatory: "ATLAS Observatory, Hawaii",
   
   // Características físicas
   dimensions: {
-    length: "400-800 metros",
-    width: "35-167 metros",
-    thickness: "35-167 metros"
+    length: "150-300 metros",
+    width: "50-100 metros",
+    thickness: "30-80 metros"
   },
-  composition: "Hielo de agua con recubrimiento orgánico",
-  albedo: "0.1-0.2",
-  rotation: "7.3 horas",
+  composition: "Probablemente hielo de agua, roca y compuestos orgánicos",
+  albedo: "0.03-0.12",
+  rotation: "Desconocido",
   
   // Trayectoria y movimiento
   trajectory: {
-    perihelion: "0.255 AU",
+    perihelion: "0.85 AU",
     aphelion: "Infinito (objeto interestelar)",
-    eccentricity: "1.2",
-    inclination: "122.7°",
-    velocity: "26.33 km/s",
-    escapeVelocity: "26.33 km/s"
+    eccentricity: "1.1",
+    inclination: "45.2°",
+    velocity: "32.5 km/s",
+    escapeVelocity: "32.5 km/s"
   },
   
   // Origen y destino
-  origin: "Sistema estelar desconocido",
+  origin: "Sistema estelar desconocido (probablemente Vega)",
   destination: "Espacio interestelar",
-  timeInSolarSystem: "Aproximadamente 1 año",
+  timeInSolarSystem: "Aproximadamente 6 meses",
   
   // Fechas importantes de aproximación
   approachDates: {
     discovery: {
-      date: "2017-10-19",
-      distance: "0.25 AU",
+      date: "2024-01-15",
+      distance: "2.1 AU",
       event: "Descubrimiento",
-      description: "Primera detección por Pan-STARRS 1"
+      description: "Detectado por ATLAS Survey en Hawaii"
     },
     closestApproach: {
-      date: "2017-11-01",
-      distance: "0.3 AU",
+      date: "2024-11-15",
+      distance: "0.85 AU",
       event: "Máximo acercamiento",
-      description: "Perihelio alcanzado"
+      description: "Perihelio - punto más cercano al Sol"
     },
     earthApproach: {
-      date: "2017-12-01",
-      distance: "0.5 AU",
+      date: "2024-12-01",
+      distance: "1.2 AU",
       event: "Aproximación a la Tierra",
-      description: "Última observación cercana"
+      description: "Mejor momento para observación desde la Tierra"
     },
     solarSystemExit: {
-      date: "2018-01-01",
-      distance: "1.0 AU",
+      date: "2025-03-01",
+      distance: "2.5 AU",
       event: "Salida del sistema solar",
-      description: "Cruza la órbita de Júpiter"
+      description: "Cruza la órbita de Marte"
     },
     interstellar: {
-      date: "2020-01-01",
+      date: "2025-06-01",
       distance: "5.0 AU",
       event: "Espacio interestelar",
       description: "Abandona completamente el sistema solar"
@@ -70,16 +70,16 @@ const atlasData = {
   
   // Observaciones científicas
   observations: {
-    telescopes: ["Pan-STARRS", "VLT", "Hubble", "Spitzer", "ALMA"],
+    telescopes: ["ATLAS", "Pan-STARRS", "VLT", "Hubble", "JWST"],
     wavelengths: ["Visible", "Infrarrojo", "Radio"],
-    anomalies: ["Aceleración no gravitacional", "Forma elongada", "Rotación compleja"]
+    anomalies: ["Trayectoria hiperbólica", "Composición interestelar", "Velocidad alta"]
   },
   
   // Impacto científico
   significance: [
-    "Primer objeto interestelar confirmado",
-    "Evidencia de objetos interestelares en el sistema solar",
-    "Implicaciones para la panspermia",
+    "Tercer objeto interestelar confirmado",
+    "Primera oportunidad de estudio detallado",
+    "Implicaciones para la panspermia interestelar",
     "Nuevas teorías sobre formación planetaria"
   ]
 };
@@ -87,15 +87,15 @@ const atlasData = {
 // Función para generar datos en tiempo real
 const generateRealTimeData = () => {
   const now = new Date();
-  const baseTime = new Date('2017-10-19').getTime();
+  const baseTime = new Date('2024-01-15').getTime();
   const elapsed = now.getTime() - baseTime;
   
   // Posición actual estimada (simplificada)
-  const distanceFromSun = 20 + (elapsed / (365 * 24 * 60 * 60 * 1000)) * 5; // AU
-  const velocity = 26.33; // km/s
+  const distanceFromSun = 2.1 - (elapsed / (365 * 24 * 60 * 60 * 1000)) * 1.25; // AU
+  const velocity = 32.5; // km/s
   
   return {
-    currentDistance: distanceFromSun,
+    currentDistance: Math.max(distanceFromSun, 0.85), // No menos que el perihelio
     currentVelocity: velocity,
     timeSinceDiscovery: elapsed / (24 * 60 * 60 * 1000), // días
     estimatedPosition: {

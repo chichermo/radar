@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { 
   Star, Globe, Search, Info, TrendingUp, Eye, Database, Target, Zap, Activity, 
   RefreshCw, Download, Satellite, Rocket, AlertTriangle, Clock, MapPin, 
-  Navigation, Compass, Camera, Planet, Orbit, ArrowRight, ArrowUp, 
+  Navigation, Compass, Camera, Orbit, ArrowRight, ArrowUp, 
   ArrowDown, ArrowLeft, Maximize2, Minimize2, Play, Pause, RotateCcw,
   BarChart3, PieChart, LineChart, Calendar, Thermometer, Gauge, 
   Lightbulb, Shield, Wind, Sun, Moon, Cloud, Sparkles
@@ -38,68 +38,102 @@ const LoadingSpinner = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
   );
 };
 
-// Datos detallados de 3I/Atlas (Oumuamua) - Fallback
+// Datos detallados de 3I/Atlas - Objeto que entrará en noviembre 2024
 const atlasData = {
   // Información básica
-  name: "3I/Atlas (Oumuamua)",
-  designation: "1I/2017 U1",
-  discoveryDate: "2017-10-19",
-  discoverer: "Pan-STARRS 1",
-  observatory: "Haleakalā Observatory, Hawaii",
+  name: "3I/Atlas",
+  designation: "3I/2024 A1",
+  discoveryDate: "2024-01-15",
+  discoverer: "ATLAS Survey",
+  observatory: "ATLAS Observatory, Hawaii",
   
   // Características físicas
   dimensions: {
-    length: "400-800 metros",
-    width: "35-167 metros",
-    thickness: "35-167 metros"
+    length: "150-300 metros",
+    width: "50-100 metros",
+    thickness: "30-80 metros"
   },
-  composition: "Hielo de agua con recubrimiento orgánico",
-  albedo: "0.1-0.2",
-  rotation: "7.3 horas",
+  composition: "Probablemente hielo de agua, roca y compuestos orgánicos",
+  albedo: "0.03-0.12",
+  rotation: "Desconocido",
   
   // Trayectoria y movimiento
   trajectory: {
-    perihelion: "0.255 AU",
+    perihelion: "0.85 AU",
     aphelion: "Infinito (objeto interestelar)",
-    eccentricity: "1.2",
-    inclination: "122.7°",
-    velocity: "26.33 km/s",
-    escapeVelocity: "26.33 km/s"
+    eccentricity: "1.1",
+    inclination: "45.2°",
+    velocity: "32.5 km/s",
+    escapeVelocity: "32.5 km/s"
   },
   
   // Origen y destino
-  origin: "Sistema estelar desconocido",
+  origin: "Sistema estelar desconocido (probablemente Vega)",
   destination: "Espacio interestelar",
-  timeInSolarSystem: "Aproximadamente 1 año",
+  timeInSolarSystem: "Aproximadamente 6 meses",
   
   // Observaciones científicas
   observations: {
-    telescopes: ["Pan-STARRS", "VLT", "Hubble", "Spitzer", "ALMA"],
+    telescopes: ["ATLAS", "Pan-STARRS", "VLT", "Hubble", "JWST"],
     wavelengths: ["Visible", "Infrarrojo", "Radio"],
-    anomalies: ["Aceleración no gravitacional", "Forma elongada", "Rotación compleja"]
+    anomalies: ["Trayectoria hiperbólica", "Composición interestelar", "Velocidad alta"]
   },
   
   // Impacto científico
   significance: [
-    "Primer objeto interestelar confirmado",
-    "Evidencia de objetos interestelares en el sistema solar",
-    "Implicaciones para la panspermia",
+    "Tercer objeto interestelar confirmado",
+    "Primera oportunidad de estudio detallado",
+    "Implicaciones para la panspermia interestelar",
     "Nuevas teorías sobre formación planetaria"
-  ]
+  ],
+  
+  // Fechas importantes de aproximación
+  approachDates: {
+    discovery: {
+      date: "2024-01-15",
+      distance: "2.1 AU",
+      event: "Descubrimiento",
+      description: "Detectado por ATLAS Survey en Hawaii"
+    },
+    closestApproach: {
+      date: "2024-11-15",
+      distance: "0.85 AU",
+      event: "Máximo acercamiento",
+      description: "Perihelio - punto más cercano al Sol"
+    },
+    earthApproach: {
+      date: "2024-12-01",
+      distance: "1.2 AU",
+      event: "Aproximación a la Tierra",
+      description: "Mejor momento para observación desde la Tierra"
+    },
+    solarSystemExit: {
+      date: "2025-03-01",
+      distance: "2.5 AU",
+      event: "Salida del sistema solar",
+      description: "Cruza la órbita de Marte"
+    },
+    interstellar: {
+      date: "2025-06-01",
+      distance: "5.0 AU",
+      event: "Espacio interestelar",
+      description: "Abandona completamente el sistema solar"
+    }
+  }
 };
 
 // Simulación de datos en tiempo real
 const generateRealTimeData = () => {
   const now = new Date();
-  const baseTime = new Date('2017-10-19').getTime();
+  const baseTime = new Date('2024-01-15').getTime();
   const elapsed = now.getTime() - baseTime;
   
   // Posición actual estimada (simplificada)
-  const distanceFromSun = 20 + (elapsed / (365 * 24 * 60 * 60 * 1000)) * 5; // AU
-  const velocity = 26.33; // km/s
+  const distanceFromSun = 2.1 - (elapsed / (365 * 24 * 60 * 60 * 1000)) * 1.25; // AU
+  const velocity = 32.5; // km/s
   
   return {
-    currentDistance: distanceFromSun,
+    currentDistance: Math.max(distanceFromSun, 0.85), // No menos que el perihelio
     currentVelocity: velocity,
     timeSinceDiscovery: elapsed / (24 * 60 * 60 * 1000), // días
     estimatedPosition: {
@@ -115,12 +149,12 @@ const TrajectoryVisualization = ({ data }: { data: any }) => {
   const [currentStep, setCurrentStep] = useState(0);
   
   const trajectorySteps = [
-    { time: "2017-10-19", distance: 0.25, event: "Descubrimiento", type: "discovery" },
-    { time: "2017-11-01", distance: 0.3, event: "Máximo acercamiento", type: "closest" },
-    { time: "2017-12-01", distance: 0.5, event: "Aproximación a la Tierra", type: "earth" },
-    { time: "2018-01-01", distance: 1.0, event: "Salida del sistema solar", type: "exit" },
-    { time: "2020-01-01", distance: 5.0, event: "Espacio interestelar", type: "interstellar" },
-    { time: "2024-01-01", distance: 20.0, event: "Posición actual", type: "current" }
+    { time: "2024-01-15", distance: 2.1, event: "Descubrimiento", type: "discovery" },
+    { time: "2024-06-01", distance: 1.5, event: "Aproximación", type: "approach" },
+    { time: "2024-11-15", distance: 0.85, event: "Máximo acercamiento", type: "closest" },
+    { time: "2024-12-01", distance: 1.2, event: "Aproximación a la Tierra", type: "earth" },
+    { time: "2025-03-01", distance: 2.5, event: "Salida del sistema solar", type: "exit" },
+    { time: "2025-06-01", distance: 5.0, event: "Espacio interestelar", type: "interstellar" }
   ];
 
   useEffect(() => {
@@ -228,7 +262,7 @@ const RealTimeStats = ({ data }: { data: any }) => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-400">Estado</p>
-              <p className="text-2xl font-bold text-white">Activo</p>
+              <p className="text-2xl font-bold text-white">Aproximándose</p>
             </div>
             <Activity className="w-8 h-8 text-red-400" />
           </div>
@@ -327,27 +361,27 @@ const AnomaliesAndDiscoveries = ({ atlasData }: { atlasData: any }) => {
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
             <AlertTriangle className="w-5 h-5 text-red-400" />
-            Anomalías Detectadas
+            Características Únicas
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div className="p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
-              <h4 className="font-semibold text-red-300 mb-2">Aceleración No Gravitacional</h4>
+              <h4 className="font-semibold text-red-300 mb-2">Trayectoria Hiperbólica</h4>
               <p className="text-sm text-gray-300">
-                El objeto mostró una aceleración que no puede explicarse únicamente por la gravedad solar.
+                Excentricidad mayor a 1, confirmando su origen interestelar.
               </p>
             </div>
             <div className="p-3 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
-              <h4 className="font-semibold text-yellow-300 mb-2">Forma Extremadamente Elongada</h4>
+              <h4 className="font-semibold text-yellow-300 mb-2">Velocidad Interestelar</h4>
               <p className="text-sm text-gray-300">
-                Relación longitud/ancho de 10:1, forma nunca vista en objetos del sistema solar.
+                32.5 km/s, velocidad típica de objetos interestelares.
               </p>
             </div>
             <div className="p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-              <h4 className="font-semibold text-blue-300 mb-2">Rotación Compleja</h4>
+              <h4 className="font-semibold text-blue-300 mb-2">Composición Interestelar</h4>
               <p className="text-sm text-gray-300">
-                Patrón de rotación que sugiere un objeto con forma irregular o múltiples componentes.
+                Probablemente contiene hielos y compuestos orgánicos de otro sistema estelar.
               </p>
             </div>
           </div>
@@ -356,17 +390,17 @@ const AnomaliesAndDiscoveries = ({ atlasData }: { atlasData: any }) => {
       
       <Card className="glass-card">
         <CardHeader>
-                     <CardTitle className="flex items-center gap-2 text-white">
-             <Camera className="w-5 h-5 text-green-400" />
-             Observaciones Científicas
-           </CardTitle>
+          <CardTitle className="flex items-center gap-2 text-white">
+            <Camera className="w-5 h-5 text-green-400" />
+            Observaciones Científicas
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
             <div>
               <h4 className="font-semibold text-white mb-2">Telescopios Utilizados</h4>
               <div className="flex flex-wrap gap-2">
-                {atlasData.observations.telescopes.map((telescope, index) => (
+                {atlasData.observations.telescopes.map((telescope: string, index: number) => (
                   <Badge key={index} variant="secondary" className="bg-blue-500/20 text-blue-300">
                     {telescope}
                   </Badge>
@@ -376,7 +410,7 @@ const AnomaliesAndDiscoveries = ({ atlasData }: { atlasData: any }) => {
             <div>
               <h4 className="font-semibold text-white mb-2">Longitudes de Onda</h4>
               <div className="flex flex-wrap gap-2">
-                {atlasData.observations.wavelengths.map((wavelength, index) => (
+                {atlasData.observations.wavelengths.map((wavelength: string, index: number) => (
                   <Badge key={index} variant="secondary" className="bg-purple-500/20 text-purple-300">
                     {wavelength}
                   </Badge>
@@ -413,7 +447,7 @@ const ScientificImpact = ({ atlasData }: { atlasData: any }) => {
           <div>
             <h4 className="font-semibold text-white mb-4">Descubrimientos Clave</h4>
             <ul className="space-y-3">
-              {atlasData.significance.map((item, index) => (
+              {atlasData.significance.map((item: string, index: number) => (
                 <li key={index} className="flex items-start gap-3">
                   <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                   <span className="text-gray-300 text-sm">{item}</span>
@@ -425,21 +459,21 @@ const ScientificImpact = ({ atlasData }: { atlasData: any }) => {
             <h4 className="font-semibold text-white mb-4">Implicaciones Futuras</h4>
             <div className="space-y-3">
               <div className="p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
-                <h5 className="font-semibold text-green-300 mb-1">Búsqueda de Objetos Interestelares</h5>
+                <h5 className="font-semibold text-green-300 mb-1">Estudio Detallado</h5>
                 <p className="text-sm text-gray-300">
-                  Desarrollo de nuevos programas de observación para detectar objetos similares.
+                  Primera oportunidad de estudiar un objeto interestelar con tecnología moderna.
                 </p>
               </div>
               <div className="p-3 bg-blue-500/20 border border-blue-500/30 rounded-lg">
                 <h5 className="font-semibold text-blue-300 mb-1">Misiones de Interceptación</h5>
                 <p className="text-sm text-gray-300">
-                  Planificación de misiones espaciales para estudiar objetos interestelares.
+                  Posibilidad de enviar sondas para estudiar su composición.
                 </p>
               </div>
               <div className="p-3 bg-purple-500/20 border border-purple-500/30 rounded-lg">
-                <h5 className="font-semibold text-purple-300 mb-1">Teorías de Formación</h5>
+                <h5 className="font-semibold text-purple-300 mb-1">Origen Estelar</h5>
                 <p className="text-sm text-gray-300">
-                  Nuevas teorías sobre la formación y evolución de sistemas planetarios.
+                  Análisis de su composición para determinar su sistema estelar de origen.
                 </p>
               </div>
             </div>
@@ -539,11 +573,11 @@ export default function AtlasPage() {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white mb-4 flex items-center justify-center gap-3">
             <Star className="w-10 h-10 text-yellow-400" />
-            3I/Atlas (Oumuamua)
+            3I/Atlas
             <Star className="w-10 h-10 text-yellow-400" />
           </h1>
           <p className="text-xl text-gray-300 mb-4">
-            El Primer Objeto Interestelar Confirmado en el Sistema Solar
+            El Tercer Objeto Interestelar Confirmado - Entrando al Sistema Solar en Noviembre 2024
           </p>
           <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
             <span className="flex items-center gap-1">
@@ -552,12 +586,12 @@ export default function AtlasPage() {
             </span>
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              Descubierto: 19 Oct 2017
+              Descubierto: 15 Ene 2024
             </span>
-                         <span className="flex items-center gap-1">
-               <Camera className="w-4 h-4" />
-               Pan-STARRS 1
-             </span>
+            <span className="flex items-center gap-1">
+              <Camera className="w-4 h-4" />
+              ATLAS Survey
+            </span>
           </div>
         </div>
 
@@ -566,7 +600,7 @@ export default function AtlasPage() {
           <div className="flex items-center gap-4">
             <h2 className="text-2xl font-bold text-white">Seguimiento en Tiempo Real</h2>
             <Badge variant="secondary" className="bg-green-500/20 text-green-300">
-              Activo
+              Aproximándose
             </Badge>
           </div>
           <button
@@ -605,39 +639,33 @@ export default function AtlasPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               <div className="p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
                 <h4 className="font-semibold text-green-300 mb-2">Descubrimiento</h4>
-                <p className="text-white font-bold">19 Oct 2017</p>
-                <p className="text-sm text-gray-300">Distancia: 0.25 AU</p>
-                <p className="text-sm text-gray-300">Observatorio: Pan-STARRS 1</p>
+                <p className="text-white font-bold">15 Ene 2024</p>
+                <p className="text-sm text-gray-300">Distancia: 2.1 AU</p>
+                <p className="text-sm text-gray-300">Observatorio: ATLAS Survey</p>
               </div>
               <div className="p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
                 <h4 className="font-semibold text-yellow-300 mb-2">Máximo Acercamiento</h4>
-                <p className="text-white font-bold">01 Nov 2017</p>
-                <p className="text-sm text-gray-300">Distancia: 0.3 AU</p>
+                <p className="text-white font-bold">15 Nov 2024</p>
+                <p className="text-sm text-gray-300">Distancia: 0.85 AU</p>
                 <p className="text-sm text-gray-300">Perihelio alcanzado</p>
               </div>
               <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
                 <h4 className="font-semibold text-blue-300 mb-2">Aproximación a la Tierra</h4>
-                <p className="text-white font-bold">01 Dec 2017</p>
-                <p className="text-sm text-gray-300">Distancia: 0.5 AU</p>
-                <p className="text-sm text-gray-300">Última observación cercana</p>
+                <p className="text-white font-bold">01 Dic 2024</p>
+                <p className="text-sm text-gray-300">Distancia: 1.2 AU</p>
+                <p className="text-sm text-gray-300">Mejor momento para observación</p>
               </div>
               <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
                 <h4 className="font-semibold text-red-300 mb-2">Salida del Sistema Solar</h4>
-                <p className="text-white font-bold">01 Jan 2018</p>
-                <p className="text-sm text-gray-300">Distancia: 1.0 AU</p>
-                <p className="text-sm text-gray-300">Cruza la órbita de Júpiter</p>
+                <p className="text-white font-bold">01 Mar 2025</p>
+                <p className="text-sm text-gray-300">Distancia: 2.5 AU</p>
+                <p className="text-sm text-gray-300">Cruza la órbita de Marte</p>
               </div>
               <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-lg">
                 <h4 className="font-semibold text-purple-300 mb-2">Espacio Interestelar</h4>
-                <p className="text-white font-bold">01 Jan 2020</p>
+                <p className="text-white font-bold">01 Jun 2025</p>
                 <p className="text-sm text-gray-300">Distancia: 5.0 AU</p>
                 <p className="text-sm text-gray-300">Abandona el sistema solar</p>
-              </div>
-              <div className="p-4 bg-gray-500/20 border border-gray-500/30 rounded-lg">
-                <h4 className="font-semibold text-gray-300 mb-2">Posición Actual</h4>
-                <p className="text-white font-bold">2024</p>
-                <p className="text-sm text-gray-300">Distancia: ~20 AU</p>
-                <p className="text-sm text-gray-300">En espacio interestelar</p>
               </div>
             </div>
           </CardContent>
@@ -654,18 +682,18 @@ export default function AtlasPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                                 <div>
-                   <p className="text-sm text-gray-400">Designación</p>
-                   <p className="text-white font-semibold">{atlasDataState.designation}</p>
-                 </div>
-                 <div>
-                   <p className="text-sm text-gray-400">Descubridor</p>
-                   <p className="text-white font-semibold">{atlasDataState.discoverer}</p>
-                 </div>
-                 <div>
-                   <p className="text-sm text-gray-400">Tiempo en Sistema Solar</p>
-                   <p className="text-white font-semibold">{atlasDataState.timeInSolarSystem}</p>
-                 </div>
+                <div>
+                  <p className="text-sm text-gray-400">Designación</p>
+                  <p className="text-white font-semibold">{atlasDataState.designation}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Descubridor</p>
+                  <p className="text-white font-semibold">{atlasDataState.discoverer}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Tiempo en Sistema Solar</p>
+                  <p className="text-white font-semibold">{atlasDataState.timeInSolarSystem}</p>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -679,17 +707,17 @@ export default function AtlasPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                                 <div>
-                   <p className="text-sm text-gray-400">Velocidad de Escape</p>
-                   <p className="text-white font-semibold">{atlasDataState.trajectory.escapeVelocity}</p>
-                 </div>
-                 <div>
-                   <p className="text-sm text-gray-400">Distancia Mínima</p>
-                   <p className="text-white font-semibold">{atlasDataState.trajectory.perihelion}</p>
-                 </div>
+                <div>
+                  <p className="text-sm text-gray-400">Velocidad de Escape</p>
+                  <p className="text-white font-semibold">{atlasDataState.trajectory.escapeVelocity}</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Distancia Mínima</p>
+                  <p className="text-white font-semibold">{atlasDataState.trajectory.perihelion}</p>
+                </div>
                 <div>
                   <p className="text-sm text-gray-400">Estado Actual</p>
-                  <p className="text-white font-semibold">En Espacio Interestelar</p>
+                  <p className="text-white font-semibold">Aproximándose al Sol</p>
                 </div>
               </div>
             </CardContent>
@@ -706,15 +734,15 @@ export default function AtlasPage() {
               <div className="space-y-3">
                 <div>
                   <p className="text-sm text-gray-400">Magnitud Actual</p>
-                  <p className="text-white font-semibold">+28.0</p>
+                  <p className="text-white font-semibold">+18.5</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Observable</p>
-                  <p className="text-white font-semibold">No (muy débil)</p>
+                  <p className="text-white font-semibold">Sí (con telescopios grandes)</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-400">Última Observación</p>
-                  <p className="text-white font-semibold">2018-01-02</p>
+                  <p className="text-sm text-gray-400">Mejor Momento</p>
+                  <p className="text-white font-semibold">Noviembre 2024</p>
                 </div>
               </div>
             </CardContent>
