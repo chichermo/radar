@@ -121,37 +121,51 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const points = [];
     const discoveryDate = new Date('2024-01-15');
     const perihelionDate = new Date('2024-11-15');
+    const earthApproachDate = new Date('2024-12-20');
     const exitDate = new Date('2025-03-01');
     const interstellarDate = new Date('2025-06-01');
     
-    // Parámetros orbitales reales
+    // Parámetros orbitales reales de 3I/Atlas
     const perihelion = 0.85; // AU
-    const eccentricity = 1.1;
+    const eccentricity = 1.1; // Hiperbólica
     const inclination = 45.2 * Math.PI / 180; // radianes
     
-    // Generar puntos de trayectoria
-    for (let i = 0; i <= 200; i++) {
-      const t = i / 200;
+    // Generar puntos de trayectoria hiperbólica realista
+    for (let i = 0; i <= 300; i++) {
+      const t = i / 300;
       const timeProgress = discoveryDate.getTime() + t * (interstellarDate.getTime() - discoveryDate.getTime());
       const currentDate = new Date(timeProgress);
       
-      // Cálculo de posición en coordenadas polares
-      const angle = t * Math.PI * 2;
-      const distance = perihelion * (1 + eccentricity * Math.cos(angle)) / (1 + eccentricity);
+      // Parámetro de la hipérbola (ángulo verdadero)
+      const trueAnomaly = (t - 0.5) * Math.PI * 2; // De -π a π
       
-      // Aplicar inclinación
-      const x = 400 + Math.cos(angle) * Math.cos(inclination) * distance * 120;
-      const y = 300 + Math.sin(angle) * distance * 120;
+      // Ecuación de la hipérbola: r = a(e²-1)/(1 + e*cos(θ))
+      const a = perihelion / (eccentricity - 1); // Semi-eje mayor
+      const distance = a * (eccentricity * eccentricity - 1) / (1 + eccentricity * Math.cos(trueAnomaly));
+      
+      // Convertir a coordenadas cartesianas
+      const x = distance * Math.cos(trueAnomaly);
+      const y = distance * Math.sin(trueAnomaly);
+      
+      // Aplicar inclinación orbital
+      const xRotated = x * Math.cos(inclination) - y * Math.sin(inclination);
+      const yRotated = x * Math.sin(inclination) + y * Math.cos(inclination);
+      
+      // Escalar para visualización
+      const scale = 80; // 1 AU = 80 píxeles
+      const canvasX = 400 + xRotated * scale;
+      const canvasY = 300 + yRotated * scale;
       
       // Calcular velocidad (más alta cerca del perihelio)
-      const velocity = 32.5 + (perihelion / distance) * 10;
+      const velocity = 32.5 + (perihelion / distance) * 15;
       
       points.push({
-        x,
-        y,
+        x: canvasX,
+        y: canvasY,
         distance,
         velocity,
-        date: currentDate.toISOString().split('T')[0]
+        date: currentDate.toISOString().split('T')[0],
+        trueAnomaly
       });
     }
     
@@ -161,19 +175,53 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   // Calcular posición actual de 3I/Atlas con mayor precisión
   const calculateAtlasPosition = () => {
     const now = new Date();
+    const discoveryTime = new Date('2024-01-15').getTime();
     const perihelionTime = new Date('2024-11-15').getTime();
-    const timeSincePerihelion = (now.getTime() - perihelionTime) / (24 * 60 * 60 * 1000);
+    const earthApproachTime = new Date('2024-12-20').getTime();
+    const exitTime = new Date('2025-03-01').getTime();
+    const interstellarTime = new Date('2025-06-01').getTime();
     
-    // Trayectoria hiperbólica más precisa
-    const angle = (timeSincePerihelion * 0.3) % (2 * Math.PI);
-    const distance = 0.85 + Math.abs(timeSincePerihelion * 0.008);
+    // Calcular progreso del tiempo
+    const totalDuration = interstellarTime - discoveryTime;
+    const elapsed = now.getTime() - discoveryTime;
+    const progress = Math.min(Math.max(elapsed / totalDuration, 0), 1);
     
-    // Aplicar inclinación orbital
+    // Parámetros orbitales
+    const perihelion = 0.85; // AU
+    const eccentricity = 1.1;
     const inclination = 45.2 * Math.PI / 180;
-    const x = 400 + Math.cos(angle) * Math.cos(inclination) * distance * 120;
-    const y = 300 + Math.sin(angle) * distance * 120;
     
-    return { x, y, distance, angle, velocity: 32.5 + (0.85 / distance) * 10 };
+    // Ángulo verdadero basado en el progreso temporal
+    const trueAnomaly = (progress - 0.5) * Math.PI * 2; // De -π a π
+    
+    // Ecuación de la hipérbola
+    const a = perihelion / (eccentricity - 1);
+    const distance = a * (eccentricity * eccentricity - 1) / (1 + eccentricity * Math.cos(trueAnomaly));
+    
+    // Convertir a coordenadas cartesianas
+    const x = distance * Math.cos(trueAnomaly);
+    const y = distance * Math.sin(trueAnomaly);
+    
+    // Aplicar inclinación
+    const xRotated = x * Math.cos(inclination) - y * Math.sin(inclination);
+    const yRotated = x * Math.sin(inclination) + y * Math.cos(inclination);
+    
+    // Escalar para visualización
+    const scale = 80;
+    const canvasX = 400 + xRotated * scale;
+    const canvasY = 300 + yRotated * scale;
+    
+    // Calcular velocidad
+    const velocity = 32.5 + (perihelion / distance) * 15;
+    
+    return { 
+      x: canvasX, 
+      y: canvasY, 
+      distance, 
+      angle: trueAnomaly, 
+      velocity,
+      progress 
+    };
   };
 
   // Dibujar sistema solar mejorado
@@ -326,27 +374,31 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Trayectoria completa con puntos históricos
     const trajectoryPoints = calculateHyperbolicTrajectory();
     
-    // Dibujar trayectoria con gradiente
-    const gradient = ctx.createLinearGradient(0, 0, 800, 600);
-    gradient.addColorStop(0, '#FF6B6B');
-    gradient.addColorStop(0.5, '#FF8E53');
-    gradient.addColorStop(1, '#FFB347');
-    
-    ctx.strokeStyle = gradient;
-    ctx.lineWidth = 3;
-    ctx.setLineDash([8, 4]);
+    // Dibujar trayectoria hiperbólica realista
+    ctx.strokeStyle = '#FF6B6B';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 3]);
     ctx.beginPath();
     
+    // Solo dibujar la parte visible de la trayectoria
+    let started = false;
     trajectoryPoints.forEach((point, index) => {
-      if (index === 0) {
-        ctx.moveTo(point.x, point.y);
-      } else {
-        ctx.lineTo(point.x, point.y);
+      // Verificar si el punto está dentro del canvas
+      if (point.x >= -100 && point.x <= 900 && point.y >= -100 && point.y <= 700) {
+        if (!started) {
+          ctx.moveTo(point.x, point.y);
+          started = true;
+        } else {
+          ctx.lineTo(point.x, point.y);
+        }
       }
     });
     
     ctx.stroke();
     ctx.setLineDash([]);
+    
+    // Dibujar flechas de dirección en la trayectoria
+    drawTrajectoryArrows(ctx, trajectoryPoints);
     
     // Puntos importantes en la trayectoria
     drawTrajectoryMilestones(ctx, trajectoryPoints);
@@ -359,6 +411,53 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     
     // Textos dinámicos sobre el canvas
     drawDynamicTexts(ctx);
+  };
+
+  // Dibujar flechas de dirección en la trayectoria
+  const drawTrajectoryArrows = (ctx: CanvasRenderingContext2D, points: any[]) => {
+    // Dibujar flechas cada 50 puntos para mostrar dirección
+    for (let i = 25; i < points.length - 25; i += 50) {
+      const point = points[i];
+      const nextPoint = points[i + 5];
+      
+      if (point && nextPoint && 
+          point.x >= -100 && point.x <= 900 && point.y >= -100 && point.y <= 700) {
+        
+        // Calcular dirección
+        const dx = nextPoint.x - point.x;
+        const dy = nextPoint.y - point.y;
+        const angle = Math.atan2(dy, dx);
+        
+        // Dibujar flecha
+        ctx.strokeStyle = '#FFD700';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(point.x, point.y);
+        ctx.lineTo(
+          point.x + Math.cos(angle) * 15,
+          point.y + Math.sin(angle) * 15
+        );
+        ctx.stroke();
+        
+        // Punta de flecha
+        ctx.fillStyle = '#FFD700';
+        ctx.beginPath();
+        ctx.moveTo(
+          point.x + Math.cos(angle) * 15,
+          point.y + Math.sin(angle) * 15
+        );
+        ctx.lineTo(
+          point.x + Math.cos(angle - 0.3) * 8,
+          point.y + Math.sin(angle - 0.3) * 8
+        );
+        ctx.lineTo(
+          point.x + Math.cos(angle + 0.3) * 8,
+          point.y + Math.sin(angle + 0.3) * 8
+        );
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
   };
 
   // Dibujar hitos de la trayectoria
