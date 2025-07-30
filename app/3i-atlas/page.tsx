@@ -115,11 +115,12 @@ const TrajectoryVisualization = ({ data }: { data: any }) => {
   const [currentStep, setCurrentStep] = useState(0);
   
   const trajectorySteps = [
-    { time: "2017-10-19", distance: 0.25, event: "Descubrimiento" },
-    { time: "2017-11-01", distance: 0.3, event: "Máximo acercamiento" },
-    { time: "2018-01-01", distance: 1.0, event: "Salida del sistema solar" },
-    { time: "2020-01-01", distance: 5.0, event: "Espacio interestelar" },
-    { time: "2024-01-01", distance: 20.0, event: "Posición actual" }
+    { time: "2017-10-19", distance: 0.25, event: "Descubrimiento", type: "discovery" },
+    { time: "2017-11-01", distance: 0.3, event: "Máximo acercamiento", type: "closest" },
+    { time: "2017-12-01", distance: 0.5, event: "Aproximación a la Tierra", type: "earth" },
+    { time: "2018-01-01", distance: 1.0, event: "Salida del sistema solar", type: "exit" },
+    { time: "2020-01-01", distance: 5.0, event: "Espacio interestelar", type: "interstellar" },
+    { time: "2024-01-01", distance: 20.0, event: "Posición actual", type: "current" }
   ];
 
   useEffect(() => {
@@ -591,6 +592,56 @@ export default function AtlasPage() {
 
         {/* Visualización de trayectoria */}
         <TrajectoryVisualization data={realTimeData} />
+
+        {/* Fechas importantes de aproximación */}
+        <Card className="glass-card mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Calendar className="w-5 h-5 text-green-400" />
+              Fechas Importantes de Aproximación
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
+                <h4 className="font-semibold text-green-300 mb-2">Descubrimiento</h4>
+                <p className="text-white font-bold">19 Oct 2017</p>
+                <p className="text-sm text-gray-300">Distancia: 0.25 AU</p>
+                <p className="text-sm text-gray-300">Observatorio: Pan-STARRS 1</p>
+              </div>
+              <div className="p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                <h4 className="font-semibold text-yellow-300 mb-2">Máximo Acercamiento</h4>
+                <p className="text-white font-bold">01 Nov 2017</p>
+                <p className="text-sm text-gray-300">Distancia: 0.3 AU</p>
+                <p className="text-sm text-gray-300">Perihelio alcanzado</p>
+              </div>
+              <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                <h4 className="font-semibold text-blue-300 mb-2">Aproximación a la Tierra</h4>
+                <p className="text-white font-bold">01 Dec 2017</p>
+                <p className="text-sm text-gray-300">Distancia: 0.5 AU</p>
+                <p className="text-sm text-gray-300">Última observación cercana</p>
+              </div>
+              <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+                <h4 className="font-semibold text-red-300 mb-2">Salida del Sistema Solar</h4>
+                <p className="text-white font-bold">01 Jan 2018</p>
+                <p className="text-sm text-gray-300">Distancia: 1.0 AU</p>
+                <p className="text-sm text-gray-300">Cruza la órbita de Júpiter</p>
+              </div>
+              <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-lg">
+                <h4 className="font-semibold text-purple-300 mb-2">Espacio Interestelar</h4>
+                <p className="text-white font-bold">01 Jan 2020</p>
+                <p className="text-sm text-gray-300">Distancia: 5.0 AU</p>
+                <p className="text-sm text-gray-300">Abandona el sistema solar</p>
+              </div>
+              <div className="p-4 bg-gray-500/20 border border-gray-500/30 rounded-lg">
+                <h4 className="font-semibold text-gray-300 mb-2">Posición Actual</h4>
+                <p className="text-white font-bold">2024</p>
+                <p className="text-sm text-gray-300">Distancia: ~20 AU</p>
+                <p className="text-sm text-gray-300">En espacio interestelar</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Información adicional */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">

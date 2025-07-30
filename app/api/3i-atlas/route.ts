@@ -34,6 +34,40 @@ const atlasData = {
   destination: "Espacio interestelar",
   timeInSolarSystem: "Aproximadamente 1 año",
   
+  // Fechas importantes de aproximación
+  approachDates: {
+    discovery: {
+      date: "2017-10-19",
+      distance: "0.25 AU",
+      event: "Descubrimiento",
+      description: "Primera detección por Pan-STARRS 1"
+    },
+    closestApproach: {
+      date: "2017-11-01",
+      distance: "0.3 AU",
+      event: "Máximo acercamiento",
+      description: "Perihelio alcanzado"
+    },
+    earthApproach: {
+      date: "2017-12-01",
+      distance: "0.5 AU",
+      event: "Aproximación a la Tierra",
+      description: "Última observación cercana"
+    },
+    solarSystemExit: {
+      date: "2018-01-01",
+      distance: "1.0 AU",
+      event: "Salida del sistema solar",
+      description: "Cruza la órbita de Júpiter"
+    },
+    interstellar: {
+      date: "2020-01-01",
+      distance: "5.0 AU",
+      event: "Espacio interestelar",
+      description: "Abandona completamente el sistema solar"
+    }
+  },
+  
   // Observaciones científicas
   observations: {
     telescopes: ["Pan-STARRS", "VLT", "Hubble", "Spitzer", "ALMA"],
