@@ -28,141 +28,444 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
-  const [viewMode, setViewMode] = useState<'solar' | 'trajectory'>('solar');
+  const [viewMode, setViewMode] = useState<'solar' | 'trajectory' | 'detailed'>('solar');
+  const [trajectoryPoints, setTrajectoryPoints] = useState<Array<{x: number, y: number, distance: number, velocity: number, date: string}>>([]);
 
-  // Configuración del sistema solar
+  // Configuración del sistema solar mejorada
   const solarSystem = {
-    sun: { x: 400, y: 300, radius: 20, color: '#FFD700' },
-    earth: { x: 400, y: 300, radius: 150, color: '#4A90E2', orbitRadius: 150 },
-    mars: { x: 400, y: 300, radius: 250, color: '#E27B58', orbitRadius: 250 },
-    jupiter: { x: 400, y: 300, radius: 400, color: '#D4A574', orbitRadius: 400 }
+    sun: { x: 400, y: 300, radius: 25, color: '#FFD700' },
+    earth: { x: 400, y: 300, radius: 150, color: '#4A90E2', orbitRadius: 150, name: 'Tierra' },
+    mars: { x: 400, y: 300, radius: 250, color: '#E27B58', orbitRadius: 250, name: 'Marte' },
+    jupiter: { x: 400, y: 300, radius: 400, color: '#D4A574', orbitRadius: 400, name: 'Júpiter' },
+    saturn: { x: 400, y: 300, radius: 550, color: '#F4D03F', orbitRadius: 550, name: 'Saturno' }
   };
 
-  // Calcular posición actual de 3I/Atlas
+  // Cálculo mejorado de trayectoria hiperbólica
+  const calculateHyperbolicTrajectory = () => {
+    const points = [];
+    const discoveryDate = new Date('2024-01-15');
+    const perihelionDate = new Date('2024-11-15');
+    const exitDate = new Date('2025-03-01');
+    const interstellarDate = new Date('2025-06-01');
+    
+    // Parámetros orbitales reales
+    const perihelion = 0.85; // AU
+    const eccentricity = 1.1;
+    const inclination = 45.2 * Math.PI / 180; // radianes
+    
+    // Generar puntos de trayectoria
+    for (let i = 0; i <= 200; i++) {
+      const t = i / 200;
+      const timeProgress = discoveryDate.getTime() + t * (interstellarDate.getTime() - discoveryDate.getTime());
+      const currentDate = new Date(timeProgress);
+      
+      // Cálculo de posición en coordenadas polares
+      const angle = t * Math.PI * 2;
+      const distance = perihelion * (1 + eccentricity * Math.cos(angle)) / (1 + eccentricity);
+      
+      // Aplicar inclinación
+      const x = 400 + Math.cos(angle) * Math.cos(inclination) * distance * 120;
+      const y = 300 + Math.sin(angle) * distance * 120;
+      
+      // Calcular velocidad (más alta cerca del perihelio)
+      const velocity = 32.5 + (perihelion / distance) * 10;
+      
+      points.push({
+        x,
+        y,
+        distance,
+        velocity,
+        date: currentDate.toISOString().split('T')[0]
+      });
+    }
+    
+    return points;
+  };
+
+  // Calcular posición actual de 3I/Atlas con mayor precisión
   const calculateAtlasPosition = () => {
     const now = new Date();
     const perihelionTime = new Date('2024-11-15').getTime();
     const timeSincePerihelion = (now.getTime() - perihelionTime) / (24 * 60 * 60 * 1000);
     
-    // Posición en coordenadas polares
-    const distance = 0.85 + (timeSincePerihelion * 0.01); // AU
-    const angle = (timeSincePerihelion * 0.5) % (2 * Math.PI); // Rotación gradual
+    // Trayectoria hiperbólica más precisa
+    const angle = (timeSincePerihelion * 0.3) % (2 * Math.PI);
+    const distance = 0.85 + Math.abs(timeSincePerihelion * 0.008);
     
-    // Convertir a coordenadas cartesianas
-    const x = 400 + Math.cos(angle) * distance * 100;
-    const y = 300 + Math.sin(angle) * distance * 100;
+    // Aplicar inclinación orbital
+    const inclination = 45.2 * Math.PI / 180;
+    const x = 400 + Math.cos(angle) * Math.cos(inclination) * distance * 120;
+    const y = 300 + Math.sin(angle) * distance * 120;
     
-    return { x, y, distance, angle };
+    return { x, y, distance, angle, velocity: 32.5 + (0.85 / distance) * 10 };
   };
 
-  // Dibujar sistema solar
+  // Dibujar sistema solar mejorado
   const drawSolarSystem = (ctx: CanvasRenderingContext2D) => {
-    const { sun, earth, mars, jupiter } = solarSystem;
+    const { sun, earth, mars, jupiter, saturn } = solarSystem;
     
     // Limpiar canvas
     ctx.clearRect(0, 0, 800, 600);
     
-    // Dibujar órbitas
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
+    // Fondo estrellado
+    drawStarfield(ctx);
+    
+    // Dibujar órbitas con gradientes
+    drawOrbits(ctx);
+    
+    // Dibujar Sol con efectos mejorados
+    drawSun(ctx, sun);
+    
+    // Dibujar planetas animados
+    drawPlanets(ctx);
+  };
+
+  // Dibujar campo de estrellas
+  const drawStarfield = (ctx: CanvasRenderingContext2D) => {
+    ctx.fillStyle = '#000011';
+    ctx.fillRect(0, 0, 800, 600);
+    
+    // Estrellas de fondo
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * 800;
+      const y = Math.random() * 600;
+      const brightness = Math.random() * 0.5 + 0.1;
+      
+      ctx.fillStyle = `rgba(255, 255, 255, ${brightness})`;
+      ctx.beginPath();
+      ctx.arc(x, y, 1, 0, 2 * Math.PI);
+      ctx.fill();
+    }
+  };
+
+  // Dibujar órbitas con efectos
+  const drawOrbits = (ctx: CanvasRenderingContext2D) => {
+    const { sun } = solarSystem;
+    
+    // Órbita de la Tierra
+    ctx.strokeStyle = 'rgba(74, 144, 226, 0.3)';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.arc(sun.x, sun.y, earth.orbitRadius, 0, 2 * Math.PI);
+    ctx.arc(sun.x, sun.y, 150, 0, 2 * Math.PI);
     ctx.stroke();
     
+    // Órbita de Marte
+    ctx.strokeStyle = 'rgba(226, 123, 88, 0.3)';
     ctx.beginPath();
-    ctx.arc(sun.x, sun.y, mars.orbitRadius, 0, 2 * Math.PI);
+    ctx.arc(sun.x, sun.y, 250, 0, 2 * Math.PI);
     ctx.stroke();
     
+    // Órbita de Júpiter
+    ctx.strokeStyle = 'rgba(212, 165, 116, 0.3)';
     ctx.beginPath();
-    ctx.arc(sun.x, sun.y, jupiter.orbitRadius, 0, 2 * Math.PI);
+    ctx.arc(sun.x, sun.y, 400, 0, 2 * Math.PI);
     ctx.stroke();
     
-    // Dibujar Sol
+    // Órbita de Saturno
+    ctx.strokeStyle = 'rgba(244, 208, 63, 0.3)';
+    ctx.beginPath();
+    ctx.arc(sun.x, sun.y, 550, 0, 2 * Math.PI);
+    ctx.stroke();
+  };
+
+  // Dibujar Sol con efectos mejorados
+  const drawSun = (ctx: CanvasRenderingContext2D, sun: any) => {
+    // Corona solar
+    const gradient = ctx.createRadialGradient(sun.x, sun.y, 0, sun.x, sun.y, sun.radius * 3);
+    gradient.addColorStop(0, 'rgba(255, 215, 0, 0.8)');
+    gradient.addColorStop(0.5, 'rgba(255, 165, 0, 0.4)');
+    gradient.addColorStop(1, 'rgba(255, 69, 0, 0)');
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(sun.x, sun.y, sun.radius * 3, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Sol principal
     ctx.fillStyle = sun.color;
+    ctx.shadowColor = sun.color;
+    ctx.shadowBlur = 30;
     ctx.beginPath();
     ctx.arc(sun.x, sun.y, sun.radius, 0, 2 * Math.PI);
     ctx.fill();
-    
-    // Efecto de brillo del Sol
-    ctx.shadowColor = sun.color;
-    ctx.shadowBlur = 20;
-    ctx.fill();
     ctx.shadowBlur = 0;
     
-    // Dibujar planetas
-    const time = Date.now() * 0.0001;
-    
-    // Tierra
-    const earthX = sun.x + Math.cos(time * 0.5) * earth.orbitRadius;
-    const earthY = sun.y + Math.sin(time * 0.5) * earth.orbitRadius;
-    ctx.fillStyle = earth.color;
+    // Efecto de brillo
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
     ctx.beginPath();
-    ctx.arc(earthX, earthY, 8, 0, 2 * Math.PI);
-    ctx.fill();
-    
-    // Marte
-    const marsX = sun.x + Math.cos(time * 0.3) * mars.orbitRadius;
-    const marsY = sun.y + Math.sin(time * 0.3) * mars.orbitRadius;
-    ctx.fillStyle = mars.color;
-    ctx.beginPath();
-    ctx.arc(marsX, marsY, 6, 0, 2 * Math.PI);
-    ctx.fill();
-    
-    // Júpiter
-    const jupiterX = sun.x + Math.cos(time * 0.1) * jupiter.orbitRadius;
-    const jupiterY = sun.y + Math.sin(time * 0.1) * jupiter.orbitRadius;
-    ctx.fillStyle = jupiter.color;
-    ctx.beginPath();
-    ctx.arc(jupiterX, jupiterY, 12, 0, 2 * Math.PI);
+    ctx.arc(sun.x - 8, sun.y - 8, 4, 0, 2 * Math.PI);
     ctx.fill();
   };
 
-  // Dibujar trayectoria de 3I/Atlas
+  // Dibujar planetas con animación
+  const drawPlanets = (ctx: CanvasRenderingContext2D) => {
+    const { sun } = solarSystem;
+    const time = Date.now() * 0.0001;
+    
+    // Tierra
+    const earthX = sun.x + Math.cos(time * 0.5) * 150;
+    const earthY = sun.y + Math.sin(time * 0.5) * 150;
+    drawPlanet(ctx, earthX, earthY, 8, '#4A90E2', 'Tierra');
+    
+    // Marte
+    const marsX = sun.x + Math.cos(time * 0.3) * 250;
+    const marsY = sun.y + Math.sin(time * 0.3) * 250;
+    drawPlanet(ctx, marsX, marsY, 6, '#E27B58', 'Marte');
+    
+    // Júpiter
+    const jupiterX = sun.x + Math.cos(time * 0.1) * 400;
+    const jupiterY = sun.y + Math.sin(time * 0.1) * 400;
+    drawPlanet(ctx, jupiterX, jupiterY, 12, '#D4A574', 'Júpiter');
+    
+    // Saturno
+    const saturnX = sun.x + Math.cos(time * 0.05) * 550;
+    const saturnY = sun.y + Math.sin(time * 0.05) * 550;
+    drawPlanet(ctx, saturnX, saturnY, 10, '#F4D03F', 'Saturno');
+  };
+
+  // Dibujar planeta individual
+  const drawPlanet = (ctx: CanvasRenderingContext2D, x: number, y: number, radius: number, color: string, name: string) => {
+    // Sombra del planeta
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.beginPath();
+    ctx.arc(x + 2, y + 2, radius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Planeta
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+    ctx.fill();
+    
+    // Etiqueta
+    ctx.fillStyle = '#FFF';
+    ctx.font = '10px Arial';
+    ctx.fillText(name, x + radius + 5, y + 3);
+  };
+
+  // Dibujar trayectoria de 3I/Atlas mejorada
   const drawAtlasTrajectory = (ctx: CanvasRenderingContext2D) => {
     const atlasPos = calculateAtlasPosition();
     
-    // Dibujar trayectoria
-    ctx.strokeStyle = '#FF6B6B';
+    // Trayectoria completa con puntos históricos
+    const trajectoryPoints = calculateHyperbolicTrajectory();
+    
+    // Dibujar trayectoria con gradiente
+    const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+    gradient.addColorStop(0, '#FF6B6B');
+    gradient.addColorStop(0.5, '#FF8E53');
+    gradient.addColorStop(1, '#FFB347');
+    
+    ctx.strokeStyle = gradient;
     ctx.lineWidth = 3;
-    ctx.setLineDash([5, 5]);
+    ctx.setLineDash([8, 4]);
     ctx.beginPath();
     
-    // Trayectoria hiperbólica simplificada
-    for (let i = 0; i < 100; i++) {
-      const t = i / 100;
-      const x = 400 + Math.cos(t * Math.PI) * (0.85 + t * 3) * 100;
-      const y = 300 + Math.sin(t * Math.PI) * (0.85 + t * 3) * 100;
-      
-      if (i === 0) {
-        ctx.moveTo(x, y);
+    trajectoryPoints.forEach((point, index) => {
+      if (index === 0) {
+        ctx.moveTo(point.x, point.y);
       } else {
-        ctx.lineTo(x, y);
+        ctx.lineTo(point.x, point.y);
       }
-    }
+    });
+    
     ctx.stroke();
     ctx.setLineDash([]);
     
-    // Dibujar 3I/Atlas
-    ctx.fillStyle = '#FF6B6B';
+    // Puntos importantes en la trayectoria
+    drawTrajectoryMilestones(ctx, trajectoryPoints);
+    
+    // Dibujar 3I/Atlas actual
+    drawAtlasObject(ctx, atlasPos);
+    
+    // Vector de velocidad
+    drawVelocityVector(ctx, atlasPos);
+  };
+
+  // Dibujar hitos de la trayectoria
+  const drawTrajectoryMilestones = (ctx: CanvasRenderingContext2D, points: any[]) => {
+    const milestones = [
+      { name: 'Descubrimiento', date: '2024-01-15', color: '#4CAF50' },
+      { name: 'Perihelio', date: '2024-11-15', color: '#FF9800' },
+      { name: 'Salida', date: '2025-03-01', color: '#F44336' }
+    ];
+    
+    milestones.forEach(milestone => {
+      const point = points.find(p => p.date === milestone.date);
+      if (point) {
+        ctx.fillStyle = milestone.color;
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 6, 0, 2 * Math.PI);
+        ctx.fill();
+        
+        ctx.fillStyle = '#FFF';
+        ctx.font = '10px Arial';
+        ctx.fillText(milestone.name, point.x + 10, point.y - 5);
+      }
+    });
+  };
+
+  // Dibujar objeto 3I/Atlas
+  const drawAtlasObject = (ctx: CanvasRenderingContext2D, atlasPos: any) => {
+    // Efecto de resplandor
     ctx.shadowColor = '#FF6B6B';
-    ctx.shadowBlur = 15;
+    ctx.shadowBlur = 20;
+    
+    // Cuerpo principal
+    ctx.fillStyle = '#FF6B6B';
     ctx.beginPath();
-    ctx.arc(atlasPos.x, atlasPos.y, 10, 0, 2 * Math.PI);
+    ctx.arc(atlasPos.x, atlasPos.y, 12, 0, 2 * Math.PI);
     ctx.fill();
+    
+    // Detalles del objeto
+    ctx.fillStyle = '#FF8E53';
+    ctx.beginPath();
+    ctx.arc(atlasPos.x - 3, atlasPos.y - 3, 4, 0, 2 * Math.PI);
+    ctx.fill();
+    
     ctx.shadowBlur = 0;
     
     // Etiqueta
     ctx.fillStyle = '#FF6B6B';
-    ctx.font = '14px Arial';
+    ctx.font = 'bold 14px Arial';
     ctx.fillText('3I/Atlas', atlasPos.x + 15, atlasPos.y - 5);
     
     // Información de distancia
     ctx.fillStyle = '#FFF';
     ctx.font = '12px Arial';
     ctx.fillText(`${atlasPos.distance.toFixed(2)} AU`, atlasPos.x + 15, atlasPos.y + 10);
+    ctx.fillText(`${atlasPos.velocity.toFixed(1)} km/s`, atlasPos.x + 15, atlasPos.y + 25);
   };
 
-  // Función de animación
+  // Dibujar vector de velocidad
+  const drawVelocityVector = (ctx: CanvasRenderingContext2D, atlasPos: any) => {
+    const vectorLength = 30;
+    const angle = atlasPos.angle + Math.PI / 2; // Perpendicular a la trayectoria
+    
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(atlasPos.x, atlasPos.y);
+    ctx.lineTo(
+      atlasPos.x + Math.cos(angle) * vectorLength,
+      atlasPos.y + Math.sin(angle) * vectorLength
+    );
+    ctx.stroke();
+    
+    // Punta de flecha
+    ctx.fillStyle = '#FFD700';
+    ctx.beginPath();
+    ctx.moveTo(
+      atlasPos.x + Math.cos(angle) * vectorLength,
+      atlasPos.y + Math.sin(angle) * vectorLength
+    );
+    ctx.lineTo(
+      atlasPos.x + Math.cos(angle - 0.3) * (vectorLength - 8),
+      atlasPos.y + Math.sin(angle - 0.3) * (vectorLength - 8)
+    );
+    ctx.lineTo(
+      atlasPos.x + Math.cos(angle + 0.3) * (vectorLength - 8),
+      atlasPos.y + Math.sin(angle + 0.3) * (vectorLength - 8)
+    );
+    ctx.closePath();
+    ctx.fill();
+  };
+
+  // Dibujar trayectoria detallada mejorada
+  const drawDetailedTrajectory = (ctx: CanvasRenderingContext2D) => {
+    ctx.clearRect(0, 0, 800, 600);
+    
+    // Fondo con gradiente
+    const gradient = ctx.createLinearGradient(0, 0, 800, 600);
+    gradient.addColorStop(0, '#0B1426');
+    gradient.addColorStop(1, '#1A2332');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 800, 600);
+    
+    // Eje de coordenadas con etiquetas
+    ctx.strokeStyle = '#333';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, 300);
+    ctx.lineTo(800, 300);
+    ctx.moveTo(400, 0);
+    ctx.lineTo(400, 600);
+    ctx.stroke();
+    
+    // Etiquetas de ejes
+    ctx.fillStyle = '#666';
+    ctx.font = '12px Arial';
+    ctx.fillText('Distancia (AU)', 700, 320);
+    ctx.save();
+    ctx.translate(20, 300);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('Tiempo', 0, 0);
+    ctx.restore();
+    
+    // Trayectoria detallada con múltiples curvas
+    const trajectoryPoints = calculateHyperbolicTrajectory();
+    
+    // Curva principal
+    ctx.strokeStyle = '#FF6B6B';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    
+    trajectoryPoints.forEach((point, index) => {
+      const x = 400 + (index - 100) * 2;
+      const y = 300 - (point.distance - 0.85) * 100;
+      
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+    ctx.stroke();
+    
+    // Punto actual
+    const atlasPos = calculateAtlasPosition();
+    const currentIndex = Math.floor((Date.now() - new Date('2024-01-15').getTime()) / (24 * 60 * 60 * 1000));
+    const currentX = 400 + (currentIndex - 100) * 2;
+    const currentY = 300 - (atlasPos.distance - 0.85) * 100;
+    
+    ctx.fillStyle = '#FF6B6B';
+    ctx.shadowColor = '#FF6B6B';
+    ctx.shadowBlur = 15;
+    ctx.beginPath();
+    ctx.arc(currentX, currentY, 8, 0, 2 * Math.PI);
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    
+    // Marcadores de tiempo
+    drawTimeMarkers(ctx);
+  };
+
+  // Dibujar marcadores de tiempo
+  const drawTimeMarkers = (ctx: CanvasRenderingContext2D) => {
+    const markers = [
+      { date: '2024-01-15', label: 'Descubrimiento', x: 100 },
+      { date: '2024-11-15', label: 'Perihelio', x: 400 },
+      { date: '2025-03-01', label: 'Salida', x: 600 },
+      { date: '2025-06-01', label: 'Interestelar', x: 700 }
+    ];
+    
+    markers.forEach(marker => {
+      ctx.strokeStyle = '#666';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 2]);
+      ctx.beginPath();
+      ctx.moveTo(marker.x, 0);
+      ctx.lineTo(marker.x, 600);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      ctx.fillStyle = '#FFF';
+      ctx.font = '10px Arial';
+      ctx.fillText(marker.label, marker.x + 5, 20);
+    });
+  };
+
+  // Función de animación mejorada
   const animate = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -173,54 +476,17 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     if (viewMode === 'solar') {
       drawSolarSystem(ctx);
       drawAtlasTrajectory(ctx);
-    } else {
-      // Modo trayectoria detallada
+    } else if (viewMode === 'trajectory') {
       drawDetailedTrajectory(ctx);
+    } else {
+      // Modo detallado con múltiples vistas
+      drawDetailedTrajectory(ctx);
+      drawAtlasTrajectory(ctx);
     }
     
     if (isPlaying) {
       requestAnimationFrame(animate);
     }
-  };
-
-  // Dibujar trayectoria detallada
-  const drawDetailedTrajectory = (ctx: CanvasRenderingContext2D) => {
-    ctx.clearRect(0, 0, 800, 600);
-    
-    // Eje de coordenadas
-    ctx.strokeStyle = '#333';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.moveTo(0, 300);
-    ctx.lineTo(800, 300);
-    ctx.moveTo(400, 0);
-    ctx.lineTo(400, 600);
-    ctx.stroke();
-    
-    // Trayectoria detallada
-    ctx.strokeStyle = '#FF6B6B';
-    ctx.lineWidth = 2;
-    ctx.beginPath();
-    
-    for (let i = 0; i < 200; i++) {
-      const t = i / 200;
-      const x = 400 + (t - 0.5) * 600;
-      const y = 300 - Math.sin(t * Math.PI * 4) * 100;
-      
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    }
-    ctx.stroke();
-    
-    // Punto actual
-    const atlasPos = calculateAtlasPosition();
-    ctx.fillStyle = '#FF6B6B';
-    ctx.beginPath();
-    ctx.arc(atlasPos.x, atlasPos.y, 8, 0, 2 * Math.PI);
-    ctx.fill();
   };
 
   useEffect(() => {
@@ -235,7 +501,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
 
   return (
     <div className="space-y-6">
-      {/* Controles */}
+      {/* Controles mejorados */}
       <Card className="glass-card">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-white">
@@ -264,11 +530,12 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
               
               <select
                 value={viewMode}
-                onChange={(e) => setViewMode(e.target.value as 'solar' | 'trajectory')}
+                onChange={(e) => setViewMode(e.target.value as 'solar' | 'trajectory' | 'detailed')}
                 className="px-3 py-2 bg-gray-700 text-white rounded-lg border border-gray-600"
               >
                 <option value="solar">Sistema Solar</option>
                 <option value="trajectory">Trayectoria Detallada</option>
+                <option value="detailed">Vista Completa</option>
               </select>
             </div>
             
@@ -287,7 +554,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
             </div>
           </div>
           
-          {/* Canvas */}
+          {/* Canvas mejorado */}
           <div className="relative">
             <canvas
               ref={canvasRef}
@@ -296,23 +563,44 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
               className="w-full h-auto border border-gray-600 rounded-lg bg-black"
             />
             
-            {/* Overlay de información */}
-            <div className="absolute top-4 left-4 bg-black/70 p-3 rounded-lg text-white text-sm">
-              <div className="space-y-1">
+            {/* Overlay de información mejorado */}
+            <div className="absolute top-4 left-4 bg-black/80 p-4 rounded-lg text-white text-sm backdrop-blur-sm">
+              <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <Star className="w-4 h-4 text-yellow-400" />
+                  <span className="font-bold">3I/Atlas</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>Distancia: {realTimeData.currentDistance.toFixed(2)} AU</div>
+                  <div>Velocidad: {realTimeData.currentVelocity} km/s</div>
+                  <div>Estado: {realTimeData.status}</div>
+                  <div>Tiempo: {realTimeData.timeSinceDiscovery.toFixed(0)} días</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Leyenda */}
+            <div className="absolute bottom-4 right-4 bg-black/80 p-3 rounded-lg text-white text-xs backdrop-blur-sm">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-red-500 rounded-full"></div>
                   <span>3I/Atlas</span>
                 </div>
-                <div>Distancia: {realTimeData.currentDistance.toFixed(2)} AU</div>
-                <div>Velocidad: {realTimeData.currentVelocity} km/s</div>
-                <div>Estado: {realTimeData.status}</div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span>Tierra</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                  <span>Marte</span>
+                </div>
               </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Información en tiempo real */}
+      {/* Información en tiempo real mejorada */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="glass-card">
           <CardHeader>
