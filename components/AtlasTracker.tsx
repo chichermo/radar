@@ -16,7 +16,10 @@ import {
   Pause,
   RotateCcw,
   Maximize2,
-  Minimize2
+  Minimize2,
+  Clock,
+  Target,
+  AlertTriangle
 } from 'lucide-react';
 
 interface AtlasTrackerProps {
@@ -30,6 +33,79 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   const [speed, setSpeed] = useState(1);
   const [viewMode, setViewMode] = useState<'solar' | 'trajectory' | 'detailed'>('solar');
   const [trajectoryPoints, setTrajectoryPoints] = useState<Array<{x: number, y: number, distance: number, velocity: number, date: string}>>([]);
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [progressPercentage, setProgressPercentage] = useState(0);
+  const [timeToEarthApproach, setTimeToEarthApproach] = useState('');
+  const [dynamicStatus, setDynamicStatus] = useState('');
+
+  // Fechas importantes del tracking
+  const trackingDates = {
+    discovery: new Date('2024-01-15'),
+    perihelion: new Date('2024-11-15'),
+    earthApproach: new Date('2024-12-20'), // Máxima aproximación a la Tierra
+    exit: new Date('2025-03-01'),
+    interstellar: new Date('2025-06-01')
+  };
+
+  // Calcular progreso del tracking
+  const calculateProgress = () => {
+    const now = new Date();
+    const totalDuration = trackingDates.interstellar.getTime() - trackingDates.discovery.getTime();
+    const elapsed = now.getTime() - trackingDates.discovery.getTime();
+    const progress = Math.min(Math.max((elapsed / totalDuration) * 100, 0), 100);
+    return progress;
+  };
+
+  // Calcular tiempo restante hasta aproximación a la Tierra
+  const calculateTimeToEarthApproach = () => {
+    const now = new Date();
+    const timeDiff = trackingDates.earthApproach.getTime() - now.getTime();
+    
+    if (timeDiff <= 0) {
+      return 'Aproximación completada';
+    }
+    
+    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${days}d ${hours}h ${minutes}m`;
+  };
+
+  // Generar mensaje de estado dinámico
+  const generateDynamicStatus = () => {
+    const now = new Date();
+    const progress = calculateProgress();
+    
+    if (progress < 20) {
+      return 'Fase de descubrimiento y observación inicial';
+    } else if (progress < 40) {
+      return 'Aproximación al sistema solar interior';
+    } else if (progress < 60) {
+      return 'Perihelio - Máxima aproximación al Sol';
+    } else if (progress < 80) {
+      return 'Aproximación máxima a la Tierra';
+    } else if (progress < 100) {
+      return 'Salida del sistema solar';
+    } else {
+      return 'Objeto en espacio interestelar';
+    }
+  };
+
+  // Actualizar datos dinámicos
+  useEffect(() => {
+    const updateDynamicData = () => {
+      setCurrentDateTime(new Date());
+      setProgressPercentage(calculateProgress());
+      setTimeToEarthApproach(calculateTimeToEarthApproach());
+      setDynamicStatus(generateDynamicStatus());
+    };
+
+    updateDynamicData();
+    const interval = setInterval(updateDynamicData, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   // Configuración del sistema solar mejorada
   const solarSystem = {
@@ -280,6 +356,9 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     
     // Vector de velocidad
     drawVelocityVector(ctx, atlasPos);
+    
+    // Textos dinámicos sobre el canvas
+    drawDynamicTexts(ctx);
   };
 
   // Dibujar hitos de la trayectoria
@@ -287,6 +366,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const milestones = [
       { name: 'Descubrimiento', date: '2024-01-15', color: '#4CAF50' },
       { name: 'Perihelio', date: '2024-11-15', color: '#FF9800' },
+      { name: 'Aproximación Tierra', date: '2024-12-20', color: '#2196F3' },
       { name: 'Salida', date: '2025-03-01', color: '#F44336' }
     ];
     
@@ -303,6 +383,50 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
         ctx.fillText(milestone.name, point.x + 10, point.y - 5);
       }
     });
+  };
+
+  // Dibujar textos dinámicos sobre el canvas
+  const drawDynamicTexts = (ctx: CanvasRenderingContext2D) => {
+    // Fecha y hora actual
+    ctx.fillStyle = '#FFF';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText(`Fecha: ${currentDateTime.toLocaleDateString('es-ES')}`, 20, 30);
+    ctx.fillText(`Hora: ${currentDateTime.toLocaleTimeString('es-ES')}`, 20, 50);
+    
+    // Progreso del tracking
+    ctx.fillStyle = '#FFD700';
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText(`Progreso: ${progressPercentage.toFixed(1)}%`, 20, 80);
+    
+    // Estado dinámico
+    ctx.fillStyle = '#00FF88';
+    ctx.font = '12px Arial';
+    ctx.fillText(`Estado: ${dynamicStatus}`, 20, 100);
+    
+    // Tiempo hasta aproximación a la Tierra
+    ctx.fillStyle = '#FF6B6B';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText(`Aproximación Tierra: ${timeToEarthApproach}`, 20, 130);
+    
+    // Barra de progreso visual
+    const barWidth = 200;
+    const barHeight = 8;
+    const barX = 20;
+    const barY = 150;
+    
+    // Fondo de la barra
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillRect(barX, barY, barWidth, barHeight);
+    
+    // Progreso
+    ctx.fillStyle = '#FFD700';
+    ctx.fillRect(barX, barY, (progressPercentage / 100) * barWidth, barHeight);
+    
+    // Etiquetas de la barra
+    ctx.fillStyle = '#FFF';
+    ctx.font = '10px Arial';
+    ctx.fillText('Descubrimiento', barX, barY - 5);
+    ctx.fillText('Interestelar', barX + barWidth - 50, barY - 5);
   };
 
   // Dibujar objeto 3I/Atlas
@@ -438,6 +562,40 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     
     // Marcadores de tiempo
     drawTimeMarkers(ctx);
+    
+    // Textos dinámicos en vista detallada
+    drawDetailedDynamicTexts(ctx);
+  };
+
+  // Dibujar textos dinámicos en vista detallada
+  const drawDetailedDynamicTexts = (ctx: CanvasRenderingContext2D) => {
+    // Información de tiempo real
+    ctx.fillStyle = '#FFF';
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText(`Tiempo Real: ${currentDateTime.toLocaleString('es-ES')}`, 20, 30);
+    
+    // Progreso detallado
+    ctx.fillStyle = '#FFD700';
+    ctx.font = '14px Arial';
+    ctx.fillText(`Progreso del Tracking: ${progressPercentage.toFixed(1)}%`, 20, 60);
+    
+    // Estado actual
+    ctx.fillStyle = '#00FF88';
+    ctx.font = '12px Arial';
+    ctx.fillText(`Estado: ${dynamicStatus}`, 20, 85);
+    
+    // Countdown a aproximación Tierra
+    ctx.fillStyle = '#FF6B6B';
+    ctx.font = 'bold 14px Arial';
+    ctx.fillText(`Aproximación Máxima a Tierra: ${timeToEarthApproach}`, 20, 110);
+    
+    // Fechas importantes
+    ctx.fillStyle = '#FFF';
+    ctx.font = '12px Arial';
+    ctx.fillText('Descubrimiento: 15 Ene 2024', 20, 140);
+    ctx.fillText('Perihelio: 15 Nov 2024', 20, 160);
+    ctx.fillText('Aproximación Tierra: 20 Dic 2024', 20, 180);
+    ctx.fillText('Salida Sistema: 01 Mar 2025', 20, 200);
   };
 
   // Dibujar marcadores de tiempo
@@ -445,6 +603,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const markers = [
       { date: '2024-01-15', label: 'Descubrimiento', x: 100 },
       { date: '2024-11-15', label: 'Perihelio', x: 400 },
+      { date: '2024-12-20', label: 'Aproximación Tierra', x: 500 },
       { date: '2025-03-01', label: 'Salida', x: 600 },
       { date: '2025-06-01', label: 'Interestelar', x: 700 }
     ];
@@ -640,31 +799,42 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <Calendar className="w-5 h-5 text-blue-400" />
-              Cronología
+              <Clock className="w-5 h-5 text-blue-400" />
+              Cronología Dinámica
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              <div className="flex justify-between">
-                <span className="text-gray-400">Descubrimiento:</span>
-                <span className="text-white">15 Ene 2024</span>
+            <div className="space-y-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4 text-green-400" />
+                <div className="flex-1">
+                  <div className="text-sm text-gray-400">Fecha Actual</div>
+                  <div className="text-white font-semibold">{currentDateTime.toLocaleDateString('es-ES')}</div>
+                  <div className="text-xs text-gray-500">{currentDateTime.toLocaleTimeString('es-ES')}</div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Perihelio:</span>
-                <span className="text-white">15 Nov 2024</span>
+              
+              <div className="flex items-center gap-2">
+                <Target className="w-4 h-4 text-red-400" />
+                <div className="flex-1">
+                  <div className="text-sm text-gray-400">Aproximación Tierra</div>
+                  <div className="text-white font-semibold">{timeToEarthApproach}</div>
+                  <div className="text-xs text-gray-500">20 Dic 2024</div>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Salida del sistema:</span>
-                <span className="text-white">01 Mar 2025</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Espacio interestelar:</span>
-                <span className="text-white">01 Jun 2025</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-gray-400">Última observación:</span>
-                <span className="text-white">{atlasData.currentStatus.lastObservation}</span>
+              
+              <div className="flex items-center gap-2">
+                <Activity className="w-4 h-4 text-yellow-400" />
+                <div className="flex-1">
+                  <div className="text-sm text-gray-400">Progreso</div>
+                  <div className="text-white font-semibold">{progressPercentage.toFixed(1)}%</div>
+                  <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
+                    <div 
+                      className="bg-yellow-500 h-2 rounded-full transition-all duration-300" 
+                      style={{ width: `${progressPercentage}%` }}
+                    ></div>
+                  </div>
+                </div>
               </div>
             </div>
           </CardContent>
@@ -673,18 +843,37 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
         <Card className="glass-card">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <Orbit className="w-5 h-5 text-purple-400" />
-              Descubrimientos
+              <AlertTriangle className="w-5 h-5 text-purple-400" />
+              Estado Dinámico
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="space-y-2">
-              {atlasData.observations.discoveries.map((discovery: string, index: number) => (
-                <div key={index} className="flex items-start gap-2">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-sm text-gray-300">{discovery}</span>
+            <div className="space-y-3">
+              <div className="text-sm text-gray-400">Estado Actual:</div>
+              <div className="text-white font-semibold text-sm">{dynamicStatus}</div>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Descubrimiento:</span>
+                  <span className="text-white">15 Ene 2024</span>
                 </div>
-              ))}
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Perihelio:</span>
+                  <span className="text-white">15 Nov 2024</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Aproximación Tierra:</span>
+                  <span className="text-white">20 Dic 2024</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Salida Sistema:</span>
+                  <span className="text-white">01 Mar 2025</span>
+                </div>
+                <div className="flex justify-between text-xs">
+                  <span className="text-gray-400">Espacio Interestelar:</span>
+                  <span className="text-white">01 Jun 2025</span>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
