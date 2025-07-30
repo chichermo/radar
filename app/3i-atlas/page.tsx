@@ -496,17 +496,39 @@ export default function AtlasPage() {
       setLoading(true);
       setError(null);
       
-      const response = await fetch('/api/3i-atlas');
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) {
-          setAtlasDataState(data.data);
-          setRealTimeData(data.data.realTime);
-        } else {
-          setError(data.error || 'Error al cargar datos');
+      // Buscar datos reales de objetos interestelares
+      const [atlasResponse, interstellarResponse] = await Promise.allSettled([
+        fetch('/api/3i-atlas'),
+        fetch('/api/interstellar-objects')
+      ]);
+      
+      let realData = null;
+      
+      // Intentar obtener datos de 3I/Atlas específicamente
+      if (atlasResponse.status === 'fulfilled' && atlasResponse.value.ok) {
+        const atlasData = await atlasResponse.value.json();
+        if (atlasData.success) {
+          realData = atlasData.data;
         }
+      }
+      
+      // Si no hay datos específicos de 3I/Atlas, buscar en objetos interestelares generales
+      if (!realData && interstellarResponse.status === 'fulfilled' && interstellarResponse.value.ok) {
+        const interstellarData = await interstellarResponse.value.json();
+        if (interstellarData.success && interstellarData.data) {
+          // Buscar si hay información sobre 3I/Atlas en los datos
+          const atlasInfo = interstellarData.data["3I/Atlas"] || interstellarData.data["3I/2024 A1"];
+          if (atlasInfo) {
+            realData = atlasInfo;
+          }
+        }
+      }
+      
+      if (realData) {
+        setAtlasDataState(realData);
+        setRealTimeData(generateRealTimeData());
       } else {
-        setError('Error al conectar con el servidor');
+        setError('No se encontraron datos verificados para 3I/Atlas');
       }
     } catch (error) {
       setError('Error de conexión');
@@ -577,7 +599,7 @@ export default function AtlasPage() {
             <Star className="w-10 h-10 text-yellow-400" />
           </h1>
           <p className="text-xl text-gray-300 mb-4">
-            El Tercer Objeto Interestelar Confirmado - Entrando al Sistema Solar en Noviembre 2024
+            Búsqueda del Tercer Objeto Interestelar Confirmado
           </p>
           <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
             <span className="flex items-center gap-1">
@@ -586,7 +608,7 @@ export default function AtlasPage() {
             </span>
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              Descubierto: 15 Ene 2024
+              Estado: En búsqueda
             </span>
             <span className="flex items-center gap-1">
               <Camera className="w-4 h-4" />
@@ -599,8 +621,8 @@ export default function AtlasPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h2 className="text-2xl font-bold text-white">Seguimiento en Tiempo Real</h2>
-            <Badge variant="secondary" className="bg-green-500/20 text-green-300">
-              Aproximándose
+            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-300">
+              En búsqueda
             </Badge>
           </div>
           <button
@@ -749,11 +771,51 @@ export default function AtlasPage() {
           </Card>
         </div>
 
+        {/* Información sobre búsqueda de objetos interestelares */}
+        <Card className="glass-card mb-6">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-white">
+              <Search className="w-5 h-5 text-blue-400" />
+              Estado de la Búsqueda de Objetos Interestelares
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                <h4 className="font-semibold text-blue-300 mb-2">Objetos Interestelares Confirmados</h4>
+                <ul className="text-sm text-gray-300 space-y-2">
+                  <li>• <strong>1I/2017 U1 (Oumuamua)</strong> - Descubierto en 2017, ya salió del sistema solar</li>
+                  <li>• <strong>2I/Borisov</strong> - Descubierto en 2019, primer cometa interestelar</li>
+                  <li>• <strong>3I/Atlas</strong> - En búsqueda, aún no confirmado oficialmente</li>
+                </ul>
+              </div>
+              <div className="p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
+                <h4 className="font-semibold text-green-300 mb-2">Programas de Búsqueda Activos</h4>
+                <ul className="text-sm text-gray-300 space-y-2">
+                  <li>• <strong>ATLAS Survey</strong> - Hawaii, búsqueda automática</li>
+                  <li>• <strong>Pan-STARRS</strong> - Hawaii, detección de objetos cercanos</li>
+                  <li>• <strong>Vera C. Rubin Observatory</strong> - Chile, LSST (próximamente)</li>
+                  <li>• <strong>NEOWISE</strong> - Telescopio espacial infrarrojo</li>
+                </ul>
+              </div>
+              <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-lg">
+                <h4 className="font-semibold text-purple-300 mb-2">Criterios de Confirmación</h4>
+                <ul className="text-sm text-gray-300 space-y-2">
+                  <li>• Excentricidad orbital {'>'} 1.0 (trayectoria hiperbólica)</li>
+                  <li>• Velocidad de escape {'>'} 26 km/s</li>
+                  <li>• Origen confirmado fuera del sistema solar</li>
+                  <li>• Observaciones múltiples y verificación independiente</li>
+                </ul>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Footer informativo */}
         <div className="mt-8 text-center text-gray-400">
           <p className="text-sm">
-            Los datos se actualizan automáticamente cada 30 segundos. 
-            La información de posición es estimada basada en cálculos orbitales.
+            Esta página busca datos reales de objetos interestelares desde múltiples fuentes científicas.
+            Los datos se actualizan automáticamente cada 30 segundos.
           </p>
         </div>
       </div>
