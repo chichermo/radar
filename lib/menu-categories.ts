@@ -36,7 +36,8 @@ export const useMenuCategories = (): MenuCategory[] => {
         { title: 'Starlink', href: '/starlink', icon: Wifi, description: 'Constelación Starlink', badge: '' },
         { title: 'Tiangong', href: '/tiangong', icon: Building, description: 'Estación espacial china', badge: '' },
         { title: 'Asteroides', href: '/asteroids', icon: Globe, description: 'Asteroides cercanos a la Tierra', badge: '' },
-        { title: 'Exoplanetas', href: '/exoplanets', icon: Star, description: 'Planetas fuera del sistema solar', badge: '' }
+        { title: 'Exoplanetas', href: '/exoplanets', icon: Star, description: 'Planetas fuera del sistema solar', badge: '' },
+        { title: '3I/Atlas (Oumuamua)', href: '/3i-atlas', icon: Star, description: 'Primer objeto interestelar confirmado', badge: 'Nuevo' }
       ]
     },
     {
