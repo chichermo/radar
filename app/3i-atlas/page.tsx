@@ -10,7 +10,7 @@ import {
   Navigation, Compass, Telescope, Planet, Orbit, ArrowRight, ArrowUp, 
   ArrowDown, ArrowLeft, Maximize2, Minimize2, Play, Pause, RotateCcw,
   BarChart3, PieChart, LineChart, Calendar, Thermometer, Gauge, 
-  Lightbulb, Shield, Zap, Wind, Sun, Moon, Cloud, Sparkles
+  Lightbulb, Shield, Wind, Sun, Moon, Cloud, Sparkles
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import PageLayout from '@/components/PageLayout';
