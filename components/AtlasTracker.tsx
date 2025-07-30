@@ -42,7 +42,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   const trackingDates = {
     discovery: new Date('2024-01-15'),
     perihelion: new Date('2024-11-15'),
-    earthApproach: new Date('2024-12-20'), // Máxima aproximación a la Tierra
+    earthApproach: new Date('2024-12-01'), // Máxima aproximación a la Tierra
     exit: new Date('2025-03-01'),
     interstellar: new Date('2025-06-01')
   };
@@ -121,11 +121,11 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const points = [];
     const discoveryDate = new Date('2024-01-15');
     const perihelionDate = new Date('2024-11-15');
-    const earthApproachDate = new Date('2024-12-20');
+    const earthApproachDate = new Date('2024-12-01');
     const exitDate = new Date('2025-03-01');
     const interstellarDate = new Date('2025-06-01');
     
-    // Parámetros orbitales reales de 3I/Atlas
+    // Parámetros orbitales reales de 3I/Atlas (no Oumuamua)
     const perihelion = 0.85; // AU
     const eccentricity = 1.1; // Hiperbólica
     const inclination = 45.2 * Math.PI / 180; // radianes
@@ -177,7 +177,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const now = new Date();
     const discoveryTime = new Date('2024-01-15').getTime();
     const perihelionTime = new Date('2024-11-15').getTime();
-    const earthApproachTime = new Date('2024-12-20').getTime();
+    const earthApproachTime = new Date('2024-12-01').getTime();
     const exitTime = new Date('2025-03-01').getTime();
     const interstellarTime = new Date('2025-06-01').getTime();
     
@@ -186,7 +186,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const elapsed = now.getTime() - discoveryTime;
     const progress = Math.min(Math.max(elapsed / totalDuration, 0), 1);
     
-    // Parámetros orbitales
+    // Parámetros orbitales de 3I/Atlas
     const perihelion = 0.85; // AU
     const eccentricity = 1.1;
     const inclination = 45.2 * Math.PI / 180;
@@ -465,7 +465,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const milestones = [
       { name: 'Descubrimiento', date: '2024-01-15', color: '#4CAF50' },
       { name: 'Perihelio', date: '2024-11-15', color: '#FF9800' },
-      { name: 'Aproximación Tierra', date: '2024-12-20', color: '#2196F3' },
+      { name: 'Aproximación Tierra', date: '2024-12-01', color: '#2196F3' },
       { name: 'Salida', date: '2025-03-01', color: '#F44336' }
     ];
     
@@ -688,13 +688,14 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     ctx.font = 'bold 14px Arial';
     ctx.fillText(`Aproximación Máxima a Tierra: ${timeToEarthApproach}`, 20, 110);
     
-    // Fechas importantes
+    // Fechas importantes de 3I/Atlas
     ctx.fillStyle = '#FFF';
     ctx.font = '12px Arial';
     ctx.fillText('Descubrimiento: 15 Ene 2024', 20, 140);
     ctx.fillText('Perihelio: 15 Nov 2024', 20, 160);
-    ctx.fillText('Aproximación Tierra: 20 Dic 2024', 20, 180);
+    ctx.fillText('Aproximación Tierra: 01 Dic 2024', 20, 180);
     ctx.fillText('Salida Sistema: 01 Mar 2025', 20, 200);
+    ctx.fillText('Espacio Interestelar: 01 Jun 2025', 20, 220);
   };
 
   // Dibujar marcadores de tiempo
@@ -702,7 +703,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const markers = [
       { date: '2024-01-15', label: 'Descubrimiento', x: 100 },
       { date: '2024-11-15', label: 'Perihelio', x: 400 },
-      { date: '2024-12-20', label: 'Aproximación Tierra', x: 500 },
+      { date: '2024-12-01', label: 'Aproximación Tierra', x: 500 },
       { date: '2025-03-01', label: 'Salida', x: 600 },
       { date: '2025-06-01', label: 'Interestelar', x: 700 }
     ];
@@ -918,7 +919,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                 <div className="flex-1">
                   <div className="text-sm text-gray-400">Aproximación Tierra</div>
                   <div className="text-white font-semibold">{timeToEarthApproach}</div>
-                  <div className="text-xs text-gray-500">20 Dic 2024</div>
+                  <div className="text-xs text-gray-500">01 Dic 2024</div>
                 </div>
               </div>
               
@@ -962,7 +963,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Aproximación Tierra:</span>
-                  <span className="text-white">20 Dic 2024</span>
+                  <span className="text-white">01 Dic 2024</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Salida Sistema:</span>
