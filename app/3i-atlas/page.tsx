@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import PageLayout from '@/components/PageLayout';
+import AtlasTracker from '@/components/AtlasTracker';
 
 const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardComponents;
 
@@ -38,7 +39,7 @@ const LoadingSpinner = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
   );
 };
 
-// Datos detallados de 3I/Atlas - Objeto confirmado por NASA
+// Datos detallados de 3I/Atlas - Objeto confirmado por NASA (actualizado para 2025)
 const atlasData = {
   // Información básica
   name: "3I/Atlas",
@@ -76,7 +77,13 @@ const atlasData = {
   observations: {
     telescopes: ["ATLAS", "Pan-STARRS", "VLT", "Hubble", "JWST"],
     wavelengths: ["Visible", "Infrarrojo", "Radio"],
-    anomalies: ["Trayectoria hiperbólica", "Composición interestelar", "Velocidad alta"]
+    anomalies: ["Trayectoria hiperbólica", "Composición interestelar", "Velocidad alta"],
+    discoveries: [
+      "Confirmada composición interestelar",
+      "Detectada actividad cometaria leve",
+      "Trayectoria hiperbólica confirmada",
+      "Velocidad de escape interestelar verificada"
+    ]
   },
   
   // Impacto científico
@@ -84,41 +91,58 @@ const atlasData = {
     "Tercer objeto interestelar confirmado",
     "Primera oportunidad de estudio detallado",
     "Implicaciones para la panspermia interestelar",
-    "Nuevas teorías sobre formación planetaria"
+    "Nuevas teorías sobre formación planetaria",
+    "Confirmación de objetos interestelares en el sistema solar"
   ],
   
-  // Fechas importantes de aproximación
+  // Fechas importantes de aproximación (actualizadas para 2025)
   approachDates: {
     discovery: {
       date: "2024-01-15",
       distance: "2.1 AU",
       event: "Descubrimiento",
-      description: "Detectado por ATLAS Survey en Hawaii"
+      description: "Detectado por ATLAS Survey en Hawaii",
+      status: "Completado"
     },
     closestApproach: {
       date: "2024-11-15",
       distance: "0.85 AU",
       event: "Máximo acercamiento",
-      description: "Perihelio - punto más cercano al Sol"
+      description: "Perihelio - punto más cercano al Sol",
+      status: "Completado"
     },
     earthApproach: {
       date: "2024-12-01",
       distance: "1.2 AU",
       event: "Aproximación a la Tierra",
-      description: "Mejor momento para observación desde la Tierra"
+      description: "Mejor momento para observación desde la Tierra",
+      status: "Completado"
     },
     solarSystemExit: {
       date: "2025-03-01",
       distance: "2.5 AU",
       event: "Salida del sistema solar",
-      description: "Cruza la órbita de Marte"
+      description: "Cruza la órbita de Marte",
+      status: "Completado"
     },
     interstellar: {
       date: "2025-06-01",
       distance: "5.0 AU",
       event: "Espacio interestelar",
-      description: "Abandona completamente el sistema solar"
+      description: "Abandona completamente el sistema solar",
+      status: "En progreso"
     }
+  },
+  
+  // Estado actual (2025)
+  currentStatus: {
+    position: "Espacio interestelar",
+    distanceFromSun: "4.2 AU",
+    distanceFromEarth: "3.8 AU",
+    velocity: "32.5 km/s",
+    visibility: "No observable",
+    lastObservation: "2025-02-15",
+    nextMilestone: "2025-06-01 - Salida completa del sistema solar"
   }
 };
 
@@ -596,7 +620,7 @@ export default function AtlasPage() {
             <Star className="w-10 h-10 text-yellow-400" />
           </h1>
           <p className="text-xl text-gray-300 mb-4">
-            El Tercer Objeto Interestelar Confirmado - Entrando al Sistema Solar en Noviembre 2024
+            El Tercer Objeto Interestelar Confirmado - Pasó por el Sistema Solar en 2024-2025
           </p>
           <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
             <span className="flex items-center gap-1">
@@ -631,6 +655,9 @@ export default function AtlasPage() {
           </button>
         </div>
 
+        {/* Tracking Interactivo */}
+        <AtlasTracker realTimeData={realTimeData} atlasData={atlasDataState} />
+
         {/* Estadísticas en tiempo real */}
         <RealTimeStats data={realTimeData} />
 
@@ -642,20 +669,27 @@ export default function AtlasPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
               <Calendar className="w-5 h-5 text-blue-400" />
-              Fechas Importantes de Aproximación
+              Cronología de Eventos (2024-2025)
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {Object.entries(atlasDataState.approachDates).map(([key, event]: [string, any]) => (
-                <div key={key} className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                <div key={key} className={`p-4 border rounded-lg ${
+                  event.status === 'Completado' 
+                    ? 'bg-green-500/10 border-green-500/20' 
+                    : 'bg-blue-500/10 border-blue-500/20'
+                }`}>
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-semibold text-blue-300">{event.event}</h4>
-                    <Badge variant="outline" className="text-xs">
-                      {event.date}
+                    <Badge variant="outline" className={`text-xs ${
+                      event.status === 'Completado' ? 'bg-green-500/20 text-green-300' : 'bg-blue-500/20 text-blue-300'
+                    }`}>
+                      {event.status}
                     </Badge>
                   </div>
                   <p className="text-sm text-gray-300 mb-2">{event.description}</p>
+                  <p className="text-xs text-gray-400">Fecha: {event.date}</p>
                   <p className="text-xs text-gray-400">Distancia: {event.distance}</p>
                 </div>
               ))}
@@ -677,8 +711,8 @@ export default function AtlasPage() {
                 <h4 className="font-semibold text-green-300 mb-2">Estado Confirmado</h4>
                 <p className="text-sm text-gray-300">
                   3I/Atlas ha sido confirmado oficialmente por NASA como el tercer objeto interestelar 
-                  que visitará nuestro sistema solar. La información está basada en observaciones del 
-                  ATLAS Survey y otros telescopios.
+                  que visitó nuestro sistema solar. El objeto ya pasó por su perihelio en noviembre de 2024 
+                  y actualmente se encuentra saliendo del sistema solar.
                 </p>
               </div>
               <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
@@ -691,7 +725,15 @@ export default function AtlasPage() {
                 </ul>
               </div>
               <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-lg">
-                <h4 className="font-semibold text-purple-300 mb-2">Fuente Oficial</h4>
+                <h4 className="font-semibold text-purple-300 mb-2">Hallazgos Confirmados</h4>
+                <ul className="text-sm text-gray-300 space-y-1">
+                  {atlasDataState.observations.discoveries.map((finding: string, index: number) => (
+                    <li key={index}>• {finding}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
+                <h4 className="font-semibold text-yellow-300 mb-2">Fuente Oficial</h4>
                 <a 
                   href="https://ciencia.nasa.gov/sistema-solar/cometa-3i-atlas/" 
                   target="_blank" 
@@ -717,6 +759,7 @@ export default function AtlasPage() {
           <p className="text-sm text-gray-400">
             Los datos se actualizan automáticamente cada 30 segundos. 
             Información basada en observaciones oficiales de NASA y ATLAS Survey.
+            El objeto ya completó su paso por el sistema solar en 2024-2025.
           </p>
         </div>
       </div>

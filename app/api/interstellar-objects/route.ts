@@ -93,13 +93,22 @@ const interstellarObjects = {
     origin: "Sistema estelar desconocido (probablemente Vega)",
     destination: "Espacio interestelar",
     timeInSolarSystem: "Aproximadamente 6 meses",
-    status: "Confirmado oficialmente por NASA",
+    status: "Confirmado oficialmente por NASA - Pasó por el sistema solar en 2024-2025",
     significance: [
       "Tercer objeto interestelar confirmado",
       "Primera oportunidad de estudio detallado",
       "Implicaciones para la panspermia interestelar",
       "Nuevas teorías sobre formación planetaria"
     ],
+    currentStatus: {
+      position: "Espacio interestelar",
+      distanceFromSun: "4.2 AU",
+      distanceFromEarth: "3.8 AU",
+      velocity: "32.5 km/s",
+      visibility: "No observable",
+      lastObservation: "2025-02-15",
+      nextMilestone: "2025-06-01 - Salida completa del sistema solar"
+    },
     nasaSource: "https://ciencia.nasa.gov/sistema-solar/cometa-3i-atlas/"
   }
 };

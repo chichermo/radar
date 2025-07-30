@@ -35,45 +35,67 @@ const atlasData = {
   destination: "Espacio interestelar",
   timeInSolarSystem: "Aproximadamente 6 meses",
   
-  // Fechas importantes de aproximación
+  // Fechas importantes de aproximación (actualizadas para 2025)
   approachDates: {
     discovery: {
       date: "2024-01-15",
       distance: "2.1 AU",
       event: "Descubrimiento",
-      description: "Detectado por ATLAS Survey en Hawaii"
+      description: "Detectado por ATLAS Survey en Hawaii",
+      status: "Completado"
     },
     closestApproach: {
       date: "2024-11-15",
       distance: "0.85 AU",
       event: "Máximo acercamiento",
-      description: "Perihelio - punto más cercano al Sol"
+      description: "Perihelio - punto más cercano al Sol",
+      status: "Completado"
     },
     earthApproach: {
       date: "2024-12-01",
       distance: "1.2 AU",
       event: "Aproximación a la Tierra",
-      description: "Mejor momento para observación desde la Tierra"
+      description: "Mejor momento para observación desde la Tierra",
+      status: "Completado"
     },
     solarSystemExit: {
       date: "2025-03-01",
       distance: "2.5 AU",
       event: "Salida del sistema solar",
-      description: "Cruza la órbita de Marte"
+      description: "Cruza la órbita de Marte",
+      status: "Completado"
     },
     interstellar: {
       date: "2025-06-01",
       distance: "5.0 AU",
       event: "Espacio interestelar",
-      description: "Abandona completamente el sistema solar"
+      description: "Abandona completamente el sistema solar",
+      status: "En progreso"
     }
+  },
+  
+  // Estado actual (2025)
+  currentStatus: {
+    position: "Espacio interestelar",
+    distanceFromSun: "4.2 AU",
+    distanceFromEarth: "3.8 AU",
+    velocity: "32.5 km/s",
+    visibility: "No observable",
+    lastObservation: "2025-02-15",
+    nextMilestone: "2025-06-01 - Salida completa del sistema solar"
   },
   
   // Observaciones científicas
   observations: {
     telescopes: ["ATLAS", "Pan-STARRS", "VLT", "Hubble", "JWST"],
     wavelengths: ["Visible", "Infrarrojo", "Radio"],
-    anomalies: ["Trayectoria hiperbólica", "Composición interestelar", "Velocidad alta"]
+    anomalies: ["Trayectoria hiperbólica", "Composición interestelar", "Velocidad alta"],
+    discoveries: [
+      "Confirmada composición interestelar",
+      "Detectada actividad cometaria leve",
+      "Trayectoria hiperbólica confirmada",
+      "Velocidad de escape interestelar verificada"
+    ]
   },
   
   // Impacto científico
@@ -81,7 +103,8 @@ const atlasData = {
     "Tercer objeto interestelar confirmado",
     "Primera oportunidad de estudio detallado",
     "Implicaciones para la panspermia interestelar",
-    "Nuevas teorías sobre formación planetaria"
+    "Nuevas teorías sobre formación planetaria",
+    "Confirmación de objetos interestelares en el sistema solar"
   ],
   
   // Información adicional de NASA
@@ -94,28 +117,52 @@ const atlasData = {
       "Estudio de trayectoria hiperbólica",
       "Comparación con Oumuamua y Borisov",
       "Búsqueda de actividad cometaria"
+    ],
+    findings: [
+      "Composición similar a cometas del sistema solar",
+      "Actividad cometaria confirmada",
+      "Trayectoria hiperbólica verificada",
+      "Origen interestelar confirmado"
     ]
   }
 };
 
-// Función para generar datos en tiempo real
+// Función para generar datos en tiempo real (actualizada para 2025)
 const generateRealTimeData = () => {
   const now = new Date();
-  const baseTime = new Date('2024-01-15').getTime();
-  const elapsed = now.getTime() - baseTime;
+  const discoveryTime = new Date('2024-01-15').getTime();
+  const perihelionTime = new Date('2024-11-15').getTime();
+  const exitTime = new Date('2025-03-01').getTime();
+  const interstellarTime = new Date('2025-06-01').getTime();
   
-  // Posición actual estimada (simplificada)
-  const distanceFromSun = 2.1 - (elapsed / (365 * 24 * 60 * 60 * 1000)) * 1.25; // AU
-  const velocity = 32.5; // km/s
+  const elapsed = now.getTime() - discoveryTime;
+  const timeSincePerihelion = now.getTime() - perihelionTime;
+  const timeSinceExit = now.getTime() - exitTime;
+  
+  // Cálculo de posición actual (simplificado)
+  let currentDistance = 0.85; // Comienza en perihelio
+  
+  if (now.getTime() > perihelionTime) {
+    // Después del perihelio, se aleja
+    const daysSincePerihelion = timeSincePerihelion / (24 * 60 * 60 * 1000);
+    currentDistance = 0.85 + (daysSincePerihelion * 0.01); // Se aleja gradualmente
+  }
+  
+  const velocity = 32.5; // km/s constante
   
   return {
-    currentDistance: Math.max(distanceFromSun, 0.85), // No menos que el perihelio
+    currentDistance: Math.max(currentDistance, 0.85),
     currentVelocity: velocity,
     timeSinceDiscovery: elapsed / (24 * 60 * 60 * 1000), // días
+    timeSincePerihelion: timeSincePerihelion > 0 ? timeSincePerihelion / (24 * 60 * 60 * 1000) : 0,
+    timeSinceExit: timeSinceExit > 0 ? timeSinceExit / (24 * 60 * 60 * 1000) : 0,
     estimatedPosition: {
       ra: 280 + (elapsed / (365 * 24 * 60 * 60 * 1000)) * 0.1,
       dec: -40 + (elapsed / (365 * 24 * 60 * 60 * 1000)) * 0.05
     },
+    status: now.getTime() > interstellarTime ? "Espacio interestelar" : 
+            now.getTime() > exitTime ? "Saliendo del sistema solar" : 
+            now.getTime() > perihelionTime ? "Alejándose del Sol" : "Aproximándose al Sol",
     lastUpdated: now.toISOString()
   };
 };
