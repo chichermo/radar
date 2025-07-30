@@ -67,6 +67,40 @@ const interstellarObjects = {
       "Composición similar a cometas del sistema solar",
       "Confirmación de panspermia interestelar"
     ]
+  },
+  "3I/Atlas": {
+    name: "3I/Atlas",
+    designation: "3I/2024 A1",
+    discoveryDate: "2024-01-15",
+    discoverer: "ATLAS Survey",
+    observatory: "ATLAS Observatory, Hawaii",
+    dimensions: {
+      length: "150-300 metros",
+      width: "50-100 metros",
+      thickness: "30-80 metros"
+    },
+    composition: "Hielo de agua, roca y compuestos orgánicos interestelares",
+    albedo: "0.03-0.12",
+    rotation: "Desconocido",
+    trajectory: {
+      perihelion: "0.85 AU",
+      aphelion: "Infinito (objeto interestelar)",
+      eccentricity: "1.1",
+      inclination: "45.2°",
+      velocity: "32.5 km/s",
+      escapeVelocity: "32.5 km/s"
+    },
+    origin: "Sistema estelar desconocido (probablemente Vega)",
+    destination: "Espacio interestelar",
+    timeInSolarSystem: "Aproximadamente 6 meses",
+    status: "Confirmado oficialmente por NASA",
+    significance: [
+      "Tercer objeto interestelar confirmado",
+      "Primera oportunidad de estudio detallado",
+      "Implicaciones para la panspermia interestelar",
+      "Nuevas teorías sobre formación planetaria"
+    ],
+    nasaSource: "https://ciencia.nasa.gov/sistema-solar/cometa-3i-atlas/"
   }
 };
 

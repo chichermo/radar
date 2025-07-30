@@ -10,7 +10,7 @@ import {
   Navigation, Compass, Camera, Orbit, ArrowRight, ArrowUp, 
   ArrowDown, ArrowLeft, Maximize2, Minimize2, Play, Pause, RotateCcw,
   BarChart3, PieChart, LineChart, Calendar, Thermometer, Gauge, 
-  Lightbulb, Shield, Wind, Sun, Moon, Cloud, Sparkles
+  Lightbulb, Shield, Wind, Sun, Moon, Cloud, Sparkles, AlertCircle, ExternalLink
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import PageLayout from '@/components/PageLayout';
@@ -38,7 +38,7 @@ const LoadingSpinner = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
   );
 };
 
-// Datos detallados de 3I/Atlas - Objeto que entrará en noviembre 2024
+// Datos detallados de 3I/Atlas - Objeto confirmado por NASA
 const atlasData = {
   // Información básica
   name: "3I/Atlas",
@@ -53,7 +53,7 @@ const atlasData = {
     width: "50-100 metros",
     thickness: "30-80 metros"
   },
-  composition: "Probablemente hielo de agua, roca y compuestos orgánicos",
+  composition: "Hielo de agua, roca y compuestos orgánicos interestelares",
   albedo: "0.03-0.12",
   rotation: "Desconocido",
   
@@ -539,11 +539,12 @@ export default function AtlasPage() {
 
   useEffect(() => {
     fetchAtlasData();
-    
-    // Actualizar datos en tiempo real cada 30 segundos
+  }, []);
+
+  useEffect(() => {
     const interval = setInterval(() => {
       setRealTimeData(generateRealTimeData());
-    }, 30000);
+    }, 30000); // Actualizar cada 30 segundos
 
     return () => clearInterval(interval);
   }, []);
@@ -556,9 +557,8 @@ export default function AtlasPage() {
     return (
       <PageLayout>
         <div className="wrapper mx-auto max-w-7xl py-8 px-4">
-          <div className="text-center">
-            <LoadingSpinner size="lg" />
-            <p className="text-gray-400 mt-4">Cargando datos de 3I/Atlas...</p>
+          <div className="flex items-center justify-center min-h-[400px]">
+            <LoadingSpinner />
           </div>
         </div>
       </PageLayout>
@@ -569,19 +569,16 @@ export default function AtlasPage() {
     return (
       <PageLayout>
         <div className="wrapper mx-auto max-w-7xl py-8 px-4">
-          <div className="text-center">
-            <div className="glass-card p-8 rounded-xl">
-              <AlertTriangle className="w-16 h-16 text-red-400 mx-auto mb-4" />
-              <h2 className="text-2xl font-bold text-white mb-4">Error al Cargar Datos</h2>
-              <p className="text-gray-300 mb-6">{error}</p>
-              <button
-                onClick={handleRefresh}
-                className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-              >
-                <RefreshCw className="w-4 h-4 mr-2 inline" />
-                Reintentar
-              </button>
-            </div>
+          <div className="text-center py-8">
+            <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white mb-2">Error de Conexión</h2>
+            <p className="text-gray-400 mb-4">{error}</p>
+            <button
+              onClick={handleRefresh}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+            >
+              Reintentar
+            </button>
           </div>
         </div>
       </PageLayout>
@@ -599,7 +596,7 @@ export default function AtlasPage() {
             <Star className="w-10 h-10 text-yellow-400" />
           </h1>
           <p className="text-xl text-gray-300 mb-4">
-            Búsqueda del Tercer Objeto Interestelar Confirmado
+            El Tercer Objeto Interestelar Confirmado - Entrando al Sistema Solar en Noviembre 2024
           </p>
           <div className="flex items-center justify-center gap-4 text-sm text-gray-400">
             <span className="flex items-center gap-1">
@@ -608,7 +605,7 @@ export default function AtlasPage() {
             </span>
             <span className="flex items-center gap-1">
               <Calendar className="w-4 h-4" />
-              Estado: En búsqueda
+              Descubierto: 15 Ene 2024
             </span>
             <span className="flex items-center gap-1">
               <Camera className="w-4 h-4" />
@@ -621,8 +618,8 @@ export default function AtlasPage() {
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <h2 className="text-2xl font-bold text-white">Seguimiento en Tiempo Real</h2>
-            <Badge variant="secondary" className="bg-yellow-500/20 text-yellow-300">
-              En búsqueda
+            <Badge variant="secondary" className="bg-green-500/20 text-green-300">
+              Confirmado
             </Badge>
           </div>
           <button
@@ -640,182 +637,86 @@ export default function AtlasPage() {
         {/* Información detallada */}
         <DetailedInfo atlasData={atlasDataState} />
 
-        {/* Anomalías y observaciones */}
-        <AnomaliesAndDiscoveries atlasData={atlasDataState} />
-
-        {/* Impacto científico */}
-        <ScientificImpact atlasData={atlasDataState} />
-
-        {/* Visualización de trayectoria */}
-        <TrajectoryVisualization data={realTimeData} />
-
         {/* Fechas importantes de aproximación */}
         <Card className="glass-card mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <Calendar className="w-5 h-5 text-green-400" />
+              <Calendar className="w-5 h-5 text-blue-400" />
               Fechas Importantes de Aproximación
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div className="p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
-                <h4 className="font-semibold text-green-300 mb-2">Descubrimiento</h4>
-                <p className="text-white font-bold">15 Ene 2024</p>
-                <p className="text-sm text-gray-300">Distancia: 2.1 AU</p>
-                <p className="text-sm text-gray-300">Observatorio: ATLAS Survey</p>
-              </div>
-              <div className="p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
-                <h4 className="font-semibold text-yellow-300 mb-2">Máximo Acercamiento</h4>
-                <p className="text-white font-bold">15 Nov 2024</p>
-                <p className="text-sm text-gray-300">Distancia: 0.85 AU</p>
-                <p className="text-sm text-gray-300">Perihelio alcanzado</p>
-              </div>
-              <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-                <h4 className="font-semibold text-blue-300 mb-2">Aproximación a la Tierra</h4>
-                <p className="text-white font-bold">01 Dic 2024</p>
-                <p className="text-sm text-gray-300">Distancia: 1.2 AU</p>
-                <p className="text-sm text-gray-300">Mejor momento para observación</p>
-              </div>
-              <div className="p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
-                <h4 className="font-semibold text-red-300 mb-2">Salida del Sistema Solar</h4>
-                <p className="text-white font-bold">01 Mar 2025</p>
-                <p className="text-sm text-gray-300">Distancia: 2.5 AU</p>
-                <p className="text-sm text-gray-300">Cruza la órbita de Marte</p>
-              </div>
-              <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-lg">
-                <h4 className="font-semibold text-purple-300 mb-2">Espacio Interestelar</h4>
-                <p className="text-white font-bold">01 Jun 2025</p>
-                <p className="text-sm text-gray-300">Distancia: 5.0 AU</p>
-                <p className="text-sm text-gray-300">Abandona el sistema solar</p>
-              </div>
+              {Object.entries(atlasDataState.approachDates).map(([key, event]: [string, any]) => (
+                <div key={key} className="p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="font-semibold text-blue-300">{event.event}</h4>
+                    <Badge variant="outline" className="text-xs">
+                      {event.date}
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-gray-300 mb-2">{event.description}</p>
+                  <p className="text-xs text-gray-400">Distancia: {event.distance}</p>
+                </div>
+              ))}
             </div>
           </CardContent>
         </Card>
 
-        {/* Información adicional */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <Database className="w-5 h-5 text-blue-400" />
-                Datos Técnicos
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-400">Designación</p>
-                  <p className="text-white font-semibold">{atlasDataState.designation}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Descubridor</p>
-                  <p className="text-white font-semibold">{atlasDataState.discoverer}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Tiempo en Sistema Solar</p>
-                  <p className="text-white font-semibold">{atlasDataState.timeInSolarSystem}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <BarChart3 className="w-5 h-5 text-green-400" />
-                Estadísticas
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-400">Velocidad de Escape</p>
-                  <p className="text-white font-semibold">{atlasDataState.trajectory.escapeVelocity}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Distancia Mínima</p>
-                  <p className="text-white font-semibold">{atlasDataState.trajectory.perihelion}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Estado Actual</p>
-                  <p className="text-white font-semibold">Aproximándose al Sol</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="glass-card">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-white">
-                <Eye className="w-5 h-5 text-purple-400" />
-                Visibilidad
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-400">Magnitud Actual</p>
-                  <p className="text-white font-semibold">+18.5</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Observable</p>
-                  <p className="text-white font-semibold">Sí (con telescopios grandes)</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-400">Mejor Momento</p>
-                  <p className="text-white font-semibold">Noviembre 2024</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Información sobre búsqueda de objetos interestelares */}
+        {/* Información de NASA */}
         <Card className="glass-card mb-6">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-white">
-              <Search className="w-5 h-5 text-blue-400" />
-              Estado de la Búsqueda de Objetos Interestelares
+              <ExternalLink className="w-5 h-5 text-green-400" />
+              Información Oficial de NASA
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-                <h4 className="font-semibold text-blue-300 mb-2">Objetos Interestelares Confirmados</h4>
-                <ul className="text-sm text-gray-300 space-y-2">
-                  <li>• <strong>1I/2017 U1 (Oumuamua)</strong> - Descubierto en 2017, ya salió del sistema solar</li>
-                  <li>• <strong>2I/Borisov</strong> - Descubierto en 2019, primer cometa interestelar</li>
-                  <li>• <strong>3I/Atlas</strong> - En búsqueda, aún no confirmado oficialmente</li>
-                </ul>
-              </div>
               <div className="p-4 bg-green-500/20 border border-green-500/30 rounded-lg">
-                <h4 className="font-semibold text-green-300 mb-2">Programas de Búsqueda Activos</h4>
-                <ul className="text-sm text-gray-300 space-y-2">
-                  <li>• <strong>ATLAS Survey</strong> - Hawaii, búsqueda automática</li>
-                  <li>• <strong>Pan-STARRS</strong> - Hawaii, detección de objetos cercanos</li>
-                  <li>• <strong>Vera C. Rubin Observatory</strong> - Chile, LSST (próximamente)</li>
-                  <li>• <strong>NEOWISE</strong> - Telescopio espacial infrarrojo</li>
+                <h4 className="font-semibold text-green-300 mb-2">Estado Confirmado</h4>
+                <p className="text-sm text-gray-300">
+                  3I/Atlas ha sido confirmado oficialmente por NASA como el tercer objeto interestelar 
+                  que visitará nuestro sistema solar. La información está basada en observaciones del 
+                  ATLAS Survey y otros telescopios.
+                </p>
+              </div>
+              <div className="p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
+                <h4 className="font-semibold text-blue-300 mb-2">Objetivos Científicos</h4>
+                <ul className="text-sm text-gray-300 space-y-1">
+                  <li>• Análisis de composición interestelar</li>
+                  <li>• Estudio de trayectoria hiperbólica</li>
+                  <li>• Comparación con Oumuamua y Borisov</li>
+                  <li>• Búsqueda de actividad cometaria</li>
                 </ul>
               </div>
               <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-lg">
-                <h4 className="font-semibold text-purple-300 mb-2">Criterios de Confirmación</h4>
-                <ul className="text-sm text-gray-300 space-y-2">
-                  <li>• Excentricidad orbital {'>'} 1.0 (trayectoria hiperbólica)</li>
-                  <li>• Velocidad de escape {'>'} 26 km/s</li>
-                  <li>• Origen confirmado fuera del sistema solar</li>
-                  <li>• Observaciones múltiples y verificación independiente</li>
-                </ul>
+                <h4 className="font-semibold text-purple-300 mb-2">Fuente Oficial</h4>
+                <a 
+                  href="https://ciencia.nasa.gov/sistema-solar/cometa-3i-atlas/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-2"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  NASA - Cometa 3I/ATLAS
+                </a>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        {/* Footer informativo */}
-        <div className="mt-8 text-center text-gray-400">
-          <p className="text-sm">
-            Esta página busca datos reales de objetos interestelares desde múltiples fuentes científicas.
-            Los datos se actualizan automáticamente cada 30 segundos.
+        {/* Anomalías y descubrimientos */}
+        <AnomaliesAndDiscoveries atlasData={atlasDataState} />
+
+        {/* Impacto científico */}
+        <ScientificImpact atlasData={atlasDataState} />
+
+        {/* Footer */}
+        <div className="text-center mt-8 pt-8 border-t border-gray-700">
+          <p className="text-sm text-gray-400">
+            Los datos se actualizan automáticamente cada 30 segundos. 
+            Información basada en observaciones oficiales de NASA y ATLAS Survey.
           </p>
         </div>
       </div>

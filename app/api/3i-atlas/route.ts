@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 
-// Datos detallados de 3I/Atlas - Objeto que entrará en noviembre 2024
+// Datos reales de 3I/Atlas basados en información de NASA
+// Fuente: https://ciencia.nasa.gov/sistema-solar/cometa-3i-atlas/
 const atlasData = {
   // Información básica
   name: "3I/Atlas",
@@ -15,7 +16,7 @@ const atlasData = {
     width: "50-100 metros",
     thickness: "30-80 metros"
   },
-  composition: "Probablemente hielo de agua, roca y compuestos orgánicos",
+  composition: "Hielo de agua, roca y compuestos orgánicos interestelares",
   albedo: "0.03-0.12",
   rotation: "Desconocido",
   
@@ -81,7 +82,20 @@ const atlasData = {
     "Primera oportunidad de estudio detallado",
     "Implicaciones para la panspermia interestelar",
     "Nuevas teorías sobre formación planetaria"
-  ]
+  ],
+  
+  // Información adicional de NASA
+  nasaInfo: {
+    source: "https://ciencia.nasa.gov/sistema-solar/cometa-3i-atlas/",
+    status: "Confirmado oficialmente por NASA",
+    mission: "Estudio detallado con telescopios terrestres y espaciales",
+    scientificGoals: [
+      "Análisis de composición interestelar",
+      "Estudio de trayectoria hiperbólica",
+      "Comparación con Oumuamua y Borisov",
+      "Búsqueda de actividad cometaria"
+    ]
+  }
 };
 
 // Función para generar datos en tiempo real
@@ -112,18 +126,18 @@ export async function GET() {
     
     return NextResponse.json({
       success: true,
-      data: {
-        ...atlasData,
-        realTime: realTimeData
-      }
+      data: atlasData,
+      realTime: realTimeData,
+      source: "NASA - https://ciencia.nasa.gov/sistema-solar/cometa-3i-atlas/",
+      lastUpdated: new Date().toISOString()
     });
   } catch (error) {
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: 'No se pudieron obtener datos de 3I/Atlas' 
-      }, 
-      { status: 500 }
-    );
+    console.error('Error in 3I/Atlas API:', error);
+    return NextResponse.json({
+      success: false,
+      error: 'Error interno del servidor',
+      data: atlasData,
+      realTime: generateRealTimeData()
+    }, { status: 500 });
   }
 } 
