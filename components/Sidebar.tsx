@@ -294,6 +294,13 @@ const useMenuCategories = () => {
           badge: 'NASA'
         },
         {
+          title: 'Hubble',
+          href: '/hubble',
+          icon: Camera,
+          description: 'Telescopio Espacial Hubble',
+          badge: 'NASA'
+        },
+        {
           title: t('navigation.vera_rubin'),
           href: '/vera-rubin',
           icon: Camera,
