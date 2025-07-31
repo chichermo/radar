@@ -92,7 +92,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     }
   };
 
-  // Actualizar datos dinámicos
+  // Actualizar datos dinámicos con protección contra hidratación
   useEffect(() => {
     const updateDynamicData = () => {
       setCurrentDateTime(new Date());
