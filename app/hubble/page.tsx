@@ -60,7 +60,7 @@ export default function HubblePage() {
           progress: 75,
           coordinates: "RA: 00h 59m 05s, Dec: -72° 10' 28\"",
           description: "Cúmulo estelar en la Pequeña Nube de Magallanes",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/03/hubble-ngc346.jpg"
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2021/12/hubble_ngc346.jpg"
         });
       } else {
         setCurrentObservation(realData.currentObservation);
