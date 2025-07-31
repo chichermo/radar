@@ -107,14 +107,11 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     setTimeToEarthApproach('Calculando...');
     setDynamicStatus('Inicializando...');
     
-    // Actualizar después de la hidratación
-    const timer = setTimeout(() => {
-      updateDynamicData();
-    }, 100);
-
+    // Actualizar inmediatamente y luego cada segundo
+    updateDynamicData();
+    
     const interval = setInterval(updateDynamicData, 1000);
     return () => {
-      clearTimeout(timer);
       clearInterval(interval);
     };
   }, []);
@@ -498,32 +495,36 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
 
   // Dibujar textos dinámicos sobre el canvas
   const drawDynamicTexts = (ctx: CanvasRenderingContext2D) => {
+    // Fondo semitransparente para los textos
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(15, 15, 250, 160);
+    
     // Fecha y hora actual
     ctx.fillStyle = '#FFF';
     ctx.font = 'bold 14px Arial';
-    ctx.fillText(`Fecha: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}`, 20, 30);
-    ctx.fillText(`Hora: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}`, 20, 50);
+    ctx.fillText(`Fecha: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}`, 20, 35);
+    ctx.fillText(`Hora: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}`, 20, 55);
     
     // Progreso del tracking
     ctx.fillStyle = '#FFD700';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText(`Progreso: ${progressPercentage > 0 ? progressPercentage.toFixed(1) : '0.0'}%`, 20, 80);
+    ctx.fillText(`Progreso: ${progressPercentage > 0 ? progressPercentage.toFixed(1) : '0.0'}%`, 20, 85);
     
     // Estado dinámico
     ctx.fillStyle = '#00FF88';
     ctx.font = '12px Arial';
-    ctx.fillText(`Estado: ${dynamicStatus}`, 20, 100);
+    ctx.fillText(`Estado: ${dynamicStatus}`, 20, 105);
     
     // Tiempo hasta aproximación a la Tierra
     ctx.fillStyle = '#FF6B6B';
     ctx.font = 'bold 14px Arial';
-    ctx.fillText(`Aproximación Tierra: ${timeToEarthApproach}`, 20, 130);
+    ctx.fillText(`Aproximación Tierra: ${timeToEarthApproach}`, 20, 135);
     
     // Barra de progreso visual
     const barWidth = 200;
     const barHeight = 8;
     const barX = 20;
-    const barY = 150;
+    const barY = 155;
     
     // Fondo de la barra
     ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
@@ -727,43 +728,47 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
 
   // Dibujar textos dinámicos en vista detallada
   const drawDetailedDynamicTexts = (ctx: CanvasRenderingContext2D) => {
+    // Fondo semitransparente para los textos
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+    ctx.fillRect(15, 15, 300, 320);
+    
     // Información de tiempo real
     ctx.fillStyle = '#FFF';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText(`Tiempo Real: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleString('es-ES') : 'Cargando...'}`, 20, 30);
+    ctx.fillText(`Tiempo Real: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleString('es-ES') : 'Cargando...'}`, 20, 35);
     
     // Progreso detallado
     ctx.fillStyle = '#FFD700';
     ctx.font = '14px Arial';
-    ctx.fillText(`Progreso del Tracking: ${progressPercentage > 0 ? progressPercentage.toFixed(1) : '0.0'}%`, 20, 60);
+    ctx.fillText(`Progreso del Tracking: ${progressPercentage > 0 ? progressPercentage.toFixed(1) : '0.0'}%`, 20, 65);
     
     // Estado actual
     ctx.fillStyle = '#00FF88';
     ctx.font = '12px Arial';
-    ctx.fillText(`Estado: ${dynamicStatus}`, 20, 85);
+    ctx.fillText(`Estado: ${dynamicStatus}`, 20, 90);
     
     // Información actual de 3I/Atlas
     const atlasPos = calculateAtlasPosition();
     ctx.fillStyle = '#FF6B6B';
     ctx.font = 'bold 14px Arial';
-    ctx.fillText(`Distancia Actual: ${atlasPos.distance ? atlasPos.distance.toFixed(2) : '0.00'} AU`, 20, 110);
-    ctx.fillText(`Velocidad Actual: ${atlasPos.velocity ? atlasPos.velocity.toFixed(1) : '0.0'} km/s`, 20, 130);
+    ctx.fillText(`Distancia Actual: ${atlasPos.distance ? atlasPos.distance.toFixed(2) : '0.00'} AU`, 20, 115);
+    ctx.fillText(`Velocidad Actual: ${atlasPos.velocity ? atlasPos.velocity.toFixed(1) : '0.0'} km/s`, 20, 135);
     
     // Fechas importantes de 3I/Atlas
     ctx.fillStyle = '#FFF';
     ctx.font = '12px Arial';
-    ctx.fillText('Descubrimiento: 15 Jul 2025', 20, 160);
-    ctx.fillText('Perihelio: 15 Nov 2025', 20, 180);
-    ctx.fillText('Aproximación Tierra: 01 Dic 2025', 20, 200);
-    ctx.fillText('Salida Sistema: 01 Mar 2026', 20, 220);
-    ctx.fillText('Espacio Interestelar: 01 Jun 2026', 20, 240);
+    ctx.fillText('Descubrimiento: 15 Jul 2025', 20, 165);
+    ctx.fillText('Perihelio: 15 Nov 2025', 20, 185);
+    ctx.fillText('Aproximación Tierra: 01 Dic 2025', 20, 205);
+    ctx.fillText('Salida Sistema: 01 Mar 2026', 20, 225);
+    ctx.fillText('Espacio Interestelar: 01 Jun 2026', 20, 245);
     
     // Información adicional
     ctx.fillStyle = '#FFD700';
     ctx.font = '12px Arial';
-    ctx.fillText('Objeto: 3I/Atlas (3I/2024 A1)', 20, 270);
-    ctx.fillText('Tipo: Cometa Interestelar', 20, 290);
-    ctx.fillText('Trayectoria: Hiperbólica', 20, 310);
+    ctx.fillText('Objeto: 3I/Atlas (3I/2024 A1)', 20, 275);
+    ctx.fillText('Tipo: Cometa Interestelar', 20, 295);
+    ctx.fillText('Trayectoria: Hiperbólica', 20, 315);
   };
 
   // Función de animación mejorada
@@ -812,6 +817,24 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
       animate();
     }
   }, [currentDateTime]);
+
+  // Forzar actualización inicial en producción
+  useEffect(() => {
+    const forceInitialUpdate = () => {
+      if (!currentDateTime || !(currentDateTime instanceof Date)) {
+        setCurrentDateTime(new Date());
+        setProgressPercentage(calculateProgress());
+        setTimeToEarthApproach(calculateTimeToEarthApproach());
+        setDynamicStatus(generateDynamicStatus());
+      }
+    };
+
+    // Ejecutar inmediatamente y después de un breve delay
+    forceInitialUpdate();
+    const timer = setTimeout(forceInitialUpdate, 500);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="space-y-6">

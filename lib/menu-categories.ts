@@ -58,6 +58,7 @@ export const useMenuCategories = (): MenuCategory[] => {
         { title: 'Sondas Interestelares', href: '/interstellar-probes', icon: Rocket, description: 'Misiones interestelares', badge: '' },
         { title: 'Cohetes Reutilizables', href: '/reusable-rockets', icon: RefreshCw, description: 'Tecnología de cohetes', badge: '' },
         { title: 'JWST', href: '/jwst', icon: Eye, description: 'Telescopio espacial James Webb', badge: '' },
+        { title: 'Hubble', href: '/hubble', icon: Camera, description: 'Telescopio espacial Hubble', badge: '' },
         { title: 'Vera Rubin', href: '/vera-rubin', icon: Camera, description: 'Observatorio Vera Rubin', badge: '' }
       ]
     },
