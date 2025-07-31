@@ -183,6 +183,25 @@ export default function MachineLearningPage() {
   const [activeTab, setActiveTab] = useState('models');
   const [selectedModel, setSelectedModel] = useState<string | null>(null);
   const [isTraining, setIsTraining] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  const formatDate = (dateString: string) => {
+    if (!isClient) return dateString; // Return original string for SSR
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    } catch {
+      return dateString;
+    }
+  };
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -274,7 +293,7 @@ export default function MachineLearningPage() {
                   </div>
                   
                   <div className="text-gray-400 text-xs">
-                    Última actualización: {new Date(model.lastUpdated).toLocaleDateString()}
+                    Última actualización: {formatDate(model.lastUpdated)}
                   </div>
                   
                   <div className="flex space-x-2">
@@ -349,7 +368,7 @@ export default function MachineLearningPage() {
                     <div>
                       <div className="text-gray-400 text-sm">Fecha Predicha</div>
                       <div className="text-white font-semibold">
-                        {new Date(prediction.predictedDate).toLocaleDateString()}
+                        {formatDate(prediction.predictedDate)}
                       </div>
                     </div>
                   </div>

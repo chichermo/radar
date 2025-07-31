@@ -123,12 +123,27 @@ export default function ResourceDownloader({ resources, title = "Recursos de Car
   const handleDownload = async (resource: Resource) => {
     setDownloading(resource.id);
     try {
-      // Descargar el archivo usando fetch y blob
-      const response = await fetch(resource.url);
-      if (!response.ok) {
+      // Si es una URL externa (https://), abrir en nueva pestaña en lugar de descargar
+      if (resource.url.startsWith('https://') || resource.url.startsWith('http://')) {
+        const userConfirmed = confirm(
+          `¿Deseas abrir "${resource.title}" en una nueva pestaña?\n\n` +
+          `Esto te llevará al sitio web donde puedes descargar o leer el recurso.`
+        );
+        
+        if (userConfirmed) {
+          window.open(resource.url, '_blank');
+          setDownloaded(prev => new Set(Array.from(prev).concat([resource.id])));
+        }
+        return;
+      }
+      
+      // Para recursos locales, intentar descarga directa
+      const downloadResponse = await fetch(resource.url);
+      if (!downloadResponse.ok) {
         throw new Error('No se pudo descargar el recurso.');
       }
-      const blob = await response.blob();
+      
+      const blob = await downloadResponse.blob();
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
@@ -139,10 +154,42 @@ export default function ResourceDownloader({ resources, title = "Recursos de Car
       window.URL.revokeObjectURL(url);
       setDownloaded(prev => new Set(Array.from(prev).concat([resource.id])));
     } catch (error) {
-      alert('Error al descargar el recurso: ' + (error as Error).message);
       console.error('Error downloading resource:', error);
+      handleAlternativeAction(resource);
     } finally {
       setDownloading(null);
+    }
+  };
+
+  const handleAlternativeAction = (resource: Resource) => {
+    // Definir enlaces alternativos para los recursos que no existen físicamente
+    const alternativeLinks: { [key: string]: string } = {
+      'los-dragones-del-eden.pdf': 'https://www.google.com/search?q="Los+Dragones+del+Edén"+Carl+Sagan+PDF',
+      'contacto-novela.pdf': 'https://www.google.com/search?q="Contacto"+Carl+Sagan+novela+PDF',
+      'pale-blue-dot.pdf': 'https://www.google.com/search?q="Un+Punto+Azul+Pálido"+Carl+Sagan+PDF',
+      'el-cerebro-de-broca.pdf': 'https://www.google.com/search?q="El+Cerebro+de+Broca"+Carl+Sagan+PDF',
+      'el-mundo-y-sus-demonios.pdf': 'https://www.google.com/search?q="El+Mundo+y+sus+Demonios"+Carl+Sagan+PDF',
+      'cosmos-carl-sagan.pdf': 'https://www.google.com/search?q="Cosmos"+Carl+Sagan+libro+PDF'
+    };
+
+    const fileName = resource.url.split('/').pop() || '';
+    const alternativeUrl = alternativeLinks[fileName];
+
+    if (alternativeUrl) {
+      const userConfirmed = confirm(
+        `El archivo "${resource.title}" no está disponible para descarga directa.\n\n` +
+        `¿Te gustaría buscar este libro en línea? Se abrirá una búsqueda en tu navegador.`
+      );
+      
+      if (userConfirmed) {
+        window.open(alternativeUrl, '_blank');
+        setDownloaded(prev => new Set(Array.from(prev).concat([resource.id])));
+      }
+    } else {
+      alert(
+        `Lo sentimos, "${resource.title}" no está disponible para descarga en este momento.\n\n` +
+        `Te recomendamos buscar este contenido en bibliotecas digitales o librerías en línea.`
+      );
     }
   };
 
@@ -305,12 +352,17 @@ export default function ResourceDownloader({ resources, title = "Recursos de Car
                         {downloading === resource.id ? (
                           <div className="flex items-center gap-2">
                             <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                            Descargando...
+                            Procesando...
                           </div>
                         ) : downloaded.has(resource.id) ? (
                           <div className="flex items-center gap-2">
                             <CheckCircle className="w-4 h-4" />
-                            Descargado
+                            Visitado
+                          </div>
+                        ) : resource.url.startsWith('https://') || resource.url.startsWith('http://') ? (
+                          <div className="flex items-center gap-2">
+                            <ExternalLink className="w-4 h-4" />
+                            Abrir Recurso
                           </div>
                         ) : (
                           <div className="flex items-center gap-2">
