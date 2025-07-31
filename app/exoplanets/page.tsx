@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Circle, Star, Globe, Search, Filter, Info, TrendingUp, Eye, Database, Target, Zap, Activity, RefreshCw, Download } from 'lucide-react';
 import { useI18n } from '@/lib/i18n';
 import PageLayout from '@/components/PageLayout';
+import ExoplanetAnalytics from '@/components/ExoplanetAnalytics';
 
 const { Card, CardContent, CardDescription, CardHeader, CardTitle } = CardComponents;
 
@@ -353,6 +354,11 @@ export default function ExoplanetsPage() {
       <div className="header text-center mb-8">
         <h1 className="title gradient-text">Exoplanetas</h1>
         <p className="subtitle max-w-2xl mx-auto">Explora el catálogo de exoplanetas confirmados y candidatos, filtra por método de descubrimiento y ordena por habitabilidad, año, masa, radio y más.</p>
+      </div>
+
+      {/* Componente de análisis */}
+      <div className="mb-8">
+        <ExoplanetAnalytics />
       </div>
 
       {/* Filtros y catálogo */}
