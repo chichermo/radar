@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { RefreshCw, Download, Share2, Satellite, AlertTriangle, CheckCircle, Cpu, Sun, Bell, BarChart3, Sparkles, Star, Info, ArrowRight, Play, BookOpen, Globe, Rocket, Users, TrendingUp, Zap, Shield, Eye, Brain, Camera, Activity, MapPin, Clock, Database, Calculator, Settings, HelpCircle, ChevronRight, ChevronDown, Menu, X, Search, Filter, Grid, List, Heart, Bookmark, Share, Download as DownloadIcon, Eye as EyeIcon, Star as StarIcon, Globe as GlobeIcon, Rocket as RocketIcon, Users as UsersIcon, TrendingUp as TrendingUpIcon, Zap as ZapIcon, Shield as ShieldIcon, Eye as EyeIcon2, Brain as BrainIcon, Camera as CameraIcon, Activity as ActivityIcon, MapPin as MapPinIcon, Clock as ClockIcon, Database as DatabaseIcon, Calculator as CalculatorIcon, Settings as SettingsIcon, HelpCircle as HelpCircleIcon } from 'lucide-react';
 import styles from './page.module.css';
 import { useMenuCategories } from '@/lib/menu-categories';
+import DashboardAlertsWidget from '@/components/DashboardAlertsWidget';
 
 // Componente de tiempo seguro
 function SafeTimeDisplay() {
@@ -211,6 +212,40 @@ export default function Dashboard() {
 
       {/* Estadísticas rápidas */}
       <QuickStats />
+
+      {/* Grid con stats y alertas */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+        <div className="lg:col-span-2">
+          <DashboardAlertsWidget />
+        </div>
+        <div className="lg:col-span-1">
+          {/* Widget adicional de métricas rápidas */}
+          <div className="glass-card p-6">
+            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-green-400" />
+              Estado General
+            </h3>
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">APIs Activas</span>
+                <span className="text-green-400 font-semibold">24/26</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">Uptime</span>
+                <span className="text-blue-400 font-semibold">99.8%</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">Datos en Tiempo Real</span>
+                <span className="text-yellow-400 font-semibold">18 fuentes</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-300">Última Sincronización</span>
+                <span className="text-purple-400 font-semibold">2m ago</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Controles de búsqueda y vista */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
