@@ -564,6 +564,17 @@ const NASAOfficialInfo = () => {
 
 // Componente de alertas y notificaciones
 const AtlasAlerts = ({ realTimeData }: { realTimeData: any }) => {
+  const [currentTime, setCurrentTime] = useState('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleString('es-ES'));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
   const getAlertStatus = () => {
     if (realTimeData.timeToPerihelion < 30) {
       return {
@@ -616,7 +627,7 @@ const AtlasAlerts = ({ realTimeData }: { realTimeData: any }) => {
               {alert.message}
             </p>
             <p className="text-sm text-gray-400 mt-1">
-              Última actualización: {new Date().toLocaleString('es-ES')}
+              Última actualización: {currentTime || 'Cargando...'}
             </p>
           </div>
         </div>
@@ -811,11 +822,29 @@ export default function AtlasPage() {
       </div>
 
       {/* Footer Informativo */}
-      <div className="text-center py-6 border-t border-gray-700">
-        <p className="text-gray-400 text-sm">
-          Datos actualizados en tiempo real • Fuente: NASA JPL • Última actualización: {new Date().toLocaleString('es-ES')}
-        </p>
-      </div>
+      <ClientFooter />
     </PageLayout>
   );
-} 
+}
+
+// Componente cliente para el footer que evita problemas de hidratación
+const ClientFooter = () => {
+  const [currentTime, setCurrentTime] = useState('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      setCurrentTime(new Date().toLocaleString('es-ES'));
+    };
+    updateTime();
+    const interval = setInterval(updateTime, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <div className="text-center py-6 border-t border-gray-700">
+      <p className="text-gray-400 text-sm">
+        Datos actualizados en tiempo real • Fuente: NASA JPL • Última actualización: {currentTime || 'Cargando...'}
+      </p>
+    </div>
+  );
+}; 
