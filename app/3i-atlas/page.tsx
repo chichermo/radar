@@ -644,11 +644,16 @@ export default function AtlasPage() {
       if (atlasResponse.ok) {
         const atlasData = await atlasResponse.json();
         setAtlasDataState(prev => ({ ...prev, ...atlasData.data }));
+      } else {
+        console.error('Error fetching Atlas data:', atlasResponse.status);
+        setError('Error al cargar datos de 3I/Atlas');
       }
 
       if (interstellarResponse.ok) {
         const interstellarData = await interstellarResponse.json();
         // Actualizar con datos de objetos interestelares confirmados
+      } else {
+        console.error('Error fetching interstellar data:', interstellarResponse.status);
       }
     } catch (err) {
       console.error('Error fetching Atlas data:', err);
