@@ -60,7 +60,7 @@ export default function JWSTPage() {
           progress: 85,
           coordinates: "RA: 00h 59m 05s, Dec: -72° 10' 28\"",
           description: "Cúmulo estelar en la Pequeña Nube de Magallanes - Observación en infrarrojo cercano",
-          imageUrl: "https://www.nasa.gov/wp-content/uploads/2023/01/webb_first_images_deep_field_smalls.jpg",
+          imageUrl: "https://cdn.pixabay.com/photo/2016/10/20/18/35/galaxy-1756274_960_720.jpg",
           scienceTheme: "Star Lifecycle"
         });
       } else {
