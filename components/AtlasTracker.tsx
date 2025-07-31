@@ -38,13 +38,13 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   const [timeToEarthApproach, setTimeToEarthApproach] = useState('');
   const [dynamicStatus, setDynamicStatus] = useState('');
 
-  // Fechas importantes del tracking
+  // Fechas importantes del tracking - CORREGIDAS para 3I/Atlas
   const trackingDates = {
-    discovery: new Date('2024-01-15'),
-    perihelion: new Date('2024-11-15'),
-    earthApproach: new Date('2024-12-01'), // Máxima aproximación a la Tierra
-    exit: new Date('2025-03-01'),
-    interstellar: new Date('2025-06-01')
+    discovery: new Date('2025-07-15'), // Detección en julio 2025
+    perihelion: new Date('2025-11-15'), // Perihelio en noviembre 2025
+    earthApproach: new Date('2025-12-01'), // Aproximación a la Tierra en diciembre 2025
+    exit: new Date('2026-03-01'), // Salida del sistema solar en marzo 2026
+    interstellar: new Date('2026-06-01') // Espacio interestelar en junio 2026
   };
 
   // Calcular progreso del tracking
@@ -119,11 +119,11 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   // Cálculo mejorado de trayectoria hiperbólica
   const calculateHyperbolicTrajectory = () => {
     const points = [];
-    const discoveryDate = new Date('2024-01-15');
-    const perihelionDate = new Date('2024-11-15');
-    const earthApproachDate = new Date('2024-12-01');
-    const exitDate = new Date('2025-03-01');
-    const interstellarDate = new Date('2025-06-01');
+    const discoveryDate = new Date('2025-07-15');
+    const perihelionDate = new Date('2025-11-15');
+    const earthApproachDate = new Date('2025-12-01');
+    const exitDate = new Date('2026-03-01');
+    const interstellarDate = new Date('2026-06-01');
     
     // Parámetros orbitales reales de 3I/Atlas (no Oumuamua)
     const perihelion = 0.85; // AU
@@ -175,11 +175,11 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   // Calcular posición actual de 3I/Atlas con mayor precisión
   const calculateAtlasPosition = () => {
     const now = new Date();
-    const discoveryTime = new Date('2024-01-15').getTime();
-    const perihelionTime = new Date('2024-11-15').getTime();
-    const earthApproachTime = new Date('2024-12-01').getTime();
-    const exitTime = new Date('2025-03-01').getTime();
-    const interstellarTime = new Date('2025-06-01').getTime();
+    const discoveryTime = new Date('2025-07-15').getTime();
+    const perihelionTime = new Date('2025-11-15').getTime();
+    const earthApproachTime = new Date('2025-12-01').getTime();
+    const exitTime = new Date('2026-03-01').getTime();
+    const interstellarTime = new Date('2026-06-01').getTime();
     
     // Calcular progreso del tiempo
     const totalDuration = interstellarTime - discoveryTime;
@@ -463,10 +463,10 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   // Dibujar hitos de la trayectoria
   const drawTrajectoryMilestones = (ctx: CanvasRenderingContext2D, points: any[]) => {
     const milestones = [
-      { name: 'Descubrimiento', date: '2024-01-15', color: '#4CAF50' },
-      { name: 'Perihelio', date: '2024-11-15', color: '#FF9800' },
-      { name: 'Aproximación Tierra', date: '2024-12-01', color: '#2196F3' },
-      { name: 'Salida', date: '2025-03-01', color: '#F44336' }
+      { name: 'Descubrimiento', date: '2025-07-15', color: '#4CAF50' },
+      { name: 'Perihelio', date: '2025-11-15', color: '#FF9800' },
+      { name: 'Aproximación Tierra', date: '2025-12-01', color: '#2196F3' },
+      { name: 'Salida', date: '2026-03-01', color: '#F44336' }
     ];
     
     milestones.forEach(milestone => {
@@ -673,11 +673,11 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   // Dibujar marcadores de tiempo detallados
   const drawDetailedTimeMarkers = (ctx: CanvasRenderingContext2D) => {
     const markers = [
-      { date: '2024-01-15', label: 'Descubrimiento', x: 0.05, color: '#4CAF50' },
-      { date: '2024-11-15', label: 'Perihelio', x: 0.6, color: '#FF9800' },
-      { date: '2024-12-01', label: 'Aproximación Tierra', x: 0.7, color: '#2196F3' },
-      { date: '2025-03-01', label: 'Salida Sistema', x: 0.85, color: '#F44336' },
-      { date: '2025-06-01', label: 'Interestelar', x: 1.0, color: '#9C27B0' }
+      { date: '2025-07-15', label: 'Descubrimiento', x: 0.05, color: '#4CAF50' },
+      { date: '2025-11-15', label: 'Perihelio', x: 0.6, color: '#FF9800' },
+      { date: '2025-12-01', label: 'Aproximación Tierra', x: 0.7, color: '#2196F3' },
+      { date: '2026-03-01', label: 'Salida Sistema', x: 0.85, color: '#F44336' },
+      { date: '2026-06-01', label: 'Interestelar', x: 1.0, color: '#9C27B0' }
     ];
     
     markers.forEach(marker => {
@@ -740,11 +740,11 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Fechas importantes de 3I/Atlas
     ctx.fillStyle = '#FFF';
     ctx.font = '12px Arial';
-    ctx.fillText('Descubrimiento: 15 Ene 2024', 20, 160);
-    ctx.fillText('Perihelio: 15 Nov 2024', 20, 180);
-    ctx.fillText('Aproximación Tierra: 01 Dic 2024', 20, 200);
-    ctx.fillText('Salida Sistema: 01 Mar 2025', 20, 220);
-    ctx.fillText('Espacio Interestelar: 01 Jun 2025', 20, 240);
+    ctx.fillText('Descubrimiento: 15 Jul 2025', 20, 160);
+    ctx.fillText('Perihelio: 15 Nov 2025', 20, 180);
+    ctx.fillText('Aproximación Tierra: 01 Dic 2025', 20, 200);
+    ctx.fillText('Salida Sistema: 01 Mar 2026', 20, 220);
+    ctx.fillText('Espacio Interestelar: 01 Jun 2026', 20, 240);
     
     // Información adicional
     ctx.fillStyle = '#FFD700';
@@ -948,7 +948,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                 <div className="flex-1">
                   <div className="text-sm text-gray-400">Aproximación Tierra</div>
                   <div className="text-white font-semibold">{timeToEarthApproach}</div>
-                  <div className="text-xs text-gray-500">01 Dic 2024</div>
+                  <div className="text-xs text-gray-500">01 Dic 2025</div>
                 </div>
               </div>
               
@@ -984,23 +984,23 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
               <div className="space-y-2">
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Descubrimiento:</span>
-                  <span className="text-white">15 Ene 2024</span>
+                  <span className="text-white">15 Jul 2025</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Perihelio:</span>
-                  <span className="text-white">15 Nov 2024</span>
+                  <span className="text-white">15 Nov 2025</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Aproximación Tierra:</span>
-                  <span className="text-white">01 Dic 2024</span>
+                  <span className="text-white">01 Dic 2025</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Salida Sistema:</span>
-                  <span className="text-white">01 Mar 2025</span>
+                  <span className="text-white">01 Mar 2026</span>
                 </div>
                 <div className="flex justify-between text-xs">
                   <span className="text-gray-400">Espacio Interestelar:</span>
-                  <span className="text-white">01 Jun 2025</span>
+                  <span className="text-white">01 Jun 2026</span>
                 </div>
               </div>
             </div>
