@@ -33,7 +33,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   const [speed, setSpeed] = useState(1);
   const [viewMode, setViewMode] = useState<'solar' | 'trajectory' | 'detailed'>('solar');
   const [trajectoryPoints, setTrajectoryPoints] = useState<Array<{x: number, y: number, distance: number, velocity: number, date: string}>>([]);
-  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+  const [currentDateTime, setCurrentDateTime] = useState<Date | null>(null);
   const [progressPercentage, setProgressPercentage] = useState(0);
   const [timeToEarthApproach, setTimeToEarthApproach] = useState('');
   const [dynamicStatus, setDynamicStatus] = useState('');
@@ -102,6 +102,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     };
 
     // Evitar hidratación inicializando con valores por defecto
+    setCurrentDateTime(null);
     setProgressPercentage(0);
     setTimeToEarthApproach('Calculando...');
     setDynamicStatus('Inicializando...');
@@ -500,8 +501,8 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Fecha y hora actual
     ctx.fillStyle = '#FFF';
     ctx.font = 'bold 14px Arial';
-    ctx.fillText(`Fecha: ${currentDateTime.toLocaleDateString('es-ES')}`, 20, 30);
-    ctx.fillText(`Hora: ${currentDateTime.toLocaleTimeString('es-ES')}`, 20, 50);
+    ctx.fillText(`Fecha: ${currentDateTime ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}`, 20, 30);
+    ctx.fillText(`Hora: ${currentDateTime ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}`, 20, 50);
     
     // Progreso del tracking
     ctx.fillStyle = '#FFD700';
@@ -729,7 +730,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Información de tiempo real
     ctx.fillStyle = '#FFF';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText(`Tiempo Real: ${currentDateTime.toLocaleString('es-ES')}`, 20, 30);
+    ctx.fillText(`Tiempo Real: ${currentDateTime ? currentDateTime.toLocaleString('es-ES') : 'Cargando...'}`, 20, 30);
     
     // Progreso detallado
     ctx.fillStyle = '#FFD700';
@@ -949,8 +950,8 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                 <Calendar className="w-4 h-4 text-green-400" />
                 <div className="flex-1">
                   <div className="text-sm text-gray-400">Fecha Actual</div>
-                  <div className="text-white font-semibold">{currentDateTime.toLocaleDateString('es-ES')}</div>
-                  <div className="text-xs text-gray-500">{currentDateTime.toLocaleTimeString('es-ES')}</div>
+                  <div className="text-white font-semibold">{currentDateTime ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}</div>
+                  <div className="text-xs text-gray-500">{currentDateTime ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}</div>
                 </div>
               </div>
               
