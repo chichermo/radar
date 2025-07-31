@@ -43,8 +43,8 @@ const LoadingSpinner = ({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) => {
 const atlasData = {
   // Información básica
   name: "3I/Atlas",
-  designation: "3I/2024 A1",
-  discoveryDate: "2024-01-15",
+  designation: "3I/2025 A1",
+  discoveryDate: "2025-07-15",
   discoverer: "ATLAS Survey",
   observatory: "ATLAS Observatory, Hawaii",
   
@@ -95,54 +95,54 @@ const atlasData = {
     "Confirmación de objetos interestelares en el sistema solar"
   ],
   
-  // Fechas importantes de aproximación (actualizadas para 2025)
+  // Fechas importantes de aproximación (CORREGIDAS para 2025)
   approachDates: {
     discovery: {
-      date: "2024-01-15",
+      date: "2025-07-15",
       distance: "2.1 AU",
       event: "Descubrimiento",
       description: "Detectado por ATLAS Survey en Hawaii",
       status: "Completado"
     },
     closestApproach: {
-      date: "2024-11-15",
+      date: "2025-11-15",
       distance: "0.85 AU",
       event: "Máximo acercamiento",
       description: "Perihelio - punto más cercano al Sol",
-      status: "Completado"
+      status: "En progreso"
     },
     earthApproach: {
-      date: "2024-12-01",
+      date: "2025-12-01",
       distance: "1.2 AU",
       event: "Aproximación a la Tierra",
       description: "Mejor momento para observación desde la Tierra",
-      status: "Completado"
+      status: "Pendiente"
     },
     solarSystemExit: {
-      date: "2025-03-01",
+      date: "2026-03-01",
       distance: "2.5 AU",
       event: "Salida del sistema solar",
       description: "Cruza la órbita de Marte",
-      status: "Completado"
+      status: "Pendiente"
     },
     interstellar: {
-      date: "2025-06-01",
+      date: "2026-06-01",
       distance: "5.0 AU",
       event: "Espacio interestelar",
       description: "Abandona completamente el sistema solar",
-      status: "En progreso"
+      status: "Pendiente"
     }
   },
   
   // Estado actual (2025)
   currentStatus: {
-    position: "Espacio interestelar",
-    distanceFromSun: "4.2 AU",
-    distanceFromEarth: "3.8 AU",
+    position: "Aproximándose al sistema solar",
+    distanceFromSun: "2.1 AU",
+    distanceFromEarth: "1.8 AU",
     velocity: "32.5 km/s",
-    visibility: "No observable",
-    lastObservation: "2025-02-15",
-    nextMilestone: "2025-06-01 - Salida completa del sistema solar"
+    visibility: "Observable con telescopios grandes",
+    lastObservation: "2025-07-15",
+    nextMilestone: "2025-11-15 - Perihelio"
   }
 };
 
@@ -674,7 +674,7 @@ export default function AtlasPage() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {Object.entries(atlasDataState.approachDates).map(([key, event]: [string, any]) => (
+              {atlasDataState.approachDates && Object.entries(atlasDataState.approachDates).map(([key, event]: [string, any]) => (
                 <div key={key} className={`p-4 border rounded-lg ${
                   event.status === 'Completado' 
                     ? 'bg-green-500/10 border-green-500/20' 
@@ -693,6 +693,11 @@ export default function AtlasPage() {
                   <p className="text-xs text-gray-400">Distancia: {event.distance}</p>
                 </div>
               ))}
+              {!atlasDataState.approachDates && (
+                <div className="col-span-full text-center py-8">
+                  <p className="text-gray-400">Información de cronología no disponible</p>
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -727,9 +732,12 @@ export default function AtlasPage() {
               <div className="p-4 bg-purple-500/20 border border-purple-500/30 rounded-lg">
                 <h4 className="font-semibold text-purple-300 mb-2">Hallazgos Confirmados</h4>
                 <ul className="text-sm text-gray-300 space-y-1">
-                  {atlasDataState.observations.discoveries.map((finding: string, index: number) => (
-                    <li key={index}>• {finding}</li>
-                  ))}
+                  {atlasDataState.observations?.discoveries ? 
+                    atlasDataState.observations.discoveries.map((finding: string, index: number) => (
+                      <li key={index}>• {finding}</li>
+                    )) : 
+                    <li>• Información de hallazgos no disponible</li>
+                  }
                 </ul>
               </div>
               <div className="p-4 bg-yellow-500/20 border border-yellow-500/30 rounded-lg">
