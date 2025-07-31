@@ -625,17 +625,21 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     ctx.fillText('Tiempo', 0, 0);
     ctx.restore();
     
-    // Trayectoria detallada con múltiples curvas
+    // Trayectoria detallada de 3I/Atlas
     const trajectoryPoints = calculateHyperbolicTrajectory();
     
-    // Curva principal
+    // Curva principal de distancia vs tiempo
     ctx.strokeStyle = '#FF6B6B';
     ctx.lineWidth = 3;
     ctx.beginPath();
     
     trajectoryPoints.forEach((point, index) => {
-      const x = 400 + (index - 100) * 2;
-      const y = 300 - (point.distance - 0.85) * 100;
+      // Mapear tiempo (0-1) a posición X (0-800)
+      const timeProgress = index / trajectoryPoints.length;
+      const x = timeProgress * 800;
+      
+      // Mapear distancia a posición Y (invertido para mejor visualización)
+      const y = 300 - (point.distance - 0.85) * 150; // Escalar distancia
       
       if (index === 0) {
         ctx.moveTo(x, y);
@@ -645,11 +649,11 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     });
     ctx.stroke();
     
-    // Punto actual
+    // Punto actual de 3I/Atlas
     const atlasPos = calculateAtlasPosition();
-    const currentIndex = Math.floor((Date.now() - new Date('2024-01-15').getTime()) / (24 * 60 * 60 * 1000));
-    const currentX = 400 + (currentIndex - 100) * 2;
-    const currentY = 300 - (atlasPos.distance - 0.85) * 100;
+    const currentTimeProgress = atlasPos.progress;
+    const currentX = currentTimeProgress * 800;
+    const currentY = 300 - (atlasPos.distance - 0.85) * 150;
     
     ctx.fillStyle = '#FF6B6B';
     ctx.shadowColor = '#FF6B6B';
@@ -659,11 +663,54 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     ctx.fill();
     ctx.shadowBlur = 0;
     
-    // Marcadores de tiempo
-    drawTimeMarkers(ctx);
+    // Marcadores de tiempo importantes
+    drawDetailedTimeMarkers(ctx);
     
     // Textos dinámicos en vista detallada
     drawDetailedDynamicTexts(ctx);
+  };
+
+  // Dibujar marcadores de tiempo detallados
+  const drawDetailedTimeMarkers = (ctx: CanvasRenderingContext2D) => {
+    const markers = [
+      { date: '2024-01-15', label: 'Descubrimiento', x: 0.05, color: '#4CAF50' },
+      { date: '2024-11-15', label: 'Perihelio', x: 0.6, color: '#FF9800' },
+      { date: '2024-12-01', label: 'Aproximación Tierra', x: 0.7, color: '#2196F3' },
+      { date: '2025-03-01', label: 'Salida Sistema', x: 0.85, color: '#F44336' },
+      { date: '2025-06-01', label: 'Interestelar', x: 1.0, color: '#9C27B0' }
+    ];
+    
+    markers.forEach(marker => {
+      const x = marker.x * 800;
+      
+      // Línea vertical
+      ctx.strokeStyle = marker.color;
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 3]);
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, 600);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Etiqueta
+      ctx.fillStyle = marker.color;
+      ctx.font = 'bold 12px Arial';
+      ctx.fillText(marker.label, x + 5, 20);
+      
+      // Punto en la línea
+      const trajectoryPoints = calculateHyperbolicTrajectory();
+      const pointIndex = Math.floor(marker.x * trajectoryPoints.length);
+      if (pointIndex < trajectoryPoints.length) {
+        const point = trajectoryPoints[pointIndex];
+        const y = 300 - (point.distance - 0.85) * 150;
+        
+        ctx.fillStyle = marker.color;
+        ctx.beginPath();
+        ctx.arc(x, y, 6, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+    });
   };
 
   // Dibujar textos dinámicos en vista detallada
@@ -683,45 +730,28 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     ctx.font = '12px Arial';
     ctx.fillText(`Estado: ${dynamicStatus}`, 20, 85);
     
-    // Countdown a aproximación Tierra
+    // Información actual de 3I/Atlas
+    const atlasPos = calculateAtlasPosition();
     ctx.fillStyle = '#FF6B6B';
     ctx.font = 'bold 14px Arial';
-    ctx.fillText(`Aproximación Máxima a Tierra: ${timeToEarthApproach}`, 20, 110);
+    ctx.fillText(`Distancia Actual: ${atlasPos.distance.toFixed(2)} AU`, 20, 110);
+    ctx.fillText(`Velocidad Actual: ${atlasPos.velocity.toFixed(1)} km/s`, 20, 130);
     
     // Fechas importantes de 3I/Atlas
     ctx.fillStyle = '#FFF';
     ctx.font = '12px Arial';
-    ctx.fillText('Descubrimiento: 15 Ene 2024', 20, 140);
-    ctx.fillText('Perihelio: 15 Nov 2024', 20, 160);
-    ctx.fillText('Aproximación Tierra: 01 Dic 2024', 20, 180);
-    ctx.fillText('Salida Sistema: 01 Mar 2025', 20, 200);
-    ctx.fillText('Espacio Interestelar: 01 Jun 2025', 20, 220);
-  };
-
-  // Dibujar marcadores de tiempo
-  const drawTimeMarkers = (ctx: CanvasRenderingContext2D) => {
-    const markers = [
-      { date: '2024-01-15', label: 'Descubrimiento', x: 100 },
-      { date: '2024-11-15', label: 'Perihelio', x: 400 },
-      { date: '2024-12-01', label: 'Aproximación Tierra', x: 500 },
-      { date: '2025-03-01', label: 'Salida', x: 600 },
-      { date: '2025-06-01', label: 'Interestelar', x: 700 }
-    ];
+    ctx.fillText('Descubrimiento: 15 Ene 2024', 20, 160);
+    ctx.fillText('Perihelio: 15 Nov 2024', 20, 180);
+    ctx.fillText('Aproximación Tierra: 01 Dic 2024', 20, 200);
+    ctx.fillText('Salida Sistema: 01 Mar 2025', 20, 220);
+    ctx.fillText('Espacio Interestelar: 01 Jun 2025', 20, 240);
     
-    markers.forEach(marker => {
-      ctx.strokeStyle = '#666';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([2, 2]);
-      ctx.beginPath();
-      ctx.moveTo(marker.x, 0);
-      ctx.lineTo(marker.x, 600);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      
-      ctx.fillStyle = '#FFF';
-      ctx.font = '10px Arial';
-      ctx.fillText(marker.label, marker.x + 5, 20);
-    });
+    // Información adicional
+    ctx.fillStyle = '#FFD700';
+    ctx.font = '12px Arial';
+    ctx.fillText('Objeto: 3I/Atlas (3I/2024 A1)', 20, 270);
+    ctx.fillText('Tipo: Cometa Interestelar', 20, 290);
+    ctx.fillText('Trayectoria: Hiperbólica', 20, 310);
   };
 
   // Función de animación mejorada
@@ -738,9 +768,8 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     } else if (viewMode === 'trajectory') {
       drawDetailedTrajectory(ctx);
     } else {
-      // Modo detallado con múltiples vistas
+      // Modo detallado con múltiples vistas - mostrar solo trayectoria detallada
       drawDetailedTrajectory(ctx);
-      drawAtlasTrajectory(ctx);
     }
     
     if (isPlaying) {
