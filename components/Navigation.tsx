@@ -47,6 +47,7 @@ export default function Navigation() {
       { href: '/neutrinos', label: 'Neutrinos' },
       { href: '/supernovae', label: 'Supernovas' },
       { href: '/jwst', label: 'Telescopio James Webb' },
+      { href: '/hubble', label: 'Telescopio Hubble' },
       { href: '/vera-rubin', label: 'Observatorio Vera Rubin' },
       { href: '/seti', label: 'SETI' },
       { href: '/interstellar-probes', label: 'Sondas Interestelares' },

@@ -15,7 +15,7 @@ export async function GET() {
           progress: 85,
           coordinates: "RA: 00h 59m 05s, Dec: -72° 10' 28\"",
           description: "Cúmulo estelar en la Pequeña Nube de Magallanes - Observación en infrarrojo cercano",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/03/webb-ngc346.jpg",
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2023/01/webb_first_images_deep_field_smalls.jpg",
           scienceTheme: "Star Lifecycle",
           date: "2024-03-15"
         },
@@ -26,7 +26,7 @@ export async function GET() {
           progress: 100,
           coordinates: "RA: 10h 07m 01s, Dec: -40° 26' 11\"",
           description: "Nebulosa planetaria del Anillo del Sur - Estructuras detalladas en infrarrojo",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/02/webb-ngc3132.jpg",
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2022/07/webb_ngc3132.jpg",
           scienceTheme: "Star Lifecycle",
           date: "2024-02-28"
         },
@@ -37,7 +37,7 @@ export async function GET() {
           progress: 100,
           coordinates: "RA: 22h 35m 57s, Dec: +33° 57' 36\"",
           description: "Grupo compacto de galaxias - Interacciones galácticas en detalle",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/01/webb-stephan-quintet.jpg",
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2022/07/webb_stephan_quintet.jpg",
           scienceTheme: "Galaxies Over Time",
           date: "2024-01-20"
         },
@@ -48,7 +48,7 @@ export async function GET() {
           progress: 100,
           coordinates: "RA: 14h 29m 18s, Dec: -03° 26' 40\"",
           description: "Exoplaneta gigante gaseoso - Análisis atmosférico detallado",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/01/webb-wasp39b.jpg",
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2022/07/webb_wasp39b.jpg",
           scienceTheme: "Other Worlds",
           date: "2024-01-10"
         },
@@ -59,7 +59,7 @@ export async function GET() {
           progress: 100,
           coordinates: "RA: 10h 45m 08s, Dec: -59° 52' 04\"",
           description: "Región de formación estelar masiva - Pilares de gas y polvo",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/01/webb-carina.jpg",
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2022/07/webb_carina.jpg",
           scienceTheme: "Star Lifecycle",
           date: "2024-01-05"
         }
@@ -108,7 +108,7 @@ export async function GET() {
           progress: 85,
           coordinates: "RA: 00h 59m 05s, Dec: -72° 10' 28\"",
           description: "Cúmulo estelar en la Pequeña Nube de Magallanes - Observación en infrarrojo cercano",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/03/webb-ngc346.jpg",
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2023/01/webb_first_images_deep_field_smalls.jpg",
           scienceTheme: "Star Lifecycle",
           date: "2024-03-15"
         }
@@ -129,7 +129,7 @@ export async function GET() {
           progress: 85,
           coordinates: "RA: 00h 59m 05s, Dec: -72° 10' 28\"",
           description: "Cúmulo estelar en la Pequeña Nube de Magallanes - Observación en infrarrojo cercano",
-          imageUrl: "https://science.nasa.gov/wp-content/uploads/2024/03/webb-ngc346.jpg",
+          imageUrl: "https://www.nasa.gov/wp-content/uploads/2023/01/webb_first_images_deep_field_smalls.jpg",
           scienceTheme: "Star Lifecycle",
           date: "2024-03-15"
         }
