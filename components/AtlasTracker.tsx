@@ -501,8 +501,8 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Fecha y hora actual
     ctx.fillStyle = '#FFF';
     ctx.font = 'bold 14px Arial';
-    ctx.fillText(`Fecha: ${currentDateTime ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}`, 20, 30);
-    ctx.fillText(`Hora: ${currentDateTime ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}`, 20, 50);
+    ctx.fillText(`Fecha: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}`, 20, 30);
+    ctx.fillText(`Hora: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}`, 20, 50);
     
     // Progreso del tracking
     ctx.fillStyle = '#FFD700';
@@ -730,7 +730,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Información de tiempo real
     ctx.fillStyle = '#FFF';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText(`Tiempo Real: ${currentDateTime ? currentDateTime.toLocaleString('es-ES') : 'Cargando...'}`, 20, 30);
+    ctx.fillText(`Tiempo Real: ${currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleString('es-ES') : 'Cargando...'}`, 20, 30);
     
     // Progreso detallado
     ctx.fillStyle = '#FFD700';
@@ -774,6 +774,17 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
+    // No dibujar hasta que tengamos datos válidos
+    if (!currentDateTime || !(currentDateTime instanceof Date)) {
+      // Dibujar pantalla de carga
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#FFF';
+      ctx.font = 'bold 20px Arial';
+      ctx.fillText('Cargando datos de 3I/Atlas...', canvas.width / 2 - 150, canvas.height / 2);
+      return;
+    }
+    
     if (viewMode === 'solar') {
       drawSolarSystem(ctx);
       drawAtlasTrajectory(ctx);
@@ -790,14 +801,17 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
   };
 
   useEffect(() => {
-    if (isPlaying) {
+    if (isPlaying && currentDateTime && currentDateTime instanceof Date) {
       animate();
     }
-  }, [isPlaying, viewMode, speed]);
+  }, [isPlaying, viewMode, speed, currentDateTime]);
 
   useEffect(() => {
-    animate();
-  }, []);
+    // Solo iniciar animación cuando tengamos datos válidos
+    if (currentDateTime && currentDateTime instanceof Date) {
+      animate();
+    }
+  }, [currentDateTime]);
 
   return (
     <div className="space-y-6">
@@ -950,8 +964,8 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                 <Calendar className="w-4 h-4 text-green-400" />
                 <div className="flex-1">
                   <div className="text-sm text-gray-400">Fecha Actual</div>
-                  <div className="text-white font-semibold">{currentDateTime ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}</div>
-                  <div className="text-xs text-gray-500">{currentDateTime ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}</div>
+                  <div className="text-white font-semibold">{currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleDateString('es-ES') : 'Cargando...'}</div>
+                  <div className="text-xs text-gray-500">{currentDateTime && currentDateTime instanceof Date ? currentDateTime.toLocaleTimeString('es-ES') : 'Cargando...'}</div>
                 </div>
               </div>
               
