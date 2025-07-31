@@ -101,10 +101,21 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
       setDynamicStatus(generateDynamicStatus());
     };
 
-    updateDynamicData();
-    const interval = setInterval(updateDynamicData, 1000);
+    // Evitar hidratación inicializando con valores por defecto
+    setProgressPercentage(0);
+    setTimeToEarthApproach('Calculando...');
+    setDynamicStatus('Inicializando...');
+    
+    // Actualizar después de la hidratación
+    const timer = setTimeout(() => {
+      updateDynamicData();
+    }, 100);
 
-    return () => clearInterval(interval);
+    const interval = setInterval(updateDynamicData, 1000);
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, []);
 
   // Configuración del sistema solar mejorada
@@ -495,7 +506,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Progreso del tracking
     ctx.fillStyle = '#FFD700';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText(`Progreso: ${progressPercentage.toFixed(1)}%`, 20, 80);
+    ctx.fillText(`Progreso: ${progressPercentage > 0 ? progressPercentage.toFixed(1) : '0.0'}%`, 20, 80);
     
     // Estado dinámico
     ctx.fillStyle = '#00FF88';
@@ -556,8 +567,8 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Información de distancia
     ctx.fillStyle = '#FFF';
     ctx.font = '12px Arial';
-    ctx.fillText(`${atlasPos.distance.toFixed(2)} AU`, atlasPos.x + 15, atlasPos.y + 10);
-    ctx.fillText(`${atlasPos.velocity.toFixed(1)} km/s`, atlasPos.x + 15, atlasPos.y + 25);
+    ctx.fillText(`${atlasPos.distance ? atlasPos.distance.toFixed(2) : '0.00'} AU`, atlasPos.x + 15, atlasPos.y + 10);
+    ctx.fillText(`${atlasPos.velocity ? atlasPos.velocity.toFixed(1) : '0.0'} km/s`, atlasPos.x + 15, atlasPos.y + 25);
   };
 
   // Dibujar vector de velocidad
@@ -723,7 +734,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     // Progreso detallado
     ctx.fillStyle = '#FFD700';
     ctx.font = '14px Arial';
-    ctx.fillText(`Progreso del Tracking: ${progressPercentage.toFixed(1)}%`, 20, 60);
+    ctx.fillText(`Progreso del Tracking: ${progressPercentage > 0 ? progressPercentage.toFixed(1) : '0.0'}%`, 20, 60);
     
     // Estado actual
     ctx.fillStyle = '#00FF88';
@@ -734,8 +745,8 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
     const atlasPos = calculateAtlasPosition();
     ctx.fillStyle = '#FF6B6B';
     ctx.font = 'bold 14px Arial';
-    ctx.fillText(`Distancia Actual: ${atlasPos.distance.toFixed(2)} AU`, 20, 110);
-    ctx.fillText(`Velocidad Actual: ${atlasPos.velocity.toFixed(1)} km/s`, 20, 130);
+    ctx.fillText(`Distancia Actual: ${atlasPos.distance ? atlasPos.distance.toFixed(2) : '0.00'} AU`, 20, 110);
+    ctx.fillText(`Velocidad Actual: ${atlasPos.velocity ? atlasPos.velocity.toFixed(1) : '0.0'} km/s`, 20, 130);
     
     // Fechas importantes de 3I/Atlas
     ctx.fillStyle = '#FFF';
@@ -859,10 +870,10 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                   <span className="font-bold">3I/Atlas</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>Distancia: {realTimeData?.currentDistance?.toFixed(2) || '0.00'} AU</div>
-                  <div>Velocidad: {realTimeData?.currentVelocity || '0'} km/s</div>
-                  <div>Estado: {realTimeData?.status || 'Calculando'}</div>
-                  <div>Tiempo: {realTimeData?.timeSinceDiscovery?.toFixed(0) || '0'} días</div>
+                                  <div>Distancia: {realTimeData?.currentDistance ? realTimeData.currentDistance.toFixed(2) : '0.00'} AU</div>
+                <div>Velocidad: {realTimeData?.currentVelocity ? realTimeData.currentVelocity.toFixed(1) : '0.0'} km/s</div>
+                <div>Estado: {realTimeData?.status || 'Calculando'}</div>
+                <div>Tiempo: {realTimeData?.timeSinceDiscovery ? realTimeData.timeSinceDiscovery.toFixed(0) : '0'} días</div>
                 </div>
               </div>
             </div>
@@ -956,7 +967,7 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                 <Activity className="w-4 h-4 text-yellow-400" />
                 <div className="flex-1">
                   <div className="text-sm text-gray-400">Progreso</div>
-                  <div className="text-white font-semibold">{progressPercentage.toFixed(1)}%</div>
+                  <div className="text-white font-semibold">{progressPercentage > 0 ? progressPercentage.toFixed(1) : '0.0'}%</div>
                   <div className="w-full bg-gray-700 rounded-full h-2 mt-1">
                     <div 
                       className="bg-yellow-500 h-2 rounded-full transition-all duration-300" 
