@@ -424,30 +424,36 @@ const AnomaliesAndDiscoveries = ({ atlasData }: { atlasData: any }) => {
             <div>
               <h4 className="font-semibold text-white mb-2">Telescopios Utilizados</h4>
               <div className="flex flex-wrap gap-2">
-                {atlasData.observations.telescopes.map((telescope: string, index: number) => (
-                  <Badge key={index} variant="secondary" className="bg-blue-500/20 text-blue-300">
-                    {telescope}
-                  </Badge>
-                ))}
+                {atlasData.observations?.telescopes ? 
+                  atlasData.observations.telescopes.map((telescope: string, index: number) => (
+                    <Badge key={index} variant="secondary" className="bg-blue-500/20 text-blue-300">
+                      {telescope}
+                    </Badge>
+                  )) : 
+                  <p className="text-gray-400 text-sm">Información de telescopios no disponible</p>
+                }
               </div>
             </div>
             <div>
               <h4 className="font-semibold text-white mb-2">Longitudes de Onda</h4>
               <div className="flex flex-wrap gap-2">
-                {atlasData.observations.wavelengths.map((wavelength: string, index: number) => (
-                  <Badge key={index} variant="secondary" className="bg-purple-500/20 text-purple-300">
-                    {wavelength}
-                  </Badge>
-                ))}
+                {atlasData.observations?.wavelengths ? 
+                  atlasData.observations.wavelengths.map((wavelength: string, index: number) => (
+                    <Badge key={index} variant="secondary" className="bg-purple-500/20 text-purple-300">
+                      {wavelength}
+                    </Badge>
+                  )) : 
+                  <p className="text-gray-400 text-sm">Información de longitudes de onda no disponible</p>
+                }
               </div>
             </div>
             <div>
               <h4 className="font-semibold text-white mb-2">Fecha de Descubrimiento</h4>
-              <p className="text-gray-300">{atlasData.discoveryDate}</p>
+              <p className="text-gray-300">{atlasData.discoveryDate || 'No disponible'}</p>
             </div>
             <div>
               <h4 className="font-semibold text-white mb-2">Observatorio</h4>
-              <p className="text-gray-300">{atlasData.observatory}</p>
+              <p className="text-gray-300">{atlasData.observatory || 'No disponible'}</p>
             </div>
           </div>
         </CardContent>
@@ -471,12 +477,15 @@ const ScientificImpact = ({ atlasData }: { atlasData: any }) => {
           <div>
             <h4 className="font-semibold text-white mb-4">Descubrimientos Clave</h4>
             <ul className="space-y-3">
-              {atlasData.significance.map((item: string, index: number) => (
-                <li key={index} className="flex items-start gap-3">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <span className="text-gray-300 text-sm">{item}</span>
-                </li>
-              ))}
+              {atlasData.significance ? 
+                atlasData.significance.map((item: string, index: number) => (
+                  <li key={index} className="flex items-start gap-3">
+                    <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
+                    <span className="text-gray-300 text-sm">{item}</span>
+                  </li>
+                )) : 
+                <li className="text-gray-400 text-sm">Información de descubrimientos no disponible</li>
+              }
             </ul>
           </div>
           <div>
