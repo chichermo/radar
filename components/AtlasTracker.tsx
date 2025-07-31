@@ -859,10 +859,10 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
                   <span className="font-bold">3I/Atlas</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div>Distancia: {realTimeData.currentDistance.toFixed(2)} AU</div>
-                  <div>Velocidad: {realTimeData.currentVelocity} km/s</div>
-                  <div>Estado: {realTimeData.status}</div>
-                  <div>Tiempo: {realTimeData.timeSinceDiscovery.toFixed(0)} días</div>
+                  <div>Distancia: {realTimeData?.currentDistance?.toFixed(2) || '0.00'} AU</div>
+                  <div>Velocidad: {realTimeData?.currentVelocity || '0'} km/s</div>
+                  <div>Estado: {realTimeData?.status || 'Calculando'}</div>
+                  <div>Tiempo: {realTimeData?.timeSinceDiscovery?.toFixed(0) || '0'} días</div>
                 </div>
               </div>
             </div>
@@ -901,24 +901,24 @@ const AtlasTracker: React.FC<AtlasTrackerProps> = ({ realTimeData, atlasData }) 
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-400">Posición:</span>
-                <span className="text-white">{atlasData.currentStatus.position}</span>
+                <span className="text-white">{atlasData?.currentStatus?.position || 'Calculando...'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Distancia del Sol:</span>
-                <span className="text-white">{atlasData.currentStatus.distanceFromSun}</span>
+                <span className="text-white">{atlasData?.currentStatus?.distanceFromSun || 'Calculando...'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Distancia de la Tierra:</span>
-                <span className="text-white">{atlasData.currentStatus.distanceFromEarth}</span>
+                <span className="text-white">{atlasData?.currentStatus?.distanceFromEarth || 'Calculando...'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Velocidad:</span>
-                <span className="text-white">{atlasData.currentStatus.velocity}</span>
+                <span className="text-white">{atlasData?.currentStatus?.velocity || 'Calculando...'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Visibilidad:</span>
                 <Badge variant="outline" className="text-xs">
-                  {atlasData.currentStatus.visibility}
+                  {atlasData?.currentStatus?.visibility || 'Desconocida'}
                 </Badge>
               </div>
             </div>
