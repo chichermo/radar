@@ -8,6 +8,7 @@ import { NotificationProvider } from '@/components/NotificationService';
 import Navigation from '@/components/Navigation';
 import MobileNavigation from '@/components/MobileNavigation';
 import HelpGuide from '@/components/HelpGuide';
+import ServiceWorkerRegistration from '@/components/ServiceWorkerRegistration';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -126,6 +127,9 @@ export default function RootLayout({
 
               {/* Componente de ayuda */}
               <HelpGuide />
+
+              {/* Registro de Service Worker */}
+              <ServiceWorkerRegistration />
 
               {/* Footer simplificado */}
               <footer className={styles.footer}>
