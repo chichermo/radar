@@ -100,7 +100,6 @@ export default function SupernovaePage() {
           <div className="space-y-4">
             {supernovaeData && supernovaeData.length > 0 ? (
               supernovaeData.map((sn: any, index: number) => (
-              <div
               <div key={index} className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-yellow-500/50 transition-colors">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -120,8 +119,8 @@ export default function SupernovaePage() {
                     <p className="text-gray-400 text-xs mb-2">{sn.date} - Descubierta por {sn.discoverer}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-yellow-400 font-semibold">Mag {sn.magnitud}</p>
-                    <p className="text-xs text-gray-400">{sn.estado}</p>
+                    <p className="text-yellow-400 font-semibold">Mag {sn.magnitude}</p>
+                    <p className="text-xs text-gray-400">{sn.status}</p>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">

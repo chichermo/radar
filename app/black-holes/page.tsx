@@ -56,12 +56,6 @@ export default function BlackHolesPage() {
   const [selectedType, setSelectedType] = useState('all');
   const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-    fetchBlackHoles();
-    fetchBlackHoleEvents();
-  }, []);
-
   const fetchBlackHoleEvents = async () => {
     try {
       const response = await fetch('/api/black-holes-events');
@@ -125,6 +119,12 @@ export default function BlackHolesPage() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    setIsClient(true);
+    fetchBlackHoles();
+    fetchBlackHoleEvents();
+  }, []);
 
   const formatMass = (mass: number) => {
     if (mass >= 1e9) return `${(mass / 1e9).toFixed(1)} mil millones M☉`;

@@ -100,7 +100,6 @@ export default function GravitationalWavesPage() {
           <div className="space-y-4">
             {wavesData && wavesData.length > 0 ? (
               wavesData.map((evento: any, index: number) => (
-              <div
               <div key={index} className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-blue-500/50 transition-colors">
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
