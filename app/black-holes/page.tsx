@@ -437,40 +437,6 @@ export default function BlackHolesPage() {
                 </div>
               </CardContent>
             </Card>
-                    <div key={idx} className="p-3 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:border-blue-500/30 transition-colors">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs text-gray-400">{evento.fecha}</span>
-                            <span className={`px-2 py-0.5 rounded text-xs ${
-                              evento.importancia === 'Alta' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
-                            }`}>
-                              {evento.importancia}
-                            </span>
-                          </div>
-                          <h4 className="text-white font-semibold text-sm mb-1">{evento.evento}</h4>
-                          <p className="text-gray-400 text-xs mb-2">Tipo: {evento.tipo}</p>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2 text-xs">
-                        <div>
-                          <span className="text-gray-500">Masa:</span>
-                          <p className="text-white">{evento.masa}</p>
-                        </div>
-                        <div>
-                          <span className="text-gray-500">Distancia:</span>
-                          <p className="text-white">{evento.distancia}</p>
-                        </div>
-                        <div className="col-span-2">
-                          <span className="text-gray-500">Observatorio:</span>
-                          <p className="text-white">{evento.observatorio}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
 
             {/* Investigaciones en Curso */}
             <Card className="bg-gray-800/50 border-gray-700/50">
