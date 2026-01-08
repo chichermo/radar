@@ -6,17 +6,36 @@ import dynamic from 'next/dynamic';
 // Nuevo Client Component para la galería
 const GalleryClient = dynamic(() => import('./GalleryClient'), { ssr: false });
 
-// Componente server que obtiene los datos reales de la API
-export default async function GalleryPage() {
-  // Aquí deberías obtener los datos reales de la API (ejemplo: Vera Rubin, NASA, etc.)
-  // Por ejemplo, usando fetch:
-  let images: any[] = [];
-  try {
-    const res = await fetch(process.env.NEXT_PUBLIC_GALLERY_API || 'https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&count=10', { cache: 'no-store' });
-    images = await res.json();
-    // Si la API devuelve un objeto con .data, usa images = images.data;
-  } catch (e) {
-    images = [];
+// Componente que obtiene los datos en el cliente
+export default function GalleryPage() {
+  const [images, setImages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // Obtener imágenes en el cliente para evitar timeouts en build
+    const fetchImages = async () => {
+      try {
+        const res = await fetch('/api/nasa-apod');
+        if (res.ok) {
+          const data = await res.json();
+          setImages(Array.isArray(data) ? data : [data]);
+        }
+      } catch (e) {
+        console.error('Error fetching images:', e);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchImages();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400"></div>
+      </div>
+    );
   }
+
   return <GalleryClient images={images} />;
 }
