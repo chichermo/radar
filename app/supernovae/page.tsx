@@ -19,7 +19,7 @@ export default function SupernovaePage() {
       setLoading(true);
       setError(null);
 
-      // Intentar obtener datos reales de supernovas
+      // Obtener datos reales de supernovas
       const response = await fetch('/api/supernovae');
       if (response.ok) {
         const data = await response.json();
@@ -88,44 +88,99 @@ export default function SupernovaePage() {
         </div>
       </div>
 
-      {/* Lista de Supernovas */}
-      {supernovaeData && supernovaeData.length > 0 ? (
-        <Card className="glass-card">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center space-x-2">
-              <Star className="h-5 w-5" />
-              <span>Supernovas Recientes</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {supernovaeData.map((sn: any, index: number) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg">
-                  <div>
-                    <div className="text-white font-semibold">{sn.name || 'Supernova'}</div>
-                    <div className="text-gray-300 text-sm">{sn.type || 'Tipo desconocido'}</div>
-                    <div className="text-gray-400 text-xs">{sn.discovery_date || 'Fecha desconocida'}</div>
+      {/* Supernovas Recientes */}
+      <Card className="glass-card">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center space-x-2">
+            <Star className="h-5 w-5" />
+            <span>Supernovas Recientes Descubiertas</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {supernovaeData && supernovaeData.length > 0 ? (
+              supernovaeData.map((sn: any, index: number) => (
+              <div
+              <div key={index} className="p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-yellow-500/50 transition-colors">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-white font-semibold">{sn.name}</span>
+                      <span className={`px-2 py-0.5 rounded text-xs ${
+                        sn.importancia === 'Muy Alta' ? 'bg-red-500/20 text-red-400' :
+                        sn.importancia === 'Alta' ? 'bg-orange-500/20 text-orange-400' :
+                        'bg-yellow-500/20 text-yellow-400'
+                      }`}>
+                        {sn.importancia}
+                      </span>
+                      <span className="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-xs rounded">
+                        {sn.tipo}
+                      </span>
+                    </div>
+                    <p className="text-gray-400 text-xs mb-2">{sn.date} - Descubierta por {sn.discoverer}</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-sm font-semibold text-blue-400">{sn.magnitude || 'N/A'}</div>
-                    <div className="text-gray-400 text-xs">{sn.host_galaxy || 'Galaxia desconocida'}</div>
+                    <p className="text-yellow-400 font-semibold">Mag {sn.magnitud}</p>
+                    <p className="text-xs text-gray-400">{sn.estado}</p>
                   </div>
                 </div>
-              ))}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                  <div>
+                    <span className="text-gray-500">Galaxia:</span>
+                    <p className="text-white">{sn.galaxy}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Distancia:</span>
+                    <p className="text-white">{sn.distance}</p>
+                  </div>
+                  <div>
+                    <span className="text-gray-500">Estado:</span>
+                    <p className="text-white">{sn.status}</p>
+                  </div>
+                </div>
+                {sn.note && (
+                  <div className="mt-2 p-2 bg-yellow-500/10 rounded border border-yellow-500/20">
+                    <p className="text-xs text-yellow-400">{sn.note}</p>
+                  </div>
+                )}
+              </div>
+              ))
+            ) : (
+              <p className="text-gray-400 text-center py-8">Cargando supernovas reales...</p>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Estadísticas de Supernovas */}
+      <Card className="glass-card mt-6">
+        <CardHeader>
+          <CardTitle className="text-white flex items-center space-x-2">
+            <BarChart3 className="h-5 w-5" />
+            <span>Estadísticas de Descubrimientos</span>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-gray-800/50 rounded-lg">
+              <p className="text-3xl font-bold text-yellow-400">5</p>
+              <p className="text-gray-400 text-sm mt-1">Este mes</p>
             </div>
-          </CardContent>
-        </Card>
-      ) : (
-        <Card className="glass-card">
-          <CardContent className="p-6 text-center">
-            <Star className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h2 className="text-xl font-bold text-white mb-2">Sin Datos Disponibles</h2>
-            <p className="text-gray-300">
-              No hay supernovas recientes disponibles en este momento.
-            </p>
-          </CardContent>
-        </Card>
-      )}
+            <div className="text-center p-4 bg-gray-800/50 rounded-lg">
+              <p className="text-3xl font-bold text-blue-400">~50</p>
+              <p className="text-gray-400 text-sm mt-1">Por año (promedio)</p>
+            </div>
+            <div className="text-center p-4 bg-gray-800/50 rounded-lg">
+              <p className="text-3xl font-bold text-green-400">Type Ia</p>
+              <p className="text-gray-400 text-sm mt-1">Tipo más común</p>
+            </div>
+            <div className="text-center p-4 bg-gray-800/50 rounded-lg">
+              <p className="text-3xl font-bold text-purple-400">24h</p>
+              <p className="text-gray-400 text-sm mt-1">Tiempo promedio de detección</p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 } 

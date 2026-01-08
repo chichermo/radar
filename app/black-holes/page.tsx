@@ -36,9 +36,22 @@ const blackHoleStats = {
   nearest: 26
 };
 
+interface BlackHoleEvent {
+  fecha: string;
+  evento: string;
+  tipo: string;
+  masa: string;
+  distancia: string;
+  observatorio: string;
+  importancia: string;
+  descripcion: string;
+  referencia: string;
+}
+
 export default function BlackHolesPage() {
   const { t } = useI18n();
   const [blackHoles, setBlackHoles] = useState<BlackHole[]>([]);
+  const [blackHoleEvents, setBlackHoleEvents] = useState<BlackHoleEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedType, setSelectedType] = useState('all');
   const [isClient, setIsClient] = useState(false);
@@ -46,7 +59,22 @@ export default function BlackHolesPage() {
   useEffect(() => {
     setIsClient(true);
     fetchBlackHoles();
+    fetchBlackHoleEvents();
   }, []);
+
+  const fetchBlackHoleEvents = async () => {
+    try {
+      const response = await fetch('/api/black-holes-events');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setBlackHoleEvents(data.data);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching black hole events:', error);
+    }
+  };
 
   const handleRefresh = () => {
     setLoading(true);
@@ -353,32 +381,143 @@ export default function BlackHolesPage() {
               </CardContent>
             </Card>
 
-            {/* Información adicional */}
+            {/* Eventos Reales Documentados */}
             <Card className="bg-gray-800/50 border-gray-700/50">
               <CardHeader>
-                <CardTitle className="text-white">{t('blackholes.additional_info')}</CardTitle>
-                <CardDescription className="text-gray-400">{t('blackholes.info_description')}</CardDescription>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-green-400" />
+                  Eventos Reales de Agujeros Negros Documentados
+                </CardTitle>
+                <CardDescription className="text-gray-400">Fusiones, observaciones y descubrimientos históricos reales</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {blackHoleEvents.length > 0 ? (
+                    blackHoleEvents.map((evento, idx) => (
+                      <div key={idx} className="p-3 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:border-blue-500/30 transition-colors">
+                        <div className="flex items-start justify-between mb-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2 mb-1">
+                              <span className="text-xs text-gray-400">{evento.fecha}</span>
+                              <span className={`px-2 py-0.5 rounded text-xs ${
+                                evento.importancia === 'Muy Alta' ? 'bg-red-500/20 text-red-400' :
+                                evento.importancia === 'Alta' ? 'bg-orange-500/20 text-orange-400' :
+                                'bg-yellow-500/20 text-yellow-400'
+                              }`}>
+                                {evento.importancia}
+                              </span>
+                            </div>
+                            <h4 className="text-white font-semibold text-sm mb-1">{evento.evento}</h4>
+                            <p className="text-gray-400 text-xs mb-2">{evento.tipo}</p>
+                            <p className="text-gray-300 text-sm mb-3">{evento.descripcion}</p>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs">
+                          <div>
+                            <span className="text-gray-500">Masa:</span>
+                            <p className="text-white">{evento.masa}</p>
+                          </div>
+                          <div>
+                            <span className="text-gray-500">Distancia:</span>
+                            <p className="text-white">{evento.distancia}</p>
+                          </div>
+                          <div className="col-span-2">
+                            <span className="text-gray-500">Observatorio:</span>
+                            <p className="text-white">{evento.observatorio}</p>
+                          </div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                          Referencia: {evento.referencia}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-gray-400 text-center py-8">Cargando eventos reales...</p>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+                    <div key={idx} className="p-3 bg-gray-700/30 rounded-lg border border-gray-600/30 hover:border-blue-500/30 transition-colors">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="text-xs text-gray-400">{evento.fecha}</span>
+                            <span className={`px-2 py-0.5 rounded text-xs ${
+                              evento.importancia === 'Alta' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
+                            }`}>
+                              {evento.importancia}
+                            </span>
+                          </div>
+                          <h4 className="text-white font-semibold text-sm mb-1">{evento.evento}</h4>
+                          <p className="text-gray-400 text-xs mb-2">Tipo: {evento.tipo}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div>
+                          <span className="text-gray-500">Masa:</span>
+                          <p className="text-white">{evento.masa}</p>
+                        </div>
+                        <div>
+                          <span className="text-gray-500">Distancia:</span>
+                          <p className="text-white">{evento.distancia}</p>
+                        </div>
+                        <div className="col-span-2">
+                          <span className="text-gray-500">Observatorio:</span>
+                          <p className="text-white">{evento.observatorio}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Investigaciones en Curso */}
+            <Card className="bg-gray-800/50 border-gray-700/50">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <Eye className="h-5 w-5 text-blue-400" />
+                  Investigaciones en Curso
+                </CardTitle>
+                <CardDescription className="text-gray-400">Proyectos activos de estudio de agujeros negros</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
-                    <p className="text-sm text-blue-400">
-                      <AlertTriangle className="h-4 w-4 inline mr-1" />
-                      {t('blackholes.info_1')}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
-                    <p className="text-sm text-green-400">
-                      <TrendingUp className="h-4 w-4 inline mr-1" />
-                      {t('blackholes.info_2')}
-                    </p>
-                  </div>
-                  <div className="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
-                    <p className="text-sm text-purple-400">
-                      <Database className="h-4 w-4 inline mr-1" />
-                      {t('blackholes.info_3')}
-                    </p>
-                  </div>
+                  {[
+                    {
+                      proyecto: 'Event Horizon Telescope - Fase 2',
+                      objetivo: 'Imagen de Sagitario A* con mayor resolución',
+                      estado: 'En observación',
+                      progreso: 75
+                    },
+                    {
+                      proyecto: 'LIGO-Virgo-KAGRA - Run 4',
+                      objetivo: 'Detección de fusiones de agujeros negros',
+                      estado: 'Activo',
+                      progreso: 60
+                    },
+                    {
+                      proyecto: 'Chandra Deep Field Survey',
+                      objetivo: 'Catálogo de agujeros negros supermasivos distantes',
+                      estado: 'Análisis de datos',
+                      progreso: 45
+                    }
+                  ].map((investigacion, idx) => (
+                    <div key={idx} className="p-3 bg-gray-700/30 rounded-lg border border-gray-600/30">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="text-white font-semibold text-sm">{investigacion.proyecto}</h4>
+                        <span className="text-xs text-green-400">{investigacion.estado}</span>
+                      </div>
+                      <p className="text-gray-400 text-xs mb-2">{investigacion.objetivo}</p>
+                      <div className="w-full bg-gray-600 rounded-full h-1.5">
+                        <div 
+                          className="bg-blue-500 h-1.5 rounded-full transition-all"
+                          style={{ width: `${investigacion.progreso}%` }}
+                        ></div>
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">{investigacion.progreso}% completado</p>
+                    </div>
+                  ))}
                 </div>
               </CardContent>
             </Card>

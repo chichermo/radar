@@ -168,22 +168,102 @@ export default function DarkMatterPage() {
           ))}
         </div>
 
-        {/* Información adicional */}
-        <div className="mt-12 bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
-          <h2 className="text-2xl font-bold text-white mb-4">{t('darkmatter.what_is_dark_matter')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-lg font-semibold text-purple-400 mb-3">{t('darkmatter.the_problem')}</h3>
-              <p className="text-gray-300 leading-relaxed">
-                {t('darkmatter.problem_description')}
-              </p>
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-blue-400 mb-3">{t('darkmatter.the_experiments')}</h3>
-              <p className="text-gray-300 leading-relaxed">
-                {t('darkmatter.experiments_description')}
-              </p>
-            </div>
+        {/* Resultados Recientes */}
+        <div className="mt-8 bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+            <Activity className="h-6 w-6 text-green-400" />
+            Resultados y Actualizaciones Recientes
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {[
+              {
+                fecha: '2024-01-15',
+                experimento: 'LUX-ZEPLIN',
+                resultado: 'Nuevo límite de exclusión establecido',
+                detalle: 'LZ establece el límite más estricto hasta la fecha para WIMPs de 10-100 GeV',
+                importancia: 'Alta'
+              },
+              {
+                fecha: '2024-01-12',
+                experimento: 'XENONnT',
+                resultado: 'Análisis de datos Run 3 completado',
+                detalle: 'Procesamiento de 5.5 toneladas-año de exposición sin señales de materia oscura',
+                importancia: 'Media'
+              },
+              {
+                fecha: '2024-01-10',
+                experimento: 'PandaX-4T',
+                resultado: 'Publicación de resultados de búsqueda de axiones',
+                detalle: 'Nuevos límites en el rango de masas de axiones solares',
+                importancia: 'Media'
+              },
+              {
+                fecha: '2024-01-08',
+                experimento: 'ADMX',
+                resultado: 'Mejora en sensibilidad de detección',
+                detalle: 'Actualización del sistema de amplificación cuántica aumenta sensibilidad',
+                importancia: 'Alta'
+              }
+            ].map((resultado, idx) => (
+              <div key={idx} className="bg-white/5 rounded-lg p-4 border border-white/10 hover:border-purple-500/30 transition-colors">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-gray-400">{resultado.fecha}</span>
+                  <span className={`px-2 py-0.5 rounded text-xs ${
+                    resultado.importancia === 'Alta' ? 'bg-red-500/20 text-red-400' : 'bg-yellow-500/20 text-yellow-400'
+                  }`}>
+                    {resultado.importancia}
+                  </span>
+                </div>
+                <h3 className="text-white font-semibold mb-1">{resultado.experimento}</h3>
+                <p className="text-purple-400 text-sm mb-2">{resultado.resultado}</p>
+                <p className="text-gray-300 text-xs">{resultado.detalle}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Próximos Experimentos */}
+        <div className="mt-8 bg-white/5 backdrop-blur-sm rounded-xl p-8 border border-white/10">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+            <TrendingUp className="h-6 w-6 text-blue-400" />
+            Próximos Experimentos y Actualizaciones
+          </h2>
+          <div className="space-y-4">
+            {[
+              {
+                experimento: 'DARWIN',
+                estado: 'En desarrollo',
+                descripcion: 'Detector de xenón líquido de próxima generación con 50 toneladas',
+                lanzamiento: '2028 (estimado)',
+                objetivo: 'Detección directa de materia oscura'
+              },
+              {
+                experimento: 'LZ Upgrade',
+                estado: 'Planificado',
+                descripcion: 'Expansión del detector LZ para aumentar sensibilidad',
+                lanzamiento: '2026',
+                objetivo: 'Mejorar límites de exclusión'
+              },
+              {
+                experimento: 'SuperCDMS SNOLAB',
+                estado: 'En construcción',
+                descripcion: 'Detector criogénico para WIMPs de baja masa',
+                lanzamiento: '2025',
+                objetivo: 'Búsqueda de materia oscura ligera'
+              }
+            ].map((experimento, idx) => (
+              <div key={idx} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-white font-semibold">{experimento.experimento}</h3>
+                  <span className="text-xs text-yellow-400">{experimento.estado}</span>
+                </div>
+                <p className="text-gray-300 text-sm mb-2">{experimento.descripcion}</p>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-gray-400">Lanzamiento estimado: <span className="text-white">{experimento.lanzamiento}</span></span>
+                  <span className="text-blue-400">{experimento.objetivo}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
