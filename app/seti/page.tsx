@@ -200,18 +200,11 @@ export default function SetiPage() {
                   <span>Equipo:</span>
                   <span className="text-white">{caso.equipo}</span>
                 </div>
-                <div className="flex justify-between text-gray-400">
-                  <span>Progreso:</span>
-                  <span className="text-blue-400">{caso.progreso}%</span>
-                </div>
-                <div className="w-full bg-gray-600 rounded-full h-1.5 mt-2">
-                  <div 
-                    className="bg-blue-500 h-1.5 rounded-full transition-all"
-                    style={{ width: `${caso.progreso}%` }}
-                  ></div>
-                </div>
                 <div className="text-gray-400 mt-2">
-                  <span className="text-yellow-400">Próxima acción:</span> {caso.proximaAccion}
+                  <span className="text-yellow-400">Resultado:</span> {caso.resultado}
+                </div>
+                <div className="text-gray-500 text-xs mt-2">
+                  Referencia: {caso.referencia}
                 </div>
               </div>
             </div>
